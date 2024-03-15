@@ -15,6 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "macros.h"
 #include "esp_zigbee_core.h"
 #ifdef DEEP_SLEEP
 #include "deep_sleep.h"
@@ -193,7 +194,8 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         break;
 #endif
     default:
-        ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
+        // TODO: BUG When no sleep implemented will printed the following log the whole time.
+        // ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
         break;
     }
 }

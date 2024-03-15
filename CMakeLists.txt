@@ -4,7 +4,9 @@ cmake_minimum_required(VERSION 3.16)
 set(EXTRA_COMPONENT_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/components
     )
+
 #### Define Macros
+## OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK
 add_definitions(-DSENSOR_MAP=0b1001101)
 add_definitions(-DDEVICE_ENDPOINT=10)
 

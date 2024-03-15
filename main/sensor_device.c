@@ -15,20 +15,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "macros.h"
 #include "sensor_device.h"
 #include "nvs_flash.h"
 #include "esp_check.h"
 #include "esp_log.h"
-#if (SENSOR_MAP >> 6 & 1) == 1
+#ifdef OTA_UPGRATE
 #include "ota.h"
 #endif
 #include "update_cluster.h"
 #include "create_cluster.h"
-#if (SENSOR_MAP >> 2 & 1) == 1
+#ifdef LIGHT_SLEEP
 #include "light_sleep.h"
 #endif
+#ifdef SENSOR_WATERLEAK
 #include "waterleak.h"
+#endif
 #include "signal_handler.h"
 
 #if !defined ZB_ED_ROLE
@@ -44,7 +45,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
     create_signal_handler(*signal_struct);
 }
 
-#if (SENSOR_MAP >> 6 & 1) == 1
+#ifdef OTA_UPGRADE
 static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id, const void *message)
 {
     esp_err_t ret = ESP_OK;
@@ -66,11 +67,11 @@ static void esp_zb_task(void *pvParameters)
     /* initialize Zigbee stack */
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZED_CONFIG();
     /* The order in the following 3 lines must not be changed. */
-#if (SENSOR_MAP >> 2 & 1) == 1
+#ifdef LIGHT_SLEEP
     sleep_enable();
 #endif
     esp_zb_init(&zb_nwk_cfg);
-#if (SENSOR_MAP >> 2 & 1) == 1
+#ifdef LIGHT_SLEEP
     sleep_configure();
 #endif
     esp_zb_set_tx_power(TX_POWER);
@@ -80,9 +81,13 @@ static void esp_zb_task(void *pvParameters)
 
     create_basic_cluster(esp_zb_cluster_list, firmware_version);
     create_identify_cluster(esp_zb_cluster_list);
+#ifdef SENSOR_WATERLEAK
     create_waterleak_cluster(esp_zb_cluster_list);
+#endif
+#ifdef BATTERY
     create_battery_cluster(esp_zb_cluster_list);
-#if (SENSOR_MAP >> 6 & 1) == 1
+#endif
+#ifdef OTA_UPGRADE
     create_ota_cluster(esp_zb_cluster_list);
 #endif
 
@@ -90,7 +95,7 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_ep_list_add_ep(esp_zb_ep_list, esp_zb_cluster_list, DEVICE_ENDPOINT, ESP_ZB_AF_HA_PROFILE_ID, ESP_ZB_HA_TEMPERATURE_SENSOR_DEVICE_ID);
 
     esp_zb_device_register(esp_zb_ep_list);
-#if (SENSOR_MAP >> 6 & 1) == 1
+#ifdef OTA_UPGRADE
     esp_zb_core_action_handler_register(zb_action_handler);
 #endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
@@ -108,7 +113,7 @@ void app_main(void)
 
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
-#if (SENSOR_MAP >> 2 & 1) == 1
+#ifdef LIGHT_SLEEP
     ESP_ERROR_CHECK(esp_zb_power_save_init(CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ));
 #endif
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
