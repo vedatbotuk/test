@@ -14,7 +14,7 @@ add_definitions(-DDEVICE_ENDPOINT=10)
 add_definitions(-DTX_POWER=0)
 
 ## KEEP ALIVE
-add_definitions(-DED_KEEP_ALIVE=10000)
+add_definitions(-DED_KEEP_ALIVE=4000)
 
 ## OTA MACROS
 add_definitions(-DESP_OTA_CLIENT_ENDPOINT=5)

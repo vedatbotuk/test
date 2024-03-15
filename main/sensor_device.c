@@ -15,20 +15,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "macros.h"
 #include "sensor_device.h"
 #include "nvs_flash.h"
 #include "esp_check.h"
 #include "esp_log.h"
-#ifdef OTA_UPGRATE
+#ifdef OTA_UPGRADE
 #include "ota.h"
 #endif
 #include "update_cluster.h"
 #include "create_cluster.h"
 #ifdef LIGHT_SLEEP
 #include "light_sleep.h"
-#endif
-#ifdef SENSOR_WATERLEAK
-#include "waterleak.h"
 #endif
 #include "signal_handler.h"
 
