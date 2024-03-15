@@ -16,35 +16,6 @@
  */
 
 #include "esp_zigbee_core.h"
-
-const char *TAG_SIGNAL_HANDLER = "SIGNAL";
-
-/*MACROS SENSOR MAPING from CMakeLists.txt*/
-#if (SENSOR_MAP >> 0 & 1) == 1
-#define SENSOR_WATERLEAK true
-#endif
-
-#if (SENSOR_MAP >> 1 & 1) == 1
-#define DEEP_SLEEP true
-#endif
-
-#if (SENSOR_MAP >> 2 & 1) == 1
-#define LIGHT_SLEEP true
-#endif
-
-#if (SENSOR_MAP >> 3 & 1) == 1
-#define BATTERY true
-#endif
-
-#if (SENSOR_MAP >> 4 & 1) == 1
-#define SENSOR_TEMPERATURE true
-#endif
-
-#if (SENSOR_MAP >> 5 & 1) == 1
-#define SENSOR_HUMIDITY true
-#endif
-/*MACROS SENSOR MAPING END*/
-
 #ifdef DEEP_SLEEP
 #include "deep_sleep.h"
 #endif
@@ -57,6 +28,7 @@ const char *TAG_SIGNAL_HANDLER = "SIGNAL";
 // TODO: Include Temperature
 // TODO: Include Humidity
 
+const char *TAG_SIGNAL_HANDLER = "SIGNAL";
 bool conn = false;
 
 #ifdef MIX_SLEEP

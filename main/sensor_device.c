@@ -15,6 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "macros.h"
 #include "sensor_device.h"
 #include "nvs_flash.h"
 #include "esp_check.h"
