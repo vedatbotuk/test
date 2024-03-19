@@ -26,8 +26,10 @@
 #ifdef SENSOR_WATERLEAK
 #include "waterleak.h"
 #endif
-// TODO: Include Temperature
-// TODO: Include Humidity
+#if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
+#include "temperature_humidity.h"
+#endif
+
 
 const char *TAG_SIGNAL_HANDLER = "SIGNAL";
 bool conn = false;
@@ -165,10 +167,10 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         if (conn == true)
         {
 #ifdef SENSOR_TEMPERATURE
-// TODO: Temperature function
+            check_temperature();
 #endif
 #ifdef SENSOR_HUMIDITY
-// TODO: Humidity function
+            check_humidity();
 #endif
 
 #ifdef BATTERY
