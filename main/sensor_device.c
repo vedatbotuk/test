@@ -79,6 +79,12 @@ static void esp_zb_task(void *pvParameters)
 
     create_basic_cluster(esp_zb_cluster_list, firmware_version);
     create_identify_cluster(esp_zb_cluster_list);
+#ifdef SENSOR_TEMPERATURE
+    create_temp_cluster(esp_zb_cluster_list);
+#endif
+#ifdef SENSOR_HUMIDITY
+    create_hum_cluster(esp_zb_cluster_list);
+#endif
 #ifdef SENSOR_WATERLEAK
     create_waterleak_cluster(esp_zb_cluster_list);
 #endif

@@ -7,7 +7,7 @@ set(EXTRA_COMPONENT_DIRS
 
 #### Define Macros
 ## OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK
-add_definitions(-DSENSOR_MAP=0b1001101)
+add_definitions(-DSENSOR_MAP=0b0111100)
 add_definitions(-DDEVICE_ENDPOINT=10)
 
 ## Channel and TX-Power

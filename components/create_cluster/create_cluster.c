@@ -21,10 +21,10 @@
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_ota_ops.h"
 
-static char manufacturer[16] = {5, 'B', 'o', 't', 'u', '2'};
+static char manufacturer[16] = {5, 'B', 'o', 't', 'u', 'k'};
 #if defined ZB_ED_ROLE
-// static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', 'D', '_', 'D', 'e', 'v'};
-static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
+static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', 'D', '_', 'D', 'e', 'v'};
+// static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
 #endif
 #if defined CONFIG_ZB_ZCZR
 static char model[16] = {14, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'R', 'o', 'u', 't', 'e', 'r'};
