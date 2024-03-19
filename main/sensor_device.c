@@ -20,7 +20,7 @@
 #include "nvs_flash.h"
 #include "esp_check.h"
 #include "esp_log.h"
-#ifdef OTA_UPGRADE
+#ifdef OTA_UPDATE
 #include "ota.h"
 #endif
 #include "update_cluster.h"
@@ -43,7 +43,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
     create_signal_handler(*signal_struct);
 }
 
-#ifdef OTA_UPGRADE
+#ifdef OTA_UPDATE
 static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id, const void *message)
 {
     esp_err_t ret = ESP_OK;
@@ -91,15 +91,20 @@ static void esp_zb_task(void *pvParameters)
 #ifdef BATTERY
     create_battery_cluster(esp_zb_cluster_list);
 #endif
-#ifdef OTA_UPGRADE
+#ifdef OTA_UPDATE
     create_ota_cluster(esp_zb_cluster_list);
 #endif
 
     esp_zb_ep_list_t *esp_zb_ep_list = esp_zb_ep_list_create();
-    esp_zb_ep_list_add_ep(esp_zb_ep_list, esp_zb_cluster_list, DEVICE_ENDPOINT, ESP_ZB_AF_HA_PROFILE_ID, ESP_ZB_HA_TEMPERATURE_SENSOR_DEVICE_ID);
+    esp_zb_endpoint_config_t endpoint_config = {
+        .endpoint = DEVICE_ENDPOINT,
+        .app_profile_id = ESP_ZB_AF_HA_PROFILE_ID,
+        .app_device_id = ESP_ZB_HA_TEMPERATURE_SENSOR_DEVICE_ID,
+        .app_device_version = 0};
+    esp_zb_ep_list_add_ep(esp_zb_ep_list, esp_zb_cluster_list, endpoint_config);
 
     esp_zb_device_register(esp_zb_ep_list);
-#ifdef OTA_UPGRADE
+#ifdef OTA_UPDATE
     esp_zb_core_action_handler_register(zb_action_handler);
 #endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
