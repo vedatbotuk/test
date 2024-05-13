@@ -17,7 +17,7 @@ add_definitions(-DTX_POWER=0)
 add_definitions(-DED_KEEP_ALIVE=4000)
 
 ## OTA MACROS
-add_definitions(-DESP_OTA_CLIENT_ENDPOINT=5)
+add_definitions(-DESP_OTA_CLIENT_ENDPOINT=10)
 # Define HEX 0x0101 or DEC 257
 add_definitions(-DOTA_UPGRADE_HW_VERSION=0x0101)
 add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=0x01010107)
