@@ -6,8 +6,8 @@ set(EXTRA_COMPONENT_DIRS
     )
 
 #### Define Macros
-## OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK
-add_definitions(-DSENSOR_MAP=0b1111100)
+## OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
+add_definitions(-DSENSOR_MAP=0b10011001)
 add_definitions(-DDEVICE_ENDPOINT=10)
 
 ## Channel and TX-Power
@@ -20,10 +20,10 @@ add_definitions(-DED_KEEP_ALIVE=4000)
 add_definitions(-DESP_OTA_CLIENT_ENDPOINT=10)
 # Define HEX 0x0101 or DEC 257
 add_definitions(-DOTA_UPGRADE_HW_VERSION=0x0101)
-add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=0x01010107)
-add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=0x01010107)
+add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=0x01010108)
+add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=0x01010108)
 add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=0x1011)
 add_definitions(-DOTA_UPGRADE_MANUFACTURER=0x1001)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(sensor_device)
+project(automatic_irrigation)

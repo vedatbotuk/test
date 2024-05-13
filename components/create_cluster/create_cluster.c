@@ -30,6 +30,9 @@ static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', '
 #ifdef SENSOR_WATERLEAK
 static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
 #endif
+#ifdef AUTOMATIC_IRRIGATION
+static char model[14] = {12, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'P', 'U', 'M', 'P'};
+#endif
 #endif
 #if defined CONFIG_ZB_ZCZR
 static char model[16] = {14, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'R', 'o', 'u', 't', 'e', 'r'};
@@ -145,4 +148,12 @@ void create_ota_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     };
     esp_zb_ota_cluster_add_attr(esp_zb_ota_client_cluster, ESP_ZB_ZCL_ATTR_OTA_UPGRADE_CLIENT_DATA_ID, (void *)&variable_config);
     esp_zb_cluster_list_add_ota_cluster(esp_zb_cluster_list, esp_zb_ota_client_cluster, ESP_ZB_ZCL_CLUSTER_CLIENT_ROLE);
+}
+
+void create_water_pump_switch_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
+{
+    uint16_t undefined_value;
+    esp_zb_attribute_list_t *esp_zb_wtr_pmp_swt_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_ON_OFF);
+    esp_zb_on_off_cluster_add_attr(esp_zb_wtr_pmp_swt_cluster, ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, &undefined_value);
+    esp_zb_cluster_list_add_on_off_cluster(esp_zb_cluster_list, esp_zb_wtr_pmp_swt_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 }

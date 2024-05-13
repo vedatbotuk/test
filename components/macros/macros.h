@@ -21,30 +21,34 @@
 // TODO: Rename the Macros. For example WATERLEAK_FEATURES, TEMPERATURE_FEATURES
 
 #if (SENSOR_MAP >> 0 & 1) == 1
-#define SENSOR_WATERLEAK true
+#define AUTOMATIC_IRRIGATION true
 #endif
 
 #if (SENSOR_MAP >> 1 & 1) == 1
-#define DEEP_SLEEP true
+#define SENSOR_WATERLEAK true
 #endif
 
 #if (SENSOR_MAP >> 2 & 1) == 1
-#define LIGHT_SLEEP true
+#define DEEP_SLEEP true
 #endif
 
 #if (SENSOR_MAP >> 3 & 1) == 1
-#define BATTERY true
+#define LIGHT_SLEEP true
 #endif
 
 #if (SENSOR_MAP >> 4 & 1) == 1
-#define SENSOR_TEMPERATURE true
+#define BATTERY true
 #endif
 
 #if (SENSOR_MAP >> 5 & 1) == 1
-#define SENSOR_HUMIDITY true
+#define SENSOR_TEMPERATURE true
 #endif
 
 #if (SENSOR_MAP >> 6 & 1) == 1
+#define SENSOR_HUMIDITY true
+#endif
+
+#if (SENSOR_MAP >> 7 & 1) == 1
 #define OTA_UPDATE true
 #endif
 

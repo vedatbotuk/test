@@ -1,4 +1,4 @@
 idf_component_register(
-    SRCS "sensor_device.c"
+    SRCS "device.c"
     INCLUDE_DIRS "."
 )
