@@ -23,6 +23,7 @@
 #include "update_cluster.h"
 #include "create_cluster.h"
 #include "signal_handler.h"
+#include "pump_switch.h"
 
 #ifdef OTA_UPDATE
 #include "ota.h"
@@ -46,11 +47,11 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 }
 
 #ifdef AUTOMATIC_IRRIGATION
-// static esp_err_t deferred_driver_init(void)
-// {
-//     // light_driver_init(LIGHT_DEFAULT_OFF);
-//     return ESP_OK;
-// }
+static esp_err_t deferred_driver_init(void)
+{
+    light_driver_init(LIGHT_DEFAULT_OFF);
+    return ESP_OK;
+}
 
 static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t *message)
 {
@@ -70,7 +71,7 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
             {
                 light_state = message->attribute.data.value ? *(bool *)message->attribute.data.value : light_state;
                 ESP_LOGI(TAG, "Light sets to %s", light_state ? "On" : "Off");
-                // light_driver_set_power(light_state);
+                light_driver_set_power(light_state);
             }
         }
     }
