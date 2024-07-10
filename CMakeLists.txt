@@ -5,7 +5,11 @@ set(EXTRA_COMPONENT_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/components
     )
 
+## Set dev or prod
+set(DEV_PROD "dev")
+
 #### Define Macros
+## First 8 bits are for additional future features
 ## OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
 set(SENSOR_MAP_DEF "0000000011111000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
@@ -20,11 +24,13 @@ add_definitions(-DED_KEEP_ALIVE=4000)
 ## OTA MACROS
 add_definitions(-DESP_OTA_CLIENT_ENDPOINT=10)
 # Define HEX 0x0101 or DEC 257
-add_definitions(-DOTA_UPGRADE_HW_VERSION=0x0101)
-add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=0x01010108)
-add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=0x01010108)
+set(HW_VERSION "257")
+set(VERSION "16843016")
+add_definitions(-DOTA_UPGRADE_HW_VERSION=${HW_VERSION})
+add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=${VERSION})
+add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=${VERSION})
 add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=0x1011)
 add_definitions(-DOTA_UPGRADE_MANUFACTURER=0x1001)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(device_${SENSOR_MAP_DEF})
+project(device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD})
