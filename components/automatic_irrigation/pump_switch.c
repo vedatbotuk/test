@@ -25,6 +25,7 @@ static const char *TAG_PUMP_SWITCH = "AUTOMATIC_IRRIGATION";
 void light_driver_set_power(bool power)
 {
     ESP_ERROR_CHECK(gpio_set_level(8,1));
+    ESP_LOGI(TAG_PUMP_SWITCH, "Dummy LOG");
 }
 
 esp_err_t light_driver_init(bool power)

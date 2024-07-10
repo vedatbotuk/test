@@ -23,17 +23,18 @@
 #include "esp_ota_ops.h"
 
 static char manufacturer[16] = {5, 'B', 'o', 't', 'u', 'k'};
-#if defined ZB_ED_ROLE
-#if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
-static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', 'D', '_', 'D', 'e', 'v'};
-#endif
-#ifdef SENSOR_WATERLEAK
-static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
-#endif
-#ifdef AUTOMATIC_IRRIGATION
-static char model[14] = {12, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'P', 'U', 'M', 'P'};
-#endif
-#endif
+static char model[16] = {SENSOR_MAP};
+// #if defined ZB_ED_ROLE
+// #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
+// static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', 'D', '_', 'D', 'e', 'v'};
+// #endif
+// #ifdef SENSOR_WATERLEAK
+// static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
+// #endif
+// #ifdef AUTOMATIC_IRRIGATION
+// static char model[14] = {12, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'P', 'U', 'M', 'P'};
+// #endif
+// #endif
 #if defined CONFIG_ZB_ZCZR
 static char model[16] = {14, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'R', 'o', 'u', 't', 'e', 'r'};
 #endif
