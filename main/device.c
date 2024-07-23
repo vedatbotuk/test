@@ -33,10 +33,6 @@
 #include "light_sleep.h"
 #endif
 
-#if !defined ZB_ED_ROLE
-#error Define ZB_ED_ROLE in idf.py menuconfig to compile RFD (End Device) source code.
-#endif
-
 static char firmware_version[16] = {7, 'v', 'e', 'r', '0', '.', '1', '3'};
 static const char *TAG = "DEVICE";
 
@@ -106,7 +102,12 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
 static void esp_zb_task(void *pvParameters)
 {
     /* initialize Zigbee stack */
+#ifdef END_DEVICE
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZED_CONFIG();
+#endif
+#ifdef ROUTER_DEVICE
+    esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZR_CONFIG();
+#endif
     /* The order in the following 3 lines must not be changed. */
 #ifdef LIGHT_SLEEP
     sleep_enable();
@@ -145,7 +146,7 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_endpoint_config_t endpoint_config = {
         .endpoint = DEVICE_ENDPOINT,
         .app_profile_id = ESP_ZB_AF_HA_PROFILE_ID,
-        .app_device_id = ESP_ZB_HA_TEMPERATURE_SENSOR_DEVICE_ID,
+        .app_device_id = ESP_ZB_HA_TEST_DEVICE_ID,
         .app_device_version = 0};
     esp_zb_ep_list_add_ep(esp_zb_ep_list, esp_zb_cluster_list, endpoint_config);
 

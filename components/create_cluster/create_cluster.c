@@ -22,29 +22,22 @@
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_ota_ops.h"
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 static char manufacturer[16] = {5, 'B', 'o', 't', 'u', 'k'};
-static char model[16] = {SENSOR_MAP};
-// #if defined ZB_ED_ROLE
-// #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
-// static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', 'D', '_', 'D', 'e', 'v'};
-// #endif
-// #ifdef SENSOR_WATERLEAK
-// static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
-// #endif
-// #ifdef AUTOMATIC_IRRIGATION
-// static char model[14] = {12, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'P', 'U', 'M', 'P'};
-// #endif
-// #endif
-#if defined CONFIG_ZB_ZCZR
-static char model[16] = {14, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'R', 'o', 'u', 't', 'e', 'r'};
-#endif
+static char *model = "\x10"TOSTRING(MODEL_ID_MAP);
 
 RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
 uint8_t test_attr;
 
 void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list, char f_version[16])
 {
+#ifdef BATTERY
     uint8_t power_source = 3;
+#else
+    uint8_t power_source = 1;
+#endif
     /* basic cluster create with fully customized */
     esp_zb_attribute_list_t *esp_zb_basic_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_BASIC);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_MANUFACTURER_NAME_ID, manufacturer);

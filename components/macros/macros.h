@@ -52,4 +52,9 @@
 #define OTA_UPDATE true
 #endif
 
+#if (SENSOR_MAP >> 8 & 1) == 1
+#define END_DEVICE true
+#else
+#define ROUTER_DEVICE true
+#endif
 #endif /* MACROS_H */
