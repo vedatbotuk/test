@@ -13,7 +13,7 @@ set(DEV_PROD "dev")
 # idf_build_set_property(COMPILE_OPTIONS "-DCDCONFIG_ZB_ZED=y" APPEND)
 ## First 7 bits are for additional future features
 ## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
-set(SENSOR_MAP_DEF "0000000000000000")
+set(SENSOR_MAP_DEF "1111110000000000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
 add_definitions(-DMODEL_ID_MAP=${SENSOR_MAP_DEF})
 add_definitions(-DDEVICE_ENDPOINT=10)

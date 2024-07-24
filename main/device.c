@@ -104,9 +104,11 @@ static void esp_zb_task(void *pvParameters)
     /* initialize Zigbee stack */
 #ifdef END_DEVICE
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZED_CONFIG();
+    ESP_LOGI(TAG, "Enable END_DEVICE");
 #endif
 #ifdef ROUTER_DEVICE
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZR_CONFIG();
+    ESP_LOGI(TAG, "Enable ROUTER_DEVICE");
 #endif
     /* The order in the following 3 lines must not be changed. */
 #ifdef LIGHT_SLEEP
@@ -115,6 +117,7 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_init(&zb_nwk_cfg);
 #ifdef LIGHT_SLEEP
     sleep_configure();
+    ESP_LOGI(TAG, "Enable LIGHT_SLEEP");
 #endif
     esp_zb_set_tx_power(TX_POWER);
 
@@ -125,18 +128,27 @@ static void esp_zb_task(void *pvParameters)
     create_identify_cluster(esp_zb_cluster_list);
 #ifdef SENSOR_TEMPERATURE
     create_temp_cluster(esp_zb_cluster_list);
+    ESP_LOGI(TAG, "Create SENSOR_TEMPERATURE Cluster");
+
 #endif
 #ifdef SENSOR_HUMIDITY
     create_hum_cluster(esp_zb_cluster_list);
+    ESP_LOGI(TAG, "Create SENSOR_HUMIDITY Cluster");
+
 #endif
 #ifdef SENSOR_WATERLEAK
     create_waterleak_cluster(esp_zb_cluster_list);
+    ESP_LOGI(TAG, "Create SENSOR_WATERLEAK Cluster");
+
 #endif
 #ifdef BATTERY
     create_battery_cluster(esp_zb_cluster_list);
+    ESP_LOGI(TAG, "Create BATTERY Cluster");
+
 #endif
 #ifdef OTA_UPDATE
     create_ota_cluster(esp_zb_cluster_list);
+    ESP_LOGI(TAG, "Create OTA_UPDATE Cluster");
 #endif
 #ifdef AUTOMATIC_IRRIGATION
     create_water_pump_switch_cluster(esp_zb_cluster_list);
