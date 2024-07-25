@@ -55,13 +55,10 @@ set(DEV_PROD "dev")
 ## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
 set(SENSOR_MAP_DEF "1111110000000000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
-
 binary_to_decimal(${SENSOR_MAP_DEF} MODEL_ID_DECIMAL)
 format_decimal(${MODEL_ID_DECIMAL} 5 MODEL_ID_FORMATED)
-
 add_definitions(-DMODEL_ID_MAP=${MODEL_ID_FORMATED})
 add_definitions(-DDEVICE_ENDPOINT=10)
-
 ## Channel and TX-Power
 add_definitions(-DTX_POWER=0)
 
@@ -80,18 +77,19 @@ add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=0x1011)
 add_definitions(-DOTA_UPGRADE_MANUFACTURER=0x1001)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(device_${MODEL_ID_FORMATED}_v${VERSION}${DEV_PROD})
+set(FILE_NAME "device_${MODEL_ID_FORMATED}_v${VERSION}${DEV_PROD}")
+project(${FILE_NAME})
 
 #### ###################### ####
 #### Create OTA-Update File ####
-set(MY_DIR ${CMAKE_BINARY_DIR}/ota)
+set(MY_DIR ${CMAKE_SOURCE_DIR}/ota)
 file(MAKE_DIRECTORY ${MY_DIR})
 
 set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m 4097 -i ${MODEL_ID_DECIMAL} -v ${VERSION} build/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.bin ota/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.ota
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+add_custom_target(RunPostBuildScript ALL
+    COMMAND ${CMAKE_COMMAND} -E echo  "Running Python script..."
+    COMMAND ${CMAKE_COMMAND} -E env /usr/bin/python3 ${PYTHON_SCRIPT} -m 4097 -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
 )
-# python3 ../../scripts/create_ota.py -m 4097 -i 4113 -v 16843014 build/sensor_device_light_sleep.bin > build/sensor_device.ota
+add_dependencies(RunPostBuildScript ${FILE_NAME}.elf)
 #### Create OTA-Update File ####
 #### ###################### ####
