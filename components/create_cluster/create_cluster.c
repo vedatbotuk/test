@@ -23,10 +23,10 @@
 #include "esp_ota_ops.h"
 
 #define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
+// #define TOSTRING(x) STRINGIFY(x)
 
-static char manufacturer[16] = {5, 'B', 'o', 't', 'u', 'k'};
-static char *model = "\x10"TOSTRING(MODEL_ID_MAP);
+static char *manufacturer = "\x05""Botuk";
+static char *model = "\x05" STRINGIFY(MODEL_ID_MAP);
 
 RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
 uint8_t test_attr;

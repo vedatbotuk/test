@@ -5,6 +5,46 @@ set(EXTRA_COMPONENT_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/components
     )
 
+#### ######### ####
+#### FUNKTIONS ####
+# Funktion zur Konvertierung einer Binärzahl in eine Dezimalzahl
+function(binary_to_decimal binary_number result)
+    set(decimal_value 0)
+    set(base 1)
+
+    # Binärzahl von rechts nach links verarbeiten
+    string(LENGTH "${binary_number}" binary_length)
+    math(EXPR last_index "${binary_length} - 1")
+    
+    foreach(index RANGE ${last_index} 0 -1)
+        string(SUBSTRING "${binary_number}" ${index} 1 digit)
+        if(digit EQUAL "1")
+            math(EXPR decimal_value "${decimal_value} + ${base}")
+        endif()
+        math(EXPR base "${base} * 2")
+    endforeach()
+
+    # Ergebnis zurückgeben
+    set(${result} "${decimal_value}" PARENT_SCOPE)
+endfunction()
+
+# Funktion zur Formatierung des Ergebnisses auf eine feste Länge
+function(format_decimal decimal_number length result)
+    string(LENGTH "${decimal_number}" decimal_length)
+    if(decimal_length LESS length)
+        math(EXPR zeros_to_add "${length} - ${decimal_length}")
+        string(REPEAT "0" ${zeros_to_add} leading_zeros)
+        set(formatted_result "${leading_zeros}${decimal_number}")
+    else()
+        set(formatted_result "${decimal_number}")
+    endif()
+
+    # Ergebnis zurückgeben
+    set(${result} "${formatted_result}" PARENT_SCOPE)
+endfunction()
+#### FUNKTIONS ####
+#### ######### ####
+
 ## Set dev or prod
 set(DEV_PROD "dev")
 
@@ -15,7 +55,11 @@ set(DEV_PROD "dev")
 ## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
 set(SENSOR_MAP_DEF "1111110000000000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
-add_definitions(-DMODEL_ID_MAP=${SENSOR_MAP_DEF})
+
+binary_to_decimal(${SENSOR_MAP_DEF} MODEL_ID_DECIMAL)
+format_decimal(${MODEL_ID_DECIMAL} 5 MODEL_ID_FORMATED)
+
+add_definitions(-DMODEL_ID_MAP=${MODEL_ID_FORMATED})
 add_definitions(-DDEVICE_ENDPOINT=10)
 
 ## Channel and TX-Power
@@ -36,39 +80,18 @@ add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=0x1011)
 add_definitions(-DOTA_UPGRADE_MANUFACTURER=0x1001)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD})
+project(device_${MODEL_ID_FORMATED}_v${VERSION}${DEV_PROD})
 
-# Funktion zur Konvertierung einer Binärzahl in eine Dezimalzahl
-function(binary_to_decimal binary_number result)
-    set(decimal_value 0)
-    set(base 1)
-
-    # Umgekehrte Reihenfolge der Binärzahl verarbeiten
-    string(REVERSE "${binary_number}" reversed_binary)
-
-    foreach(digit IN LISTS reversed_binary)
-        if(digit EQUAL "1")
-            math(EXPR decimal_value "${decimal_value} + ${base}")
-        endif()
-        math(EXPR base "${base} * 2")
-    endforeach()
-
-    # Ergebnis zurückgeben
-    set(${result} "${decimal_value}" PARENT_SCOPE)
-endfunction()
-
-# Variable für das Ergebnis der Konvertierung
-binary_to_decimal(${binary_number} imageType)
-
-## Create OTA-Update File
+#### ###################### ####
+#### Create OTA-Update File ####
 set(MY_DIR ${CMAKE_BINARY_DIR}/ota)
 file(MAKE_DIRECTORY ${MY_DIR})
 
 set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
 execute_process(
-    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m 4097 -i ${imageType} -v ${VERSION} \
-                                            build/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.bin \
-                                            ota/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.ota
+    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m 4097 -i ${MODEL_ID_DECIMAL} -v ${VERSION} build/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.bin ota/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.ota
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 # python3 ../../scripts/create_ota.py -m 4097 -i 4113 -v 16843014 build/sensor_device_light_sleep.bin > build/sensor_device.ota
+#### Create OTA-Update File ####
+#### ###################### ####
