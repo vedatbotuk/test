@@ -15,27 +15,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "macros.h"
 #include <stdio.h>
 #include "create_cluster.h"
 #include "esp_log.h"
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_ota_ops.h"
 
-static char manufacturer[16] = {5, 'B', 'o', 't', 'u', 'k'};
-#if defined ZB_ED_ROLE
-static char model[16] = {15, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'E', 'N', 'D', '_', 'D', 'e', 'v'};
-// static char model[14] = {13, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'W', 'A', 'T', 'E', 'R'};
-#endif
-#if defined CONFIG_ZB_ZCZR
-static char model[16] = {14, 'E', 'S', 'P', '3', '2', 'H', '2', '_', 'R', 'o', 'u', 't', 'e', 'r'};
-#endif
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+static char *manufacturer = "\x05""Botuk";
+static char *model = "\x05" TOSTRING(MODEL_ID_MAP);
 
 RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
 uint8_t test_attr;
 
 void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list, char f_version[16])
 {
+#ifdef BATTERY
     uint8_t power_source = 3;
+#else
+    uint8_t power_source = 1;
+#endif
     /* basic cluster create with fully customized */
     esp_zb_attribute_list_t *esp_zb_basic_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_BASIC);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_MANUFACTURER_NAME_ID, manufacturer);
@@ -84,17 +86,6 @@ void create_hum_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
 
 void create_waterleak_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
 {
-    //    esp_zb_metering_cluster_cfg_t metering_cluster_cfg = {
-    //        .metering_device_type = ESP_ZB_ZCL_METERING_WATER_METERING,
-    //        .status = ESP_ZB_ZCL_METERING_ALARM_CHECK_METER,
-    //    };
-    //    esp_zb_attribute_list_t *esp_zb_metering_cluster = esp_zb_metering_cluster_create(&metering_cluster_cfg);
-    //    esp_zb_cluster_list_add_metering_cluster(esp_zb_cluster_list, esp_zb_metering_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
-
-    //    esp_zb_attribute_list_t *esp_zb_metering_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_METERING);
-    //    esp_zb_cluster_add_attr(esp_zb_metering_cluster, ESP_ZB_ZCL_CLUSTER_ID_METERING, ESP_ZB_ZCL_ATTR_METERING_STATUS_ID, ESP_ZB_ZCL_ATTR_TYPE_64BITMAP, ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE, ESP_ZB_ZCL_METERING_ALARM_CHECK_METER);
-    //    esp_zb_cluster_list_add_metering_cluster(esp_zb_cluster_list, esp_zb_metering_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
-
     esp_zb_ias_zone_cluster_cfg_t ias_zone_cluster_cfg = {
         .zone_state = ESP_ZB_ZCL_IAS_ZONE_ZONESTATE_ENROLLED,
         .zone_type = ESP_ZB_ZCL_IAS_ZONE_ZONETYPE_WATER_SENSOR,
@@ -151,4 +142,12 @@ void create_ota_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     };
     esp_zb_ota_cluster_add_attr(esp_zb_ota_client_cluster, ESP_ZB_ZCL_ATTR_OTA_UPGRADE_CLIENT_DATA_ID, (void *)&variable_config);
     esp_zb_cluster_list_add_ota_cluster(esp_zb_cluster_list, esp_zb_ota_client_cluster, ESP_ZB_ZCL_CLUSTER_CLIENT_ROLE);
+}
+
+void create_water_pump_switch_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
+{
+    uint16_t undefined_value;
+    esp_zb_attribute_list_t *esp_zb_wtr_pmp_swt_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_ON_OFF);
+    esp_zb_on_off_cluster_add_attr(esp_zb_wtr_pmp_swt_cluster, ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, &undefined_value);
+    esp_zb_cluster_list_add_on_off_cluster(esp_zb_cluster_list, esp_zb_wtr_pmp_swt_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 }

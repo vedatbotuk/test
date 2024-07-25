@@ -22,6 +22,7 @@
 #define ED_AGING_TIMEOUT ESP_ZB_ED_AGING_TIMEOUT_64MIN /* End device ages time */
 #define ESP_ZB_PRIMARY_CHANNEL_MASK (1l << 25)         /* Zigbee primary channel mask use in the example */
 
+#ifdef END_DEVICE
 #define ESP_ZB_ZED_CONFIG()                               \
     {                                                     \
         .esp_zb_role = ESP_ZB_DEVICE_TYPE_ED,             \
@@ -31,13 +32,25 @@
             .keep_alive = ED_KEEP_ALIVE,                  \
         },                                                \
     }
+#endif
+#ifdef ROUTER_DEVICE
+#define MAX_CHILDREN 10
+#define ESP_ZB_ZR_CONFIG()                                \
+    {                                                     \
+        .esp_zb_role = ESP_ZB_DEVICE_TYPE_ROUTER,         \
+        .install_code_policy = INSTALLCODE_POLICY_ENABLE, \
+        .nwk_cfg.zczr_cfg = {                             \
+            .max_children = MAX_CHILDREN,                 \
+        },                                                \
+    }
+#endif
 
-#define ESP_ZB_DEFAULT_RADIO_CONFIG()    \
-    {                                    \
-        .radio_mode = RADIO_MODE_NATIVE, \
+#define ESP_ZB_DEFAULT_RADIO_CONFIG()       \
+    {                                       \
+        .radio_mode = ZB_RADIO_MODE_NATIVE, \
     }
 
-#define ESP_ZB_DEFAULT_HOST_CONFIG()                       \
-    {                                                      \
-        .host_connection_mode = HOST_CONNECTION_MODE_NONE, \
+#define ESP_ZB_DEFAULT_HOST_CONFIG()                          \
+    {                                                         \
+        .host_connection_mode = ZB_HOST_CONNECTION_MODE_NONE, \
     }

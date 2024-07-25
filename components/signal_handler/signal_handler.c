@@ -17,6 +17,7 @@
 
 #include "macros.h"
 #include "esp_zigbee_core.h"
+#include "esp_check.h"
 #ifdef DEEP_SLEEP
 #include "deep_sleep.h"
 #endif
@@ -29,7 +30,6 @@
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 #include "temperature_humidity.h"
 #endif
-
 
 const char *TAG_SIGNAL_HANDLER = "SIGNAL";
 bool conn = false;
@@ -46,7 +46,7 @@ uint16_t batt_cnt = 0;
 
 void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 {
-    ESP_ERROR_CHECK(esp_zb_bdb_start_top_level_commissioning(mode_mask));
+    ESP_RETURN_ON_FALSE(esp_zb_bdb_start_top_level_commissioning(mode_mask) == ESP_OK, , TAG_SIGNAL_HANDLER, "Failed to start Zigbee bdb commissioning");
 }
 
 bool connection_status()
@@ -91,7 +91,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
     {
     case ESP_ZB_ZDO_SIGNAL_SKIP_STARTUP:
         conn = false;
-        ESP_LOGI(TAG_SIGNAL_HANDLER, "Zigbee stack initialized");
+        ESP_LOGI(TAG_SIGNAL_HANDLER, "Initialize Zigbee stack");
         esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_INITIALIZATION);
         break;
     case ESP_ZB_BDB_SIGNAL_DEVICE_FIRST_START:
@@ -174,7 +174,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
 #endif
 
 #ifdef BATTERY
-            if (batt_cnt == 1000)
+            if (batt_cnt == 1000 || batt_cnt == 0)
             {
                 voltage_calculate_init();
                 get_battery_level();
@@ -194,10 +194,25 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         }
         esp_zb_sleep_now();
         break;
+#ifdef ROUTER_DEVICE
+    case ESP_ZB_NWK_SIGNAL_PERMIT_JOIN_STATUS:
+        if (err_status == ESP_OK)
+        {
+            if (*(uint8_t *)esp_zb_app_signal_get_params(p_sg_p))
+            {
+                ESP_LOGI(TAG, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
+            }
+            else
+            {
+                ESP_LOGW(TAG, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
+            }
+        }
+        break;
+#endif
 #endif
     default:
         // TODO: BUG When no sleep implemented will printed the following log the whole time.
-        // ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
+        ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
         break;
     }
 }
