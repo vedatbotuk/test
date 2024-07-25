@@ -37,3 +37,38 @@ add_definitions(-DOTA_UPGRADE_MANUFACTURER=0x1001)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD})
+
+# Funktion zur Konvertierung einer Binärzahl in eine Dezimalzahl
+function(binary_to_decimal binary_number result)
+    set(decimal_value 0)
+    set(base 1)
+
+    # Umgekehrte Reihenfolge der Binärzahl verarbeiten
+    string(REVERSE "${binary_number}" reversed_binary)
+
+    foreach(digit IN LISTS reversed_binary)
+        if(digit EQUAL "1")
+            math(EXPR decimal_value "${decimal_value} + ${base}")
+        endif()
+        math(EXPR base "${base} * 2")
+    endforeach()
+
+    # Ergebnis zurückgeben
+    set(${result} "${decimal_value}" PARENT_SCOPE)
+endfunction()
+
+# Variable für das Ergebnis der Konvertierung
+binary_to_decimal(${binary_number} imageType)
+
+## Create OTA-Update File
+set(MY_DIR ${CMAKE_BINARY_DIR}/ota)
+file(MAKE_DIRECTORY ${MY_DIR})
+
+set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m 4097 -i ${imageType} -v ${VERSION} \
+                                            build/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.bin \
+                                            ota/device_${SENSOR_MAP_DEF}_v${VERSION}${DEV_PROD}.ota
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+# python3 ../../scripts/create_ota.py -m 4097 -i 4113 -v 16843014 build/sensor_device_light_sleep.bin > build/sensor_device.ota
