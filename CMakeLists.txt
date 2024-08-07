@@ -53,14 +53,12 @@ set(DEV_PROD "dev")
 # idf_build_set_property(COMPILE_OPTIONS "-DCDCONFIG_ZB_ZED=y" APPEND)
 ## First 7 bits are for additional future features
 ## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
-set(SENSOR_MAP_DEF "1111110000000000")
+set(SENSOR_MAP_DEF "0100000000000000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
 binary_to_decimal(${SENSOR_MAP_DEF} MODEL_ID_DECIMAL)
 format_decimal(${MODEL_ID_DECIMAL} 5 MODEL_ID_FORMATED)
 add_definitions(-DMODEL_ID_MAP=${MODEL_ID_FORMATED})
 add_definitions(-DDEVICE_ENDPOINT=10)
-## Channel and TX-Power
-add_definitions(-DTX_POWER=0)
 
 ## KEEP ALIVE
 add_definitions(-DED_KEEP_ALIVE=4000)
@@ -69,12 +67,13 @@ add_definitions(-DED_KEEP_ALIVE=4000)
 add_definitions(-DESP_OTA_CLIENT_ENDPOINT=10)
 # Define HEX 0x0101 or DEC 257
 set(HW_VERSION "257")
-set(VERSION "16843017")
+set(VERSION "16843018")
+set(MANUFACTURER "4097")
 add_definitions(-DOTA_UPGRADE_HW_VERSION=${HW_VERSION})
 add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=${VERSION})
 add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=${VERSION})
-add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=0x1011)
-add_definitions(-DOTA_UPGRADE_MANUFACTURER=0x1001)
+add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=${MODEL_ID_DECIMAL})
+add_definitions(-DOTA_UPGRADE_MANUFACTURER=${MANUFACTURER})
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 set(FILE_NAME "device_${MODEL_ID_FORMATED}_v${VERSION}${DEV_PROD}")
@@ -88,7 +87,7 @@ file(MAKE_DIRECTORY ${MY_DIR})
 set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
 add_custom_target(RunPostBuildScript ALL
     COMMAND ${CMAKE_COMMAND} -E echo  "Running Python script..."
-    COMMAND ${CMAKE_COMMAND} -E env /usr/bin/python3 ${PYTHON_SCRIPT} -m 4097 -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
+    COMMAND ${CMAKE_COMMAND} -E env /usr/bin/python3 ${PYTHON_SCRIPT} -m ${MANUFACTURER} -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
 )
 add_dependencies(RunPostBuildScript ${FILE_NAME}.elf)
 #### Create OTA-Update File ####
