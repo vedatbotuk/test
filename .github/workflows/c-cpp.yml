@@ -29,33 +29,18 @@ jobs:
       # Set up ESP-IDF toolchain
       - name: Set up ESP-IDF
         run: |
-          sudo apt-get install -y git wget flex bison gperf python3 python3-pip python3-setuptools cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
-          git clone --recursive https://github.com/espressif/esp-idf.git
-          cd esp-idf
-          git checkout v5.1  # Choose your ESP-IDF version
-          ./install.sh esp32h2  # Install ESP-IDF for ESP32-H2
-          . $IDF_TOOLS_PATH/esp-idf/export.sh
-
-      # Install Zigbee Library
-      - name: Install Zigbee Library
-        run: |
-          . $IDF_TOOLS_PATH/esp-idf/export.sh
-          idf.py add-dependency "espressif/esp-zigbee"  # Install the Zigbee component
-
+          sudo apt-get install -y git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+          mkdir -p ~/esp
+          cd ~/esp
+          git clone -b v5.2.3 --recursive https://github.com/espressif/esp-idf.git
+          cd ~/esp/esp-idf
+          ./install.sh esp32h2
+          . $HOME/esp/esp-idf/export.sh
       # Build the project for ESP32-H2
       - name: Build Project
         run: |
-          . $IDF_TOOLS_PATH/esp-idf/export.sh
           idf.py set-target esp32h2  # Set target for ESP32-H2
           idf.py build
-
-      # Optional: Run unit tests
-      - name: Run tests (Optional)
-        run: |
-          . $IDF_TOOLS_PATH/esp-idf/export.sh
-          idf.py set-target esp32h2
-          idf.py build
-          idf.py test  # This is optional if you have tests in place
 
       # Upload build artifacts (Optional)
       - name: Upload Build Artifacts
