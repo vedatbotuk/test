@@ -20,12 +20,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # # Set up Python 3.x
-      # - name: Set up Python 3.x
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: 3.x
-
       # Set up ESP-IDF toolchain
       - name: Set up ESP-IDF
         run: |
@@ -48,10 +42,3 @@ jobs:
           . $HOME/esp/esp-idf/export.sh
           idf.py set-target esp32h2  # Set target for ESP32-H2
           idf.py build
-
-      # Upload build artifacts (Optional)
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: firmware
-          path: build/*.bin
