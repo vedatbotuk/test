@@ -47,7 +47,6 @@ jobs:
         run: |
           . $HOME/esp/esp-idf/export.sh
           pip3 install zigpy
-          pip install zigpy
           idf.py set-target esp32h2  # Set target for ESP32-H2
           idf.py build
 
