@@ -33,7 +33,7 @@
 #include "light_sleep.h"
 #endif
 
-static char firmware_version[16] = {7, 'v', 'e', 'r', '0', '.', '1', '4'};
+static char firmware_version[16] = {7, 'v', 'e', 'r', '0', '.', '1', '8'};
 static const char *TAG = "DEVICE";
 
 /********************* Define functions **************************/
@@ -120,9 +120,10 @@ static void esp_zb_task(void *pvParameters)
     ESP_LOGI(TAG, "Enable LIGHT_SLEEP");
 #endif
 #ifdef ROUTER_DEVICE
-    esp_zb_set_tx_power(15);
-#else
-    esp_zb_set_tx_power(0);
+    esp_zb_set_tx_power(10);
+#endif
+#ifdef END_DEVICE
+    esp_zb_set_tx_power(-24);
 #endif
 
     /* create cluster lists for this endpoint */
