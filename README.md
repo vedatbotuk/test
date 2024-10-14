@@ -87,3 +87,16 @@ The configuration is specified in the `.github/workflows/c-cpp.yaml` file.
 - **include/**: Contains header files and configuration files.
 - **.github/workflows/**: Contains the GitHub Actions workflow for automated builds.
 
+# Signal handlar maping
+Sensor or feature | Binary value
+------------------|-------------
+OTA_UPGRADE       | 0 or 1
+Humidity          | 0 or 1
+Temperature       | 0 or 1
+BATTERY           | 0 or 1
+LIGHT_SLEEP       | 0 or 1
+DEEP_SLEEP        | 0 or 1
+SENSOR_WATERLEAK  | 0 or 1
+
+For example use a RFD, which suppert temperature, humidity and light sleep.
+```110100```
