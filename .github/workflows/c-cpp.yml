@@ -31,6 +31,7 @@ jobs:
         run: |
           sudo apt-get install -y python3-pip
           pip3 install zigpy
+          pip install zigpy
 
       # Set up ESP-IDF toolchain
       - name: Set up ESP-IDF
