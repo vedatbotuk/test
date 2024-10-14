@@ -41,7 +41,6 @@ uint8_t deepsleep_cnt = 0;
 #ifdef BATTERY
 uint8_t battery_level;
 uint8_t battery_voltage;
-uint16_t batt_cnt = 0;
 #endif
 
 void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
@@ -174,14 +173,9 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
 #endif
 
 #ifdef BATTERY
-            if (batt_cnt == 1000 || batt_cnt == 0)
-            {
-                voltage_calculate_init();
-                get_battery_level();
-                voltage_calculate_deinit();
-                batt_cnt = 0;
-            }
-            batt_cnt++;
+            voltage_calculate_init();
+            get_battery_level();
+            voltage_calculate_deinit();
 #endif
 #ifdef SENSOR_WATERLEAK
             vTaskDelay(pdMS_TO_TICKS(100)); /*This sleep is necessary for the get_button()*/
