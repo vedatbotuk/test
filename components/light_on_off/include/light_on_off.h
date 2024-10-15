@@ -28,9 +28,8 @@ extern "C"
 #define LIGHT_DEFAULT_ON 1
 #define LIGHT_DEFAULT_OFF 0
 
-/* LED strip configuration */
-#define CONFIG_EXAMPLE_STRIP_LED_GPIO 8
-#define CONFIG_EXAMPLE_STRIP_LED_NUMBER 1
+#define GPIO_OUTPUT_PIN 8                             // Beispiel-Pin, an dem eine LED angeschlossen ist (GPIO 2)
+#define GPIO_OUTPUT_PIN_SEL (1ULL << GPIO_OUTPUT_PIN) // Bitmaske für den Pin
 
   /**
    * @brief Set light power (on/off).

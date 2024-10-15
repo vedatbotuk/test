@@ -16,28 +16,26 @@
  */
 
 #include "esp_log.h"
-#include "led_strip.h"
 #include "light_on_off.h"
+#include "driver/gpio.h"
 
-static led_strip_handle_t s_led_strip;
-static uint8_t s_red = 255, s_green = 255, s_blue = 255;
+#define GPIO_OUTPUT_PIN 8                             // Beispiel-Pin, an dem eine LED angeschlossen ist (GPIO 2)
+#define GPIO_OUTPUT_PIN_SEL (1ULL << GPIO_OUTPUT_PIN) // Bitmaske für den Pin
 
 void light_driver_set_power(bool power)
 {
-  ESP_ERROR_CHECK(led_strip_set_pixel(s_led_strip, 0, s_red * power, s_green * power, s_blue * power));
-  ESP_ERROR_CHECK(led_strip_refresh(s_led_strip));
+  gpio_set_level(GPIO_OUTPUT_PIN, power ? 1 : 0);
 }
 
 void light_driver_init(bool power)
 {
-  led_strip_config_t led_strip_conf = {
-      .max_leds = CONFIG_EXAMPLE_STRIP_LED_NUMBER,
-      .strip_gpio_num = CONFIG_EXAMPLE_STRIP_LED_GPIO,
-  };
-  led_strip_rmt_config_t rmt_conf = {
-      .resolution_hz = 10 * 1000 * 1000, // 10MHz
-  };
-  ESP_ERROR_CHECK(led_strip_new_rmt_device(&led_strip_conf, &rmt_conf, &s_led_strip));
-
-  light_driver_set_power(power);
+  // GPIO configuration for an output
+  gpio_config_t io_conf;
+  io_conf.intr_type = GPIO_INTR_DISABLE;      // No interrupts for the pin
+  io_conf.mode = GPIO_MODE_OUTPUT;            // Set pin as output
+  io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL; // Configure the desired pin
+  // TODO: Pull-Down or Pull-Up
+  io_conf.pull_down_en = 0; // Enable pull-down
+  io_conf.pull_up_en = 1;   // Disable pull-up
+  gpio_config(&io_conf);    // Apply the configuration
 }
