@@ -174,6 +174,14 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_main_loop_iteration();
 }
 
+#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+static esp_err_t deferred_driver_init(void)
+{
+    light_driver_init(LIGHT_DEFAULT_OFF);
+    return ESP_OK;
+}
+#endif
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "--- Application Start ---");
@@ -186,6 +194,9 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
 #ifdef LIGHT_SLEEP
     ESP_ERROR_CHECK(esp_zb_power_save_init(CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ));
+#endif
+#ifdef LIGHT_ON_OFF
+    ESP_LOGI(TAG_SIGNAL_HANDLER, "Deferred driver initialization %s", deferred_driver_init() ? "failed" : "successful");
 #endif
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
 }
