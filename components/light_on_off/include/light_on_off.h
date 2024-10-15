@@ -28,7 +28,7 @@ extern "C"
 #define LIGHT_DEFAULT_ON 1
 #define LIGHT_DEFAULT_OFF 0
 
-#define GPIO_OUTPUT_PIN 8                             // Beispiel-Pin, an dem eine LED angeschlossen ist (GPIO 2)
+#define GPIO_OUTPUT_PIN 12                            // Beispiel-Pin, an dem eine LED angeschlossen ist (GPIO 2)
 #define GPIO_OUTPUT_PIN_SEL (1ULL << GPIO_OUTPUT_PIN) // Bitmaske für den Pin
 
   /**
