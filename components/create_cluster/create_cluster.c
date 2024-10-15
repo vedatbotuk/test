@@ -25,7 +25,8 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-static char *manufacturer = "\x05""Botuk";
+static char *manufacturer = "\x05"
+                            "Botuk";
 static char *model = "\x05" TOSTRING(MODEL_ID_MAP);
 
 RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
@@ -150,4 +151,12 @@ void create_water_pump_switch_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list
     esp_zb_attribute_list_t *esp_zb_wtr_pmp_swt_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_ON_OFF);
     esp_zb_on_off_cluster_add_attr(esp_zb_wtr_pmp_swt_cluster, ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, &undefined_value);
     esp_zb_cluster_list_add_on_off_cluster(esp_zb_cluster_list, esp_zb_wtr_pmp_swt_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+}
+
+void create_light_switch_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
+{
+    uint16_t undefined_value;
+    esp_zb_attribute_list_t *esp_zb_light_swt_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_ON_OFF);
+    esp_zb_on_off_cluster_add_attr(esp_zb_light_swt_cluster, ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, &undefined_value);
+    esp_zb_cluster_list_add_on_off_cluster(esp_zb_cluster_list, esp_zb_light_swt_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 }

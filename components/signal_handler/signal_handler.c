@@ -30,6 +30,9 @@
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 #include "temperature_humidity.h"
 #endif
+#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+#include "light_on_off.h"
+#endif
 
 const char *TAG_SIGNAL_HANDLER = "SIGNAL";
 bool conn = false;
@@ -80,6 +83,14 @@ void deep_sleep_check()
 }
 #endif
 
+#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+static esp_err_t deferred_driver_init(void)
+{
+    light_driver_init(LIGHT_DEFAULT_OFF);
+    return ESP_OK;
+}
+#endif
+
 void create_signal_handler(esp_zb_app_signal_t signal_struct)
 {
     uint32_t *p_sg_p = signal_struct.p_app_signal;
@@ -97,6 +108,9 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
     case ESP_ZB_BDB_SIGNAL_DEVICE_REBOOT:
         if (err_status == ESP_OK)
         {
+#ifdef LIGHT_ON_OFF
+            ESP_LOGI(TAG_SIGNAL_HANDLER, "Deferred driver initialization %s", deferred_driver_init() ? "failed" : "successful");
+#endif
             ESP_LOGI(TAG_SIGNAL_HANDLER, "Device started up in %s factory-reset mode", esp_zb_bdb_is_factory_new() ? "" : "non");
             if (esp_zb_bdb_is_factory_new())
             {
@@ -205,8 +219,10 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
 #endif
 #endif
     default:
-        // TODO: BUG When no sleep implemented will printed the following log the whole time.
+// TODO: BUG When no sleep implemented will printed the following log the whole time.
+#ifdef LIGHT_SLEEP
         ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
+#endif
         break;
     }
 }
