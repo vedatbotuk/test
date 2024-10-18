@@ -16,7 +16,7 @@
  */
 
 #pragma once
-#include <esp_err.h>
+
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -28,22 +28,22 @@ extern "C"
 #define LIGHT_DEFAULT_ON 1
 #define LIGHT_DEFAULT_OFF 0
 
-/* LED strip configuration */
-#define CONFIG_EXAMPLE_STRIP_LED_GPIO 8
+#define GPIO_OUTPUT_PIN 12                            // Beispiel-Pin, an dem eine LED angeschlossen ist (GPIO 2)
+#define GPIO_OUTPUT_PIN_SEL (1ULL << GPIO_OUTPUT_PIN) // Bitmaske für den Pin
 
-    /**
-     * @brief Set light power (on/off).
-     *
-     * @param  power  The light power to be set
-     */
-    void relay_set_power(bool power);
+  /**
+   * @brief Set light power (on/off).
+   *
+   * @param  power  The light power to be set
+   */
+  void light_driver_set_power(bool power);
 
-    /**
-     * @brief color light driver init, be invoked where you want to use color light
-     *
-     * @param power power on/off
-     */
-    esp_err_t reley_init(bool power);
+  /**
+   * @brief color light driver init, be invoked where you want to use color light
+   *
+   * @param power power on/off
+   */
+  void light_driver_init(bool power);
 
 #ifdef __cplusplus
 } // extern "C"
