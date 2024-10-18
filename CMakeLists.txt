@@ -51,9 +51,9 @@ set(DEV_PROD "dev")
 #### Define Macros
 # add_definitions(-DCONFIG_ZB_ZED=y)
 # idf_build_set_property(COMPILE_OPTIONS "-DCDCONFIG_ZB_ZED=y" APPEND)
-## First 6 bits are for additional future features
-## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION | LIGHT_ON_OFF
-set(SENSOR_MAP_DEF "1000000001000000")
+## First 7 bits are for additional future features
+## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION
+set(SENSOR_MAP_DEF "0100000000000000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
 binary_to_decimal(${SENSOR_MAP_DEF} MODEL_ID_DECIMAL)
 format_decimal(${MODEL_ID_DECIMAL} 5 MODEL_ID_FORMATED)

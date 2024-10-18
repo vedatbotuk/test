@@ -36,14 +36,14 @@ extern "C"
      *
      * @param  power  The light power to be set
      */
-    void relay_set_power(bool power);
+    void light_driver_set_power(bool power);
 
     /**
      * @brief color light driver init, be invoked where you want to use color light
      *
      * @param power power on/off
      */
-    esp_err_t reley_init(bool power);
+    esp_err_t light_driver_init(bool power);
 
 #ifdef __cplusplus
 } // extern "C"

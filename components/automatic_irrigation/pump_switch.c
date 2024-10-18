@@ -22,15 +22,15 @@
 static const char *TAG_PUMP_SWITCH = "AUTOMATIC_IRRIGATION";
 // static led_strip_handle_t s_led_strip;
 
-void relay_set_power(bool power)
+void light_driver_set_power(bool power)
 {
-    ESP_ERROR_CHECK(gpio_set_level(8, 1));
+    ESP_ERROR_CHECK(gpio_set_level(8,1));
     ESP_LOGI(TAG_PUMP_SWITCH, "Dummy LOG");
 }
 
-esp_err_t relay_driver_init(bool power)
+esp_err_t light_driver_init(bool power)
 {
     gpio_set_direction(8, GPIO_MODE_OUTPUT);
-    relay_set_power(power);
+    light_driver_set_power(power);
     return ESP_OK;
 }
