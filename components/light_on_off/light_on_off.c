@@ -15,36 +15,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-#include <esp_err.h>
-#include <stdbool.h>
+#include "esp_log.h"
+#include "light_on_off.h"
+#include "driver/gpio.h"
 
-#ifdef __cplusplus
-extern "C"
+void light_driver_set_power(bool power)
 {
-#endif
+  gpio_set_level(GPIO_OUTPUT_PIN, power ? 1 : 0);
+}
 
-/* light intensity level */
-#define LIGHT_DEFAULT_ON 1
-#define LIGHT_DEFAULT_OFF 0
-
-/* LED strip configuration */
-#define CONFIG_EXAMPLE_STRIP_LED_GPIO 8
-
-    /**
-     * @brief Set light power (on/off).
-     *
-     * @param  power  The light power to be set
-     */
-    void relay_set_power(bool power);
-
-    /**
-     * @brief color light driver init, be invoked where you want to use color light
-     *
-     * @param power power on/off
-     */
-    esp_err_t reley_init(bool power);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
+void light_driver_init(bool power)
+{
+  // GPIO configuration for an output
+  gpio_config_t io_conf;
+  io_conf.intr_type = GPIO_INTR_DISABLE;      // No interrupts for the pin
+  io_conf.mode = GPIO_MODE_OUTPUT;            // Set pin as output
+  io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL; // Configure the desired pin
+  // TODO: Pull-Down or Pull-Up
+  io_conf.pull_down_en = 1; // Enable pull-down
+  io_conf.pull_up_en = 0;   // Disable pull-up
+  gpio_config(&io_conf);    // Apply the configuration
+}
