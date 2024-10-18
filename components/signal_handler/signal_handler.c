@@ -30,9 +30,6 @@
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 #include "temperature_humidity.h"
 #endif
-#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
-#include "light_on_off.h"
-#endif
 
 const char *TAG_SIGNAL_HANDLER = "SIGNAL";
 bool conn = false;
@@ -208,10 +205,8 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
 #endif
 #endif
     default:
-// TODO: BUG When no sleep implemented will printed the following log the whole time.
-#ifdef LIGHT_SLEEP
+        // TODO: BUG When no sleep implemented will printed the following log the whole time.
         ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
-#endif
         break;
     }
 }

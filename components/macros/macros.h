@@ -16,13 +16,9 @@
  */
 
 #ifndef MACROS_H
-#define MACROS_H
+#define MACROS_H 
 
 // TODO: Rename the Macros. For example WATERLEAK_FEATURES, TEMPERATURE_FEATURES
-
-#if (SENSOR_MAP >> 6 & 1) == 1
-#define LIGHT_ON_OFF true
-#endif
 
 #if (SENSOR_MAP >> 7 & 1) == 1
 #define AUTOMATIC_IRRIGATION true
