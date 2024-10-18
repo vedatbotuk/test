@@ -118,7 +118,8 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_set_tx_power(10);
 #endif
 #ifdef END_DEVICE
-    esp_zb_set_tx_power(-24);
+    // TODO: Set the TX power for the end device only for the test
+    esp_zb_set_tx_power(0);
 #endif
 
     /* create cluster lists for this endpoint */
