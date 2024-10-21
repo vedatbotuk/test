@@ -62,10 +62,10 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 void measure_temp_hum()
 {
-    connection_status();
     /* Measure temperature loop*/
     while (1)
     {
+        connected = connection_status();
         if (connected)
         {
 #ifdef SENSOR_TEMPERATURE
@@ -79,7 +79,7 @@ void measure_temp_hum()
         {
             ESP_LOGI(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
-        vTaskDelay(pdMS_TO_TICKS(60000));
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
 #endif
@@ -87,10 +87,10 @@ void measure_temp_hum()
 #ifdef BATTERY
 void measure_battery()
 {
-    connection_status();
     /* Measure battery loop*/
     while (1)
     {
+        connected = connection_status();
         if (connected)
         {
             voltage_calculate_init();
@@ -263,10 +263,10 @@ void app_main(void)
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
-    xTaskCreate(measure_temp_hum, "measure_temp_hum", 2048, NULL, 10, NULL);
+    xTaskCreate(measure_temp_hum, "measure_temp_hum", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
 #endif
 #ifdef BATTERY
-    xTaskCreate(measure_battery, "measure_battery", 2048, NULL, 11, NULL);
+    xTaskCreate(measure_battery, "measure_battery", configMINIMAL_STACK_SIZE * 3, NULL, 4, NULL);
 #endif
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 6, NULL);
 }
