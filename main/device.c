@@ -263,7 +263,10 @@ void app_main(void)
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
-    xTaskCreate(measure_temp_hum, "measure_temp_hum", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    xTaskCreate(measure_temp_hum, "measure_temp_hum", 2048, NULL, 10, NULL);
 #endif
-    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
+#ifdef BATTERY
+    xTaskCreate(measure_battery, "measure_battery", 2048, NULL, 11, NULL);
+#endif
+    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 6, NULL);
 }
