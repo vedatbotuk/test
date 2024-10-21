@@ -101,7 +101,7 @@ void measure_battery()
         {
             ESP_LOGI(TAG, "Device is not connected! Could not measure the battery level");
         }
-        vTaskDelay(pdMS_TO_TICKS(60000));
+        vTaskDelay(pdMS_TO_TICKS(10000));
     }
 }
 #endif
@@ -263,10 +263,10 @@ void app_main(void)
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
-    xTaskCreate(measure_temp_hum, "measure_temp_hum", configMINIMAL_STACK_SIZE * 3, NULL, 5, NULL);
+    xTaskCreate(measure_temp_hum, "measure_temp_hum", 4096, NULL, 5, NULL);
 #endif
 #ifdef BATTERY
-    xTaskCreate(measure_battery, "measure_battery", configMINIMAL_STACK_SIZE * 3, NULL, 4, NULL);
+    xTaskCreate(measure_battery, "measure_battery", 4096, NULL, 4, NULL);
 #endif
-    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 6, NULL);
+    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 10, NULL);
 }
