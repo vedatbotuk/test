@@ -65,10 +65,16 @@ add_definitions(-DDEVICE_ENDPOINT=10)
 # Both should be 0 or one of them should be 1.
 string(SUBSTRING ${SENSOR_MAP_DEF} 5 1 SIXTH_BIT)
 string(SUBSTRING ${SENSOR_MAP_DEF} 6 1 SEVENTH_BIT)
-
 if(SIXTH_BIT EQUAL "1" AND SEVENTH_BIT EQUAL "1")
     message(FATAL_ERROR "Sixth and Seventh bits cannot both be 1 at the same time in SENSOR_MAP_DEF. Please check the SENSOR_MAP_DEF and correct it.")
 endif()
+
+string(SUBSTRING ${SENSOR_MAP_DEF} 0 1 FIRST_BIT)
+string(SUBSTRING ${SENSOR_MAP_DEF} 5 1 SIXTH_BIT)
+if(FIRST_BIT EQUAL "0" AND SIXTH_BIT EQUAL "1")
+    message(FATAL_ERROR "First bit cannot be 0 while Sixth bit is 1 in SENSOR_MAP_DEF. Please check the SENSOR_MAP_DEF and correct it.")
+endif()
+
 
 #### Set specific sdkconfig
 # Check the first number of SENSOR_MAP_DEF
