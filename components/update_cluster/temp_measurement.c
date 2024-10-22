@@ -1,17 +1,17 @@
-/* 
+/*
  * selforganized_802.15.4_network_with_esp32
  * Copyright (c) 2024 Vedat Botuk.
- * 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -38,10 +38,11 @@ void zb_update_temp(int16_t temperature)
     return;
 }
 
-void zb_report_temp(uint8_t endpoint)
+// TODO - Report battery attribute does not work. Probably does not work also this function.
+void zb_report_temp()
 {
     static esp_zb_zcl_report_attr_cmd_t temp_measurement_cmd_req = {};
-    temp_measurement_cmd_req.zcl_basic_cmd.src_endpoint = endpoint;
+    temp_measurement_cmd_req.zcl_basic_cmd.src_endpoint = DEVICE_ENDPOINT;
     temp_measurement_cmd_req.address_mode = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT;
     temp_measurement_cmd_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT;
     temp_measurement_cmd_req.cluster_role = ESP_ZB_ZCL_CLUSTER_SERVER_ROLE;
@@ -50,7 +51,8 @@ void zb_report_temp(uint8_t endpoint)
     /* Request sending new phase voltage */
     esp_err_t state = esp_zb_zcl_report_attr_cmd_req(&temp_measurement_cmd_req);
     /* Check for error */
-    if(state != ESP_ZB_ZCL_STATUS_SUCCESS) {
+    if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
+    {
         ESP_LOGE(TAG, "Report temp attribute report command failed!");
         return;
     }
