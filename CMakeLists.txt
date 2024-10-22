@@ -134,6 +134,14 @@ message(STATUS "Created sdkconfig.defaults with default configurations")
 ## KEEP ALIVE
 add_definitions(-DED_KEEP_ALIVE=4000)
 
+## Firmware version
+# Define firmware version in CMakeLists.txt
+set(FIRMWARE_VERSION "7, 'v', 'e', 'r', '0', '.', '1', '8'")
+
+# Pass the firmware version as a compile definition
+add_compile_definitions(FIRMWARE_VERSION=${FIRMWARE_VERSION})
+## Firmware version
+
 ## OTA MACROS
 add_definitions(-DESP_OTA_CLIENT_ENDPOINT=10)
 # Define HEX 0x0101 or DEC 257
