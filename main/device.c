@@ -48,7 +48,7 @@
 #include "light_on_off.h"
 #endif
 
-static char firmware_version[16] = {7, 'v', 'e', 'r', '0', '.', '1', '8'};
+static char firmware_version[16] = {FIRMWARE_VERSION};
 static const char *TAG = "DEVICE";
 
 bool connected = false;
