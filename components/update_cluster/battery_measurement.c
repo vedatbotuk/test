@@ -25,9 +25,10 @@ static const char *TAG = "UPDATE_BATTERY_CLUSTER";
 void zb_update_battery_level(uint8_t level, int8_t voltage)
 {
     /* Write new level */
+    esp_zb_lock_acquire(portMAX_DELAY);
     esp_zb_zcl_status_t state_level = esp_zb_zcl_set_attribute_val(DEVICE_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_POWER_CONFIG, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID, &level, false);
     esp_zb_zcl_status_t state_voltage = esp_zb_zcl_set_attribute_val(DEVICE_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_POWER_CONFIG, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID, &voltage, false);
-
+    esp_zb_lock_release();
     ESP_LOGI(TAG, "Writing battery level success");
 
     /* Check for error */

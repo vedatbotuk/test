@@ -25,7 +25,9 @@ static const char *TAG = "UPDATE_HUMIDITY_CLUSTER";
 void zb_update_hum(int humidity)
 {
     /* Write new temp */
+    esp_zb_lock_acquire(portMAX_DELAY);
     esp_zb_zcl_status_t state = esp_zb_zcl_set_attribute_val(DEVICE_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_REL_HUMIDITY_MEASUREMENT, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_REL_HUMIDITY_MEASUREMENT_VALUE_ID, &humidity, false);
+    esp_zb_lock_release();
 
     /* Check for error */
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
