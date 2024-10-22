@@ -24,8 +24,6 @@
 static const char *TAG_TEMP_HUM = "TEMPERATURE_HUMIDITY_CHECK";
 
 float _temperature, _humidity;
-bool _new_data_temperature;
-bool _new__data_humidity;
 
 uint8_t _timer = 0;
 
@@ -35,8 +33,6 @@ esp_err_t get_dht22_data()
     {
         ESP_LOGI(TAG_TEMP_HUM, "Temperature : %.1f ℃", _temperature);
         ESP_LOGI(TAG_TEMP_HUM, "Humidity : %.1f %%", _humidity);
-        _new__data_humidity = true;
-        _new_data_temperature = true;
     }
     else
     {
@@ -48,31 +44,16 @@ esp_err_t get_dht22_data()
 
 void check_temperature()
 {
-    if (_timer >= 30 || _timer == 0)
-    {
-        get_dht22_data();
-        _timer = 0;
-    }
-    if (_new_data_temperature == true)
-    {
-        zb_update_temp((int16_t)(_temperature * 100));
-        _new_data_temperature = false;
-    }
-
-    _timer++;
+#if defined SENSOR_TEMPERATURE
+    get_dht22_data();
+#endif
+    zb_update_temp((int16_t)(_temperature * 100));
 }
 
 void check_humidity()
 {
-    if (_timer >= 30 || _timer == 0)
-    {
-        get_dht22_data();
-        _timer = 0;
-    }
-    if (_new__data_humidity == true)
-    {
-        zb_update_hum((uint16_t)(_humidity * 100));
-        _new__data_humidity = false;
-    }
-    _timer++;
+#if !defined SENSOR_TEMPERATURE
+    get_dht22_data();
+#endif
+    zb_update_hum((uint16_t)(_humidity * 100));
 }
