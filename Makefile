@@ -38,8 +38,8 @@ flash_monitor: flash monitor
 ESPPORT ?= /dev/ttyUSB0
 
 # Remove the build directory completely
-fullclean: clean
+fullclean:
 	@rm -rf $(BUILD_DIR) ota managed_components
-	@rm sdkconfig sdkconfig.old;
+	@rm sdkconfig sdkconfig.old sdkconfig.defaults
 
 .PHONY: all build flash monitor clean distclean flash_monitor
