@@ -18,7 +18,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Set up ESP-IDF toolchain
       - name: Set up ESP-IDF
@@ -36,13 +36,6 @@ jobs:
           . $HOME/esp/esp-idf/export.sh
           pip3 install zigpy
 
-      # Build the project for ESP32-H2
-      # - name: Build Project
-      #   run: |
-      #     . $HOME/esp/esp-idf/export.sh
-      #     idf.py set-target esp32h2  # Set target for ESP32-H2
-      #     idf.py build
-
       # Run the prod script
       - name: Make script executable
         run: chmod +x ./prod.sh  # Ensure the script is executable
@@ -54,7 +47,7 @@ jobs:
         run: echo "Workflow completed."  # Add any cleanup commands if necessary
 
       - name: Upload binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: my-binaries
+          name: prod_oto_files
           path: ota/**  # Upload all files in the output directory
