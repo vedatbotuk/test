@@ -8,6 +8,9 @@ set(EXTRA_COMPONENT_DIRS
 # Path to the settings file
 set(SETTINGS_FILE ${CMAKE_SOURCE_DIR}/settings.conf)
 
+# Ensure that changes in settings.conf trigger a reconfiguration
+configure_file(${SETTINGS_FILE} ${CMAKE_BINARY_DIR}/settings.conf COPYONLY)
+
 # Function to read the settings file and extract values
 function(parse_settings key result)
     file(STRINGS ${SETTINGS_FILE} content)
