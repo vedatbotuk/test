@@ -20,21 +20,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up ESP-IDF toolchain
-      - name: Set up ESP-IDF
+      - name: Set up environment
         run: |
-          sudo apt-get install -y git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
-          mkdir -p ~/esp
-          cd ~/esp
-          git clone -b v5.2.3 --recursive https://github.com/espressif/esp-idf.git
-          cd ~/esp/esp-idf
-          ./install.sh esp32h2
-
-      # Install zigpy
-      - name: Install zigpy
-        run: |
-          . $HOME/esp/esp-idf/export.sh
-          pip3 install zigpy
+          echo "Setting up environment..."
+          # Execute the setup script
+          chmod +x ./setup_env.sh  # Make sure the script is executable
+          ./setup_env.sh  # Run the script
 
       # Run the prod script
       - name: Make script executable
