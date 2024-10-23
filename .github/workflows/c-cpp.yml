@@ -52,3 +52,9 @@ jobs:
 
       - name: Clean up
         run: echo "Workflow completed."  # Add any cleanup commands if necessary
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-binaries
+          path: ota/**  # Upload all files in the output directory
