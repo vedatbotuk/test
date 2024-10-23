@@ -1,4 +1,4 @@
-name: Build ESP32-H2 Project
+name: DEV - ESP32-H2 Project
 
 on:
   push:
