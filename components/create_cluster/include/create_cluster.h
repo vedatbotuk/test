@@ -25,7 +25,7 @@ extern "C"
 {
 #endif
 
-    void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list, char f_version[16]);
+    void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list);
     void create_identify_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list);
     void create_temp_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list);
     void create_hum_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list);

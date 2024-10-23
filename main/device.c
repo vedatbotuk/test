@@ -48,7 +48,6 @@
 #include "light_on_off.h"
 #endif
 
-static char firmware_version[16] = {FIRMWARE_VERSION};
 static const char *TAG = "DEVICE";
 
 bool connected = false;
@@ -195,7 +194,7 @@ static void esp_zb_task(void *pvParameters)
     /* create cluster lists for this endpoint */
     esp_zb_cluster_list_t *esp_zb_cluster_list = esp_zb_zcl_cluster_list_create();
 
-    create_basic_cluster(esp_zb_cluster_list, firmware_version);
+    create_basic_cluster(esp_zb_cluster_list);
     create_identify_cluster(esp_zb_cluster_list);
 #ifdef SENSOR_TEMPERATURE
     create_temp_cluster(esp_zb_cluster_list);
