@@ -7,3 +7,4 @@ sdkconfig
 sdkconfig.old
 sdkconfig.defaults
 !sdkconfig_defaults/*
+settings.conf.cache
