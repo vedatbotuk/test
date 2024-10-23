@@ -5,6 +5,60 @@ set(EXTRA_COMPONENT_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/components
     )
 
+# Path to the settings file
+set(SETTINGS_FILE ${CMAKE_SOURCE_DIR}/settings.conf)
+
+# Function to read the settings file and extract values
+function(parse_settings key result)
+    file(STRINGS ${SETTINGS_FILE} content)
+
+    # Iterate through each line of the settings file
+    foreach(line IN LISTS content)
+        # Check if the line starts with the requested key
+        if("${line}" MATCHES "^${key}=")
+            string(REPLACE "${key}=" "" value "${line}")
+            set(${result} "${value}" PARENT_SCOPE)
+        endif()
+    endforeach()
+endfunction()
+
+# Check if the settings file exists
+if(EXISTS ${SETTINGS_FILE})
+    # Extract specific settings from the file
+    parse_settings("FIRMWARE_VERSION" FIRMWARE_VERSION)
+    parse_settings("DEV_PROD" DEV_PROD)
+    parse_settings("SENSOR_MAP_DEF" SENSOR_MAP_DEF)
+    parse_settings("DEVICE_ENDPOINT" DEVICE_ENDPOINT)
+    parse_settings("ED_KEEP_ALIVE" ED_KEEP_ALIVE)
+    parse_settings("HW_VERSION" HW_VERSION)
+    parse_settings("VERSION" VERSION)
+    parse_settings("MANUFACTURER" MANUFACTURER)
+
+    # Print the values for debugging
+    message(STATUS "FIRMWARE_VERSION: ${FIRMWARE_VERSION}")
+    message(STATUS "DEV_PROD: ${DEV_PROD}")
+    message(STATUS "SENSOR_MAP_DEF: ${SENSOR_MAP_DEF}")
+    message(STATUS "DEVICE_ENDPOINT: ${DEVICE_ENDPOINT}")
+    message(STATUS "ED_KEEP_ALIVE: ${ED_KEEP_ALIVE}")
+    message(STATUS "HW_VERSION: ${HW_VERSION}")
+    message(STATUS "VERSION: ${VERSION}")
+    message(STATUS "MANUFACTURER: ${MANUFACTURER}")
+
+    # Strip quotes from FIRMWARE_VERSION if necessary
+    # string(REGEX REPLACE "\"" "" FIRMWARE_VERSION_CLEANED "${FIRMWARE_VERSION}")
+    # message(STATUS "Cleaned FIRMWARE_VERSION: ${FIRMWARE_VERSION_CLEANED}")
+
+    # Add other settings as preprocessor definitions
+    add_definitions(-DFIRMWARE_VERSION="${FIRMWARE_VERSION}")
+    add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
+    add_definitions(-DED_KEEP_ALIVE=${ED_KEEP_ALIVE})
+
+else()
+    message(FATAL_ERROR "Settings file not found: ${SETTINGS_FILE}")
+endif()
+
+
+
 #### ######### ####
 #### FUNKTIONS ####
 # Funktion zur Konvertierung einer Binärzahl in eine Dezimalzahl
@@ -46,19 +100,20 @@ endfunction()
 #### ######### ####
 
 ## Set dev or prod
-set(DEV_PROD "dev")
+# set(DEV_PROD "dev")
 
 #### Define Macros
 # add_definitions(-DCONFIG_ZB_ZED=y)
 # idf_build_set_property(COMPILE_OPTIONS "-DCDCONFIG_ZB_ZED=y" APPEND)
 ## First 6 bits are for additional future features
 ## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION | LIGHT_ON_OFF
-set(SENSOR_MAP_DEF "1001110001000000")
+# set(SENSOR_MAP_DEF "1001110001000000")
 add_definitions(-DSENSOR_MAP=0b${SENSOR_MAP_DEF})
 binary_to_decimal(${SENSOR_MAP_DEF} MODEL_ID_DECIMAL)
 format_decimal(${MODEL_ID_DECIMAL} 5 MODEL_ID_FORMATED)
 add_definitions(-DMODEL_ID_MAP=${MODEL_ID_FORMATED})
-add_definitions(-DDEVICE_ENDPOINT=10)
+# set(DEVICE_ENDPOINT 10)
+add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
 
 #### Check SENSOR_MAP_DEF
 # Sixth and Seventh bit cannot be at the same time 1.
@@ -134,20 +189,16 @@ message(STATUS "Created sdkconfig.defaults with default configurations")
 ## KEEP ALIVE
 add_definitions(-DED_KEEP_ALIVE=4000)
 
-## Firmware version
-# Define firmware version in CMakeLists.txt
-set(FIRMWARE_VERSION "7, 'v', 'e', 'r', '0', '.', '1', '8'")
-
 # Pass the firmware version as a compile definition
-add_compile_definitions(FIRMWARE_VERSION=${FIRMWARE_VERSION})
+# add_compile_definitions(FIRMWARE_VERSION=${FIRMWARE_VERSION})
 ## Firmware version
 
 ## OTA MACROS
-add_definitions(-DESP_OTA_CLIENT_ENDPOINT=10)
+add_definitions(-DESP_OTA_CLIENT_ENDPOINT=${DEVICE_ENDPOINT})
 # Define HEX 0x0101 or DEC 257
-set(HW_VERSION "257")
-set(VERSION "16843022")
-set(MANUFACTURER "4097")
+# set(HW_VERSION "257")
+# set(VERSION "16843022")
+# set(MANUFACTURER "4097")
 add_definitions(-DOTA_UPGRADE_HW_VERSION=${HW_VERSION})
 add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=${VERSION})
 add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=${VERSION})
