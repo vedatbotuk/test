@@ -7,9 +7,9 @@ echo "OTA Build Script for Production Devices"
 echo "----------------------------------------"
 
 # Define the CSV file and the settings.conf file
-CSV_FILE="scripts/prod_devices.csv"
+CSV_FILE="prod_devices.csv"
 SETTINGS_FILE="settings.conf"
-BACKUP_FILE="scripts/settings.conf.cache"
+BACKUP_FILE="settings.conf.cache"
 
 # Check if the CSV file exists
 if [ ! -f "$CSV_FILE" ]; then
