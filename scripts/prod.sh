@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Save the current directory and change to the parent directory
-pushd ../ > /dev/null
-
 echo "OTA Build Script for Production Devices"
 echo "----------------------------------------"
 
@@ -84,6 +81,3 @@ echo "Finished building all devices in the CSV file."
 echo "OTA Files are in ./ota"
 echo "----------------------------------------"
 echo "OTA Build Script for Production Devices completed."
-
-# Change back to the original directory
-popd > /dev/null
