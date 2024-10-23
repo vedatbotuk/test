@@ -25,7 +25,7 @@ jobs:
           echo "Setting up environment..."
           # Execute the setup script
           chmod +x ./setup_env.sh  # Make sure the script is executable
-          ./setup_env.sh  # Run the script
+          ./scripts/setup_env.sh  # Run the script
 
       # Build the project for ESP32-H2
       - name: Build Project

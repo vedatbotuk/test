@@ -1,12 +1,15 @@
 #!/bin/bash
 
+# Save the current directory and change to the parent directory
+pushd ../ > /dev/null
+
 echo "OTA Build Script for Production Devices"
 echo "----------------------------------------"
 
 # Define the CSV file and the settings.conf file
-CSV_FILE="prod_devices.csv"
+CSV_FILE="scripts/prod_devices.csv"
 SETTINGS_FILE="settings.conf"
-BACKUP_FILE="settings.conf.cache"
+BACKUP_FILE="scripts/settings.conf.cache"
 
 # Check if the CSV file exists
 if [ ! -f "$CSV_FILE" ]; then
@@ -82,3 +85,5 @@ echo "OTA Files are in ./ota"
 echo "----------------------------------------"
 echo "OTA Build Script for Production Devices completed."
 
+# Change back to the original directory
+popd > /dev/null
