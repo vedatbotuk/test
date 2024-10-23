@@ -47,10 +47,6 @@ if(EXISTS ${SETTINGS_FILE})
     message(STATUS "VERSION: ${VERSION}")
     message(STATUS "MANUFACTURER: ${MANUFACTURER}")
 
-    # Strip quotes from FIRMWARE_VERSION if necessary
-    # string(REGEX REPLACE "\"" "" FIRMWARE_VERSION_CLEANED "${FIRMWARE_VERSION}")
-    # message(STATUS "Cleaned FIRMWARE_VERSION: ${FIRMWARE_VERSION_CLEANED}")
-
     # Add other settings as preprocessor definitions
     add_definitions(-DFIRMWARE_VERSION="${FIRMWARE_VERSION}")
     add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
@@ -102,41 +98,38 @@ endfunction()
 #### FUNKTIONS ####
 #### ######### ####
 
-## Set dev or prod
-# set(DEV_PROD "dev")
-
-#### Define Macros
-# add_definitions(-DCONFIG_ZB_ZED=y)
-# idf_build_set_property(COMPILE_OPTIONS "-DCDCONFIG_ZB_ZED=y" APPEND)
-## First 6 bits are for additional future features
-## END_DEVICE(0=ROUTER_DEVICE) | OTA_UPGRADE | Humidity | Temperature | BATTERY | LIGHT_SLEEP | DEEP_SLEEP | SENSOR_WATERLEAK | AUTOMATIC_IRRIGATION | LIGHT_ON_OFF
-# set(SENSOR_MAP_DEF "1001110001000000")
+#### Convert Macros ####
+#### ############## ####
 add_definitions(-DSENSOR_MAP=0b${MODEL_ID})
 binary_to_decimal(${MODEL_ID} MODEL_ID_DECIMAL)
 format_decimal(${MODEL_ID_DECIMAL} 5 MODEL_ID_FORMATED)
 add_definitions(-DMODEL_ID_MAP=${MODEL_ID_FORMATED})
-# set(DEVICE_ENDPOINT 10)
 add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
+#### Convert Macros ####
+#### ############## ####
 
-#### Check SENSOR_MAP_DEF
+#### Check MODEL_ID ####
+#### #################### ####
 # Sixth and Seventh bit cannot be at the same time 1.
 # Both should be 0 or one of them should be 1.
-string(SUBSTRING ${SENSOR_MAP_DEF} 5 1 SIXTH_BIT)
-string(SUBSTRING ${SENSOR_MAP_DEF} 6 1 SEVENTH_BIT)
+string(SUBSTRING ${MODEL_ID} 5 1 SIXTH_BIT)
+string(SUBSTRING ${MODEL_ID} 6 1 SEVENTH_BIT)
 if(SIXTH_BIT EQUAL "1" AND SEVENTH_BIT EQUAL "1")
-    message(FATAL_ERROR "Sixth and Seventh bits cannot both be 1 at the same time in SENSOR_MAP_DEF. Please check the SENSOR_MAP_DEF and correct it.")
+    message(FATAL_ERROR "Sixth and Seventh bits cannot both be 1 at the same time in MODEL_ID. Please check the MODEL_ID and correct it.")
 endif()
 
-string(SUBSTRING ${SENSOR_MAP_DEF} 0 1 FIRST_BIT)
-string(SUBSTRING ${SENSOR_MAP_DEF} 5 1 SIXTH_BIT)
+string(SUBSTRING ${MODEL_ID} 0 1 FIRST_BIT)
+string(SUBSTRING ${MODEL_ID} 5 1 SIXTH_BIT)
 if(FIRST_BIT EQUAL "0" AND SIXTH_BIT EQUAL "1")
-    message(FATAL_ERROR "First bit cannot be 0 while Sixth bit is 1 in SENSOR_MAP_DEF. Please check the SENSOR_MAP_DEF and correct it.")
+    message(FATAL_ERROR "First bit cannot be 0 while Sixth bit is 1 in MODEL_ID. Please check the MODEL_ID and correct it.")
 endif()
+#### Check MODEL_ID ####
+#### #################### ####
 
-
-#### Set specific sdkconfig
-# Check the first number of SENSOR_MAP_DEF
-string(SUBSTRING ${SENSOR_MAP_DEF} 0 1 FIRST_NUM)
+#### Set specific sdkconfig ####
+#### ###################### ####
+# Check the first number of MODEL_ID
+string(SUBSTRING ${MODEL_ID} 0 1 FIRST_NUM)
 if(FIRST_NUM EQUAL "1")
     set(SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.end_device")
     message(STATUS "Setting SET_SDKCONFIG_DEFAULTS to sdkconfig.end_device")
@@ -145,22 +138,22 @@ else()
     message(STATUS "Setting SET_SDKCONFIG_DEFAULTS to sdkconfig.router")
 endif()
 
-# Check the sixth number of SENSOR_MAP_DEF
-string(SUBSTRING ${SENSOR_MAP_DEF} 5 1 SIXTH_NUM)
+# Check the sixth number of MODEL_ID
+string(SUBSTRING ${MODEL_ID} 5 1 SIXTH_NUM)
 if(SIXTH_NUM EQUAL "1")
     list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep")
     message(STATUS "Appending sdkconfig.light_sleep to SET_SDKCONFIG_DEFAULTS")
 endif()
 
-# Check the seventh number of SENSOR_MAP_DEF
-string(SUBSTRING ${SENSOR_MAP_DEF} 6 1 SEVENTH_NUM)
+# Check the seventh number of MODEL_ID
+string(SUBSTRING ${MODEL_ID} 6 1 SEVENTH_NUM)
 if(SEVENTH_NUM EQUAL "1")
     list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.deep_sleep")
     message(STATUS "Appending sdkconfig.deep_sleep to SET_SDKCONFIG_DEFAULTS")
 endif()
 
-# Check the tenth number of SENSOR_MAP_DEF
-string(SUBSTRING ${SENSOR_MAP_DEF} 9 1 TENTH_NUM)
+# Check the tenth number of MODEL_ID
+string(SUBSTRING ${MODEL_ID} 9 1 TENTH_NUM)
 if(TENTH_NUM EQUAL "1")
     list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep_gpio_on")
     message(STATUS "Appending sdkconfig.light_sleep_gpio_on to SET_SDKCONFIG_DEFAULTS")
@@ -187,26 +180,19 @@ foreach(SDKCONFIG_DEFAULTS ${SET_SDKCONFIG_DEFAULTS})
 endforeach()
 
 message(STATUS "Created sdkconfig.defaults with default configurations")
+#### Set specific sdkconfig ####
+#### ###################### ####
 
-
-## KEEP ALIVE
-add_definitions(-DED_KEEP_ALIVE=4000)
-
-# Pass the firmware version as a compile definition
-# add_compile_definitions(FIRMWARE_VERSION=${FIRMWARE_VERSION})
-## Firmware version
-
-## OTA MACROS
+#### OTA MACROS ####
+#### ########## ####
 add_definitions(-DESP_OTA_CLIENT_ENDPOINT=${DEVICE_ENDPOINT})
-# Define HEX 0x0101 or DEC 257
-# set(HW_VERSION "257")
-# set(VERSION "16843022")
-# set(MANUFACTURER "4097")
 add_definitions(-DOTA_UPGRADE_HW_VERSION=${HW_VERSION})
 add_definitions(-DOTA_UPGRADE_DOWNLOADED_FILE_VERSION=${VERSION})
 add_definitions(-DOTA_UPGRADE_RUNNING_FILE_VERSION=${VERSION})
 add_definitions(-DOTA_UPGRADE_IMAGE_TYPE=${MODEL_ID_DECIMAL})
 add_definitions(-DOTA_UPGRADE_MANUFACTURER=${MANUFACTURER})
+#### OTA MACROS ####
+#### ########## ####
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 set(FILE_NAME "device_${MODEL_ID_FORMATED}_v${VERSION}${DEV_PROD}")

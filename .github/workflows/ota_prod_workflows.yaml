@@ -1,0 +1,27 @@
+name: Run Model Script
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Checkout the repository code
+
+      - name: Set up environment
+        run: |
+          echo "Setting up environment..."
+          # Optionally install any dependencies your script may need
+
+      - name: Make script executable
+        run: chmod +x ./prod.sh  # Ensure the script is executable
+
+      - name: Run the Bash script
+        run: ./prod.sh  # Execute your script
+
+      - name: Clean up
+        run: echo "Workflow completed."  # Add any cleanup commands if necessary
