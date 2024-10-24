@@ -1,12 +1,15 @@
 name: Restrict Pull Requests to Main
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
 
 jobs:
-  check-branch:
+  check-branch-main:
     runs-on: ubuntu-latest
     steps:
       - name: Check if PR is from develop branch
