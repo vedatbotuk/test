@@ -1,0 +1,20 @@
+name: Branch Check
+
+on: [pull_request]
+
+jobs:
+  check_branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR is from develop branch
+        run: |
+          if [ "${{ github.base_ref }}" != "main" ]; then
+            echo "PR is not targeting the main branch."
+            exit 1
+          fi
+
+          if [ "${{ github.head_ref }}" != "develop" ]; then
+            echo "PR is not from the develop branch."
+            exit 1
+          fi
