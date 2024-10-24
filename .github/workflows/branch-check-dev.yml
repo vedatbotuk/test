@@ -1,0 +1,16 @@
+name: Restrict Pull Requests to dev
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is from develop branch
+        if: github.event.pull_request.head.ref = 'develop'
+        run: |
+          echo "Pull requests to the dev branch are only allowed from the develop branch."
+          exit 1
