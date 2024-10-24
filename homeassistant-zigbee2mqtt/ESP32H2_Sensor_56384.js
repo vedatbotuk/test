@@ -5,6 +5,7 @@ const reporting = require('zigbee-herdsman-converters/lib/reporting');
 const ota = require('zigbee-herdsman-converters/lib/ota');
 const e = exposes.presets;
 
+
 const definition = {
   zigbeeModel: ['56384'], // Model ID as per device's Zigbee data.
   model: 'ESP32H2_Sensor', // Vendor model number for the light device.
