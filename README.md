@@ -2,6 +2,7 @@
 
 This project involves developing an IoT system using the ESP32-H2 microcontroller. Below are instructions for setting up the project, an overview of the hardware, and the build process using the ESP-IDF toolchain. Additionally, Zigpy is integrated for Zigbee protocol support.
 
+
 ## Hardware Overview
 The system is built around the **ESP32-H2**, which supports low-power applications and Zigbee connectivity. The primary hardware components include:
 
