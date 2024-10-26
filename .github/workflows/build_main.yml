@@ -34,24 +34,27 @@ jobs:
       - name: Run the production script
         run: ./scripts/prod.sh
 
-      # Step 4: Upload binaries as artifacts
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: prod_ota_files
-          path: ota/**  # Upload all files in the ota directory
+      # Step 4: Read FIRMWARE_VERSION and VERSION from settings.conf
+      - name: Read version information
+        id: version_info
+        run: |
+          FIRMWARE_VERSION=$(grep '^FIRMWARE_VERSION=' settings.conf | cut -d '=' -f2)
+          VERSION=$(grep '^VERSION=' settings.conf | cut -d '=' -f2)
+          echo "Firmware version: $FIRMWARE_VERSION"
+          echo "Version code: $VERSION"
+          echo "::set-output name=firmware_version::$FIRMWARE_VERSION"
+          echo "::set-output name=version::$VERSION"
 
       # Step 5: Determine the new version tag
       - name: Set up version tag
         id: version_tag
         run: |
-          # Create a tag based on the date, e.g., v2023.10.20
           DATE_TAG=$(date +'%Y.%m.%d')
           TAG="v${DATE_TAG}"
           echo "New tag: $TAG"
           echo "::set-output name=TAG::$TAG"
 
-      # Step 6: Create a new tag and push it
+      # Step 6: Create and push tag
       - name: Create and push tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,26 +64,26 @@ jobs:
           git tag ${{ steps.version_tag.outputs.TAG }}
           git push origin ${{ steps.version_tag.outputs.TAG }}
 
-      # Step 7: Create a GitHub release
+      # Step 7: Create a GitHub release with FIRMWARE_VERSION and VERSION
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v4
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.version_tag.outputs.TAG }}
-          release_name: "Release ${{ steps.version_tag.outputs.TAG }}"
-          body: "Automated release for changes merged into main."
+          release_name: "Release ${{ steps.version_info.outputs.firmware_version }} - Version ${{ steps.version_info.outputs.version }}"
+          body: "Automated release for changes merged into main. Firmware Version: ${{ steps.version_info.outputs.firmware_version }}, Version Code: ${{ steps.version_info.outputs.version }}"
           draft: false
           prerelease: false
 
-      # Step 8: Upload artifacts to the release
-      - name: Upload Binaries to Release
-        uses: actions/upload-release-asset@v4
+      # Step 8: Upload .ota binaries to the release
+      - name: Upload .ota Binaries to Release
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ota/**  # Upload all files in the ota directory as assets
-          asset_name: prod_ota_files.zip
-          asset_content_type: application/zip
+          asset_path: "ota/*.ota"  # Upload all .ota files in the ota directory
+          asset_name: "firmware_${{ steps.version_info.outputs.firmware_version }}.ota"
+          asset_content_type: application/octet-stream
