@@ -3,13 +3,13 @@ name: DEV - ESP32-H2 Project
 on:
   push:
     branches:
-      - dev
+      - develop
   pull_request:
     branches:
-      - dev
+      - develop
 
 jobs:
-  build-dev:
+  build-develop:
     runs-on: ubuntu-latest
 
     env:
