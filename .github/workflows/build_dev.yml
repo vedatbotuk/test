@@ -9,7 +9,7 @@ on:
       - develop
 
 jobs:
-  build-dev:
+  build-develop:
     runs-on: ubuntu-latest
 
     env:
