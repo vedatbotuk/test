@@ -1,12 +1,12 @@
 name: PROD - ESP32-H2 Project
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  build-main:
+  build-release-main:
     runs-on: ubuntu-latest
 
     env:
