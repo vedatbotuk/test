@@ -1,9 +1,6 @@
 name: Restrict Pull Requests to Main
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
