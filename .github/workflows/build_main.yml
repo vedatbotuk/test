@@ -64,7 +64,7 @@ jobs:
       # Step 7: Create a GitHub release
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -76,7 +76,7 @@ jobs:
 
       # Step 8: Upload artifacts to the release
       - name: Upload Binaries to Release
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
