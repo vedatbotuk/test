@@ -65,7 +65,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version_tag.outputs.TAG }}
-          files: ota/device_40000_v16843022prod.ota  # Replace with the path to your binary file
+          files: ota/**.ota  # Replace with the path to your binary file
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
