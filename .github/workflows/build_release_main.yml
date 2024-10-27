@@ -68,13 +68,14 @@ jobs:
         run: |
           for file in ota/*.ota; do
             [ -e "$file" ] || continue # Skip if no .ota files found
-            filename=$(basename "$file") # Get the file name
+            filename=$(basename "$file") # Extract the file name
             echo "Uploading $filename..."
             
-            # Upload the file using multipart/form-data
+            # Upload the file by appending the name directly to the URL
             curl -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
-              -F "name=$filename" \
-              -F "file=@$file" \
-              "${{ steps.create_release.outputs.upload_url }}"
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$file" \
+              "${{ steps.create_release.outputs.upload_url }}?name=$filename"
           done
+
