@@ -74,7 +74,7 @@ jobs:
             # Upload the file using multipart/form-data
             curl -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/octet-stream" \
+              -F "name=$filename" \
               -F "file=@$file" \
-              "${{ steps.create_release.outputs.upload_url }}?name=$filename"
+              "${{ steps.create_release.outputs.upload_url }}"
           done
