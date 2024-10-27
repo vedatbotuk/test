@@ -71,11 +71,12 @@ jobs:
             filename=$(basename "$file") # Extract the file name
             echo "Uploading $filename..."
             
-            # Upload the file by appending the name directly to the URL
+            # Properly format the curl command
             curl -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/octet-stream" \
               --data-binary @"$file" \
-              "${{ steps.create_release.outputs.upload_url }}?name=$filename"
+              "${{ steps.create_release.outputs.upload_url }}?name=${filename}"
           done
+
 
