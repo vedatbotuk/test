@@ -70,9 +70,11 @@ jobs:
             [ -e "$file" ] || continue # Skip if no .ota files found
             filename=$(basename "$file") # Get the file name
             echo "Uploading $filename..."
+            
+            # Upload the file using multipart/form-data
             curl -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/octet-stream" \
-              --data-binary @"$file" \
+              -F "file=@$file" \
               "${{ steps.create_release.outputs.upload_url }}?name=$filename"
           done
