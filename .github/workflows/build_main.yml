@@ -1,9 +1,6 @@
 name: PROD - ESP32-H2 Project
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
