@@ -61,12 +61,12 @@ jobs:
           draft: false
           prerelease: false
 
-    - name: Upload Release Binary
-      id: upload-release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ota/device_40000_v16843022prod.ota  # Replace with the path to your binary file
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Binary
+        id: upload-release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ota/device_40000_v16843022prod.ota  # Replace with the path to your binary file
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
