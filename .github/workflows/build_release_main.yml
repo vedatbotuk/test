@@ -61,7 +61,6 @@ jobs:
           draft: false
           prerelease: false
 
-      # Step 9: Upload .ota binaries with original names to the release
       - name: Upload .ota Binaries to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,11 +71,12 @@ jobs:
             echo "Uploading $filename..."
             
             # Properly format the curl command
-            curl -X POST \
+            curl -v -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/octet-stream" \
               --data-binary @"$file" \
-              "${{ steps.create_release.outputs.upload_url }}?name=${filename}"
+              "${{ steps.create_release.outputs.upload_url }}&name=${filename}"
           done
+
 
 
