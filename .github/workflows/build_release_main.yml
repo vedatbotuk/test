@@ -61,12 +61,18 @@ jobs:
           draft: false
           prerelease: false
 
+      # Step 9: Upload .ota binaries with original names to the release
       - name: Upload .ota Binaries to Release
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "ota/*.ota"
-          asset_name: ""  # Keep the original file name
-          asset_content_type: application/octet-stream
+        run: |
+          for file in ota/*.ota; do
+            [ -e "$file" ] || continue # Skip if no .ota files found
+            filename=$(basename "$file") # Get the file name
+            echo "Uploading $filename..."
+            curl -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$file" \
+              "${{ steps.create_release.outputs.upload_url }}?name=$filename"
+          done
