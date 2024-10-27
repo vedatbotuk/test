@@ -64,7 +64,7 @@ jobs:
       - name: Create Release and Upload Binary
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}  # Use the tag pushed, e.g., v2024.10.27-183721
+          tag_name: ${{ steps.version_tag.outputs.TAG }}
           files: ota/device_40000_v16843022prod.ota  # Replace with the path to your binary file
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
