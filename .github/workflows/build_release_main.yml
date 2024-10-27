@@ -31,10 +31,11 @@ jobs:
       - name: List Files in ota Directory
         run: ls -al ota
 
+      # Step 6: Set up a unique version tag based on date and time
       - name: Set up version tag
         id: version_tag
         run: |
-          DATE_TAG=$(date +'%Y.%m.%d')
+          DATE_TAG=$(date +'%Y.%m.%d-%H%M%S') # Adds hours, minutes, and seconds to the tag
           TAG="v${DATE_TAG}"
           echo "New tag: $TAG"
           echo "::set-output name=TAG::$TAG"
