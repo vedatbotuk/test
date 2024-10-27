@@ -20,6 +20,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Set up environment
       - name: Set up environment
         run: |
           echo "Setting up environment..."
@@ -28,11 +29,11 @@ jobs:
           ./scripts/setup_env.sh  # Run the script
 
       # Run the prod script
-      - name: Make script executable
+      - name: Make prod script executable
         run: chmod +x ./scripts/prod.sh  # Ensure the script is executable
 
       - name: Run the Bash script
-        run: ./scripts/prod.sh  # Execute your script
+        run: ./scripts/prod.sh  # Execute script
 
       - name: Clean up
         run: echo "Workflow completed."  # Add any cleanup commands if necessary
