@@ -70,19 +70,3 @@ jobs:
           files: ota/*.ota
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate Release Notes
-        id: release_notes
-        uses: release-drafter/release-drafter@v5
-        with:
-          config-name: .github/release-drafter.yml
-
-      - name: Commit and Push Release Notes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add RELEASE_NOTE
-          git commit -m "Update release notes [skip ci]"
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
