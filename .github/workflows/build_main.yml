@@ -33,4 +33,4 @@ jobs:
         run: ./scripts/prod.sh  # Execute script
 
       - name: Clean up
-        run: echo "Workflow completed."  # Add any cleanup commands if necessary
+        run: echo "Workflow completed."
