@@ -15,18 +15,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
+      # Set up environment
       - name: Set up environment
         run: |
           echo "Setting up environment..."
           chmod +x ./scripts/setup_env.sh
           ./scripts/setup_env.sh
-
+      
+      # Run the prod script
       - name: Make prod script executable
-        run: chmod +x ./scripts/prod.sh
+        run: chmod +x ./scripts/prod.sh # Ensure the script is executable
 
       - name: Run the production script
-        run: ./scripts/prod.sh
+        run: ./scripts/prod.sh # Execute script
 
       - name: List Files in ota Directory
         run: ls -al ota
@@ -65,7 +67,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version_tag.outputs.TAG }}
-          files: ota/**.ota  # Replace with the path to your binary file
+          files: ota/**.ota
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
