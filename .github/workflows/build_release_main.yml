@@ -16,6 +16,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Load settings from settings.conf file
+      - name: Load FIRMWARE_VERSION and VERSION from settings.conf
+        id: load_settings
+        run: |
+          # Source the settings.conf file to load variables
+          source settings.conf
+          echo "FIRMWARE_VERSION=$FIRMWARE_VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
       # Set up environment
       - name: Set up environment
         run: |
@@ -58,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.TAG }}
-          release_name: "Release ${{ env.TAG }}"
+          release_name: "${{ env.FIRMWARE_VERSION }}_${{ env.VERSION }}"
           body: "Automated release for changes merged into main. Release Tag: ${{ env.TAG }}"
           draft: false
           prerelease: false
