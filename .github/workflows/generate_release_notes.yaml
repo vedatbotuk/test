@@ -1,0 +1,46 @@
+name: Generate Release Notes
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get recent merges
+        id: changelog
+        run: |
+          echo "## Release Notes - $(date +'%Y-%m-%d')" > RELEASE_NOTE.md
+          echo "" >> RELEASE_NOTE.md
+          
+          # Get the last 20 commits, filtering only merge commits
+          git log --merges -n 20 --pretty=format:"- %s ([View Pull Request](https://github.com/${{ github.repository }}/pull/%b))" > temp_changes.txt
+          
+          # Check if there are any merge commits
+          if [[ -s temp_changes.txt ]]; then
+            echo "### Recent Merges:" >> RELEASE_NOTE.md
+            cat temp_changes.txt >> RELEASE_NOTE.md
+          else
+            echo "No recent merges to display." >> RELEASE_NOTE.md
+          fi
+
+      - name: Display generated release notes
+        run: |
+          echo "Generated release notes:"
+          cat RELEASE_NOTE.md
+
+      - name: Commit and push release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add RELEASE_NOTE.md
+          git commit -m "Update RELEASE_NOTE.md with latest merge information"
+          git push origin main
