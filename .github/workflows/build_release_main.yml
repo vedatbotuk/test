@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       # Set up environment
       - name: Set up environment
         run: |
@@ -33,14 +33,14 @@ jobs:
       - name: List Files in ota Directory
         run: ls -al ota
 
-      # Step 6: Set up a unique version tag based on date and time
+      # Set up a unique version tag based on date and time
       - name: Set up version tag
         id: version_tag
         run: |
           DATE_TAG=$(date +'%Y.%m.%d-%H%M%S') # Adds hours, minutes, and seconds to the tag
           TAG="v${DATE_TAG}"
           echo "New tag: $TAG"
-          echo "::set-output name=TAG::$TAG"
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Create and push tag
         env:
@@ -48,8 +48,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ steps.version_tag.outputs.TAG }}
-          git push origin ${{ steps.version_tag.outputs.TAG }}
+          git tag ${{ env.TAG }}
+          git push origin ${{ env.TAG }}
 
       - name: Create GitHub Release
         id: create_release
@@ -57,18 +57,32 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version_tag.outputs.TAG }}
-          release_name: "Release ${{ steps.version_tag.outputs.TAG }}"
-          body: "Automated release for changes merged into main. Release Tag: ${{ steps.version_tag.outputs.TAG }}"
+          tag_name: ${{ env.TAG }}
+          release_name: "Release ${{ env.TAG }}"
+          body: "Automated release for changes merged into main. Release Tag: ${{ env.TAG }}"
           draft: false
           prerelease: false
          
       - name: Create Release and Upload Binary
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version_tag.outputs.TAG }}
-          files: ota/**.ota
+          tag_name: ${{ env.TAG }}
+          files: ota/*.ota
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate Release Notes
+        id: release_notes
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: .github/release-drafter.yml
 
+      - name: Commit and Push Release Notes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add RELEASE_NOTE
+          git commit -m "Update release notes [skip ci]"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
