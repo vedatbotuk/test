@@ -38,8 +38,9 @@ else
 fi
 
 # Create a new file for the index
+touch "$BOTUK_INDEX"
 # Start the JSON array
-echo "[" > "$BOTUK_INDEX"
+echo "[" >> "$BOTUK_INDEX"
 
 
 # Check if DEV_PROD exists and change it to prod in settings.conf only once
