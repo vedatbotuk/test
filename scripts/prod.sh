@@ -9,6 +9,10 @@ SETTINGS_FILE="settings.conf"
 BACKUP_FILE="settings.conf.cache"
 BOTUK_INDEX="ota/botuk_index.json"
 
+# Create the ota directory if it does not exist
+mkdir -p ota || true
+echo "OTA directory created."
+
 # Check if the CSV file exists
 if [ ! -f "$CSV_FILE" ]; then
   echo "CSV file $CSV_FILE does not exist. Exiting script."
