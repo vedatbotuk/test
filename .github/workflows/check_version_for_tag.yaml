@@ -1,4 +1,4 @@
-name: Check Firmware Version and Prod Devices Change
+name: Check Firmware Version or Prod Devices Change
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  check-version-and-devices-change:
+  check-version-or-devices-change:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,21 +45,14 @@ jobs:
             echo "devices_file_changed=false" >> $GITHUB_ENV
           fi
 
-      - name: Check if versions or devices file have changed
+      - name: Check if version or devices file has changed
         run: |
           # Load values from environment
           source $GITHUB_ENV
-          # Check if either FIRMWARE_VERSION or VERSION has changed
-          if [[ "$main_firmware_version" == "$develop_firmware_version" ]] && [[ "$main_version" == "$develop_version" ]]; then
-            VERSION_CHANGED=false
+          # Check if either VERSION has changed or prod_devices.csv has been modified
+          if [[ "$main_version" != "$develop_version" ]] || [[ "$devices_file_changed" == "true" ]]; then
+            echo "Success: Either VERSION has changed or prod_devices.csv has been modified."
           else
-            VERSION_CHANGED=true
-          fi
-
-          # Check if all conditions for merging are met
-          if [[ "$VERSION_CHANGED" == "true" ]] && [[ "$devices_file_changed" == "true" ]]; then
-            echo "Success: Either FIRMWARE_VERSION or VERSION has changed, and prod_devices.csv has been modified."
-          else
-            echo "Error: Either FIRMWARE_VERSION or VERSION must change, and prod_devices.csv must also be modified."
+            echo "Error: Either VERSION must change or prod_devices.csv must be modified."
             exit 1
           fi
