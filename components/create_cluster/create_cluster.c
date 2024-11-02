@@ -21,11 +21,11 @@
 #include "esp_log.h"
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_ota_ops.h"
+#include <stdio.h>
+#include <string.h>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-
-static char firmware_version[16] = FIRMWARE_VERSION;
 
 static char *manufacturer = "\x05"
                             "Botuk";
@@ -36,6 +36,32 @@ static const char *TAG_CREATE_CLUSTER = "Create_Cluster";
 RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
 uint8_t test_attr;
 
+void convert_version(const char *version_string, char firmware_version[16])
+{
+    int length = strlen(version_string);
+
+    // Limit the length to fit within firmware_version size, leaving space for the length byte
+    if (length > 14)
+    { // 15 chars - 1 for the length byte
+        length = 14;
+    }
+
+    // Set the first element to the length
+    firmware_version[0] = length;
+
+    // Copy the characters of the version string into the array starting from index 1
+    for (int i = 0; i < length; i++)
+    {
+        firmware_version[i + 1] = version_string[i];
+    }
+
+    // Optional: fill the rest of the array with zeros if desired
+    for (int i = length + 1; i < 16; i++)
+    {
+        firmware_version[i] = 0;
+    }
+}
+
 void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
 {
 #ifdef BATTERY
@@ -43,6 +69,11 @@ void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
 #else
     uint8_t power_source = 1;
 #endif
+
+    int running_version = OTA_UPGRADE_RUNNING_FILE_VERSION;
+    char firmware_version[16];
+    convert_version(FIRMWARE_VERSION, firmware_version);
+
     /* basic cluster create with fully customized */
     esp_zb_attribute_list_t *esp_zb_basic_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_BASIC);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_MANUFACTURER_NAME_ID, manufacturer);
@@ -50,6 +81,7 @@ void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_SW_BUILD_ID, firmware_version);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_ZCL_VERSION_ID, &test_attr);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_POWER_SOURCE_ID, &power_source);
+    esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_APPLICATION_VERSION_ID, &running_version);
     esp_zb_cluster_update_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_ZCL_VERSION_ID, &test_attr);
     esp_zb_cluster_list_add_basic_cluster(esp_zb_cluster_list, esp_zb_basic_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
