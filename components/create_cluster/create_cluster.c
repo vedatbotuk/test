@@ -70,7 +70,7 @@ void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     uint8_t power_source = 1;
 #endif
 
-    uint8_t running_version = OTA_UPGRADE_RUNNING_FILE_VERSION;
+    uint8_t running_version = 1;
     char firmware_version[16];
     convert_version(FIRMWARE_VERSION, firmware_version);
 
