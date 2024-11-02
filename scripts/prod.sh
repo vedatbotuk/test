@@ -114,13 +114,14 @@ echo "----------------------------------------"
 
       # Create a JSON object for the current iteration
       echo "  {" >> "$BOTUK_INDEX"
+      echo "    \"fileName\": \"$FILE_NAME\"," >> "$BOTUK_INDEX"
       echo "    \"fileVersion\": $VERSION," >> "$BOTUK_INDEX"
       echo "    \"fileSize\": $FILE_SIZE," >> "$BOTUK_INDEX"
-      echo "    \"manufacturerCode\": \"$MANUFACTURER\"," >> "$BOTUK_INDEX"
+      echo "    \"manufacturerCode\": $MANUFACTURER," >> "$BOTUK_INDEX"
       echo "    \"imageType\": $MODEL_ID_DECIMAL," >> "$BOTUK_INDEX"
       echo "    \"sha512\": \"$SHA512\"," >> "$BOTUK_INDEX"
-      echo "    \"path\": \"images/$FILE_NAME\"," >> "$BOTUK_INDEX"
-      echo "    \"url\": \"images/$FILE_NAME\"" >> "$BOTUK_INDEX"
+      echo "    \"url\": \"images/$FILE_NAME\"," >> "$BOTUK_INDEX"
+      echo "    \"otaHeaderString\": \"\"" >> "$BOTUK_INDEX"
       echo "  }," >> "$BOTUK_INDEX"
 
 
