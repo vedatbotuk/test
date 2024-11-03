@@ -20,6 +20,7 @@
 #include "esp_log.h"
 #include "esp_check.h"
 #include "esp_zigbee_core.h"
+#include "miniz.h"
 
 static const char *TAG_OTA = "OTA_UPDATE";
 
@@ -47,6 +48,23 @@ void clear_ota_header()
     ota_header_ = NULL;
 }
 
+esp_err_t decompress_payload(const uint8_t *compressed_data, size_t compressed_size,
+                             uint8_t *decompressed_data, size_t decompressed_buffer_size,
+                             size_t *decompressed_size)
+{
+    *decompressed_size = tinfl_decompress_mem_to_mem(decompressed_data, decompressed_buffer_size,
+                                                     compressed_data, compressed_size, 0);
+
+    if (*decompressed_size == TINFL_DECOMPRESS_MEM_TO_MEM_FAILED)
+    {
+        ESP_LOGE("Decompression", "Decompression failed");
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI("Decompression", "Decompressed size: %d bytes", *decompressed_size);
+    return ESP_OK;
+}
+
 esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t messsage)
 {
     static uint32_t total_size = 0;
@@ -54,6 +72,9 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
     static int64_t start_time = 0;
     const uint8_t *payload = (const uint8_t *)messsage.payload;
     size_t payload_size = messsage.payload_size;
+
+    uint8_t decompressed_data[1024]; // Adjust size as needed
+    size_t decompressed_size = 0;
 
     esp_err_t ret = ESP_OK;
     if (messsage.info.status == ESP_ZB_ZCL_STATUS_SUCCESS)
@@ -99,7 +120,9 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
                 payload_size = min_size_t(ota_data_len_, payload_size);
                 ota_data_len_ = ota_data_len_ - payload_size;
 
-                ret = esp_ota_write(s_ota_handle, payload, payload_size);
+                decompress_payload(payload, payload_size, decompressed_data, sizeof(decompressed_data), &decompressed_size);
+
+                ret = esp_ota_write(s_ota_handle, decompressed_data, decompressed_size);
                 ESP_RETURN_ON_ERROR(ret, TAG_OTA, "Failed to write OTA data to partition, status: %s", esp_err_to_name(ret));
             }
             break;
