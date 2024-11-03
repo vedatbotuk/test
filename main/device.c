@@ -267,5 +267,5 @@ void app_main(void)
 #ifdef BATTERY
     xTaskCreate(measure_battery, "measure_battery", 4096, NULL, 4, NULL);
 #endif
-    xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 10, NULL);
+    xTaskCreate(esp_zb_task, "Zigbee_main", 16 * 1024, NULL, 10, NULL);
 }
