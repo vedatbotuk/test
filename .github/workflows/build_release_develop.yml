@@ -1,0 +1,80 @@
+name: Release - ESP32-H2 Project
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-release-develop:
+    runs-on: ubuntu-latest
+
+    env:
+      IDF_TOOLS_PATH: ${{ github.workspace }}/tools
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Load settings from settings.conf file
+      - name: Load FIRMWARE_VERSION and VERSION from settings.conf
+        id: load_settings
+        run: |
+          # Source the settings.conf file to load variables
+          source settings.conf
+          echo "FIRMWARE_VERSION=$FIRMWARE_VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+      # Set up environment
+      - name: Set up environment
+        run: |
+          echo "Setting up environment..."
+          chmod +x ./scripts/setup_env.sh
+          ./scripts/setup_env.sh
+      
+      # Run the prod script
+      - name: Make prod script executable
+        run: chmod +x ./scripts/prod.sh # Ensure the script is executable
+
+      - name: Run the production script
+        run: ./scripts/prod.sh # Execute script
+
+      - name: List Files in ota Directory
+        run: ls -al ota
+
+      # Set up a unique version tag based on firmware version and version
+      - name: Set up version tag
+        id: version_tag
+        run: |
+          TAG="${{ env.FIRMWARE_VERSION }}_${{ env.VERSION }}_develop"
+          echo "New tag: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+
+      - name: Create and push tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ env.TAG }}
+          git push origin ${{ env.TAG }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG }}
+          release_name: "${{ env.FIRMWARE_VERSION }}_${{ env.VERSION }}_develop"
+          body: "Automated release for changes merged into develop. Release Tag: ${{ env.TAG }}"
+          draft: false
+          prerelease: false
+         
+      - name: Create Release and Upload Binary
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG }}
+          files: ota/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
