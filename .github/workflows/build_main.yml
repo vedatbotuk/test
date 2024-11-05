@@ -32,5 +32,12 @@ jobs:
       - name: Run the Bash script
         run: ./scripts/prod.sh  # Execute script
 
+      # Upload artifact
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ota
+          path: ./ota/*
+
       - name: Clean up
         run: echo "Workflow completed."
