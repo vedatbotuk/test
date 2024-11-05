@@ -1,18 +1,19 @@
 #!/usr/bin/env python
-# selforganized_802.15.4_network_with_esp32
-# Copyright (c) 2024 Vedat Botuk.
-# 
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
-# the Free Software Foundation, version 3.
+# create-ota - Create zlib-compressed Zigbee OTA file
+# Copyright 2023  Simon Arlott
 #
-# This program is distributed in the hope that it will be useful, but 
-# WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
-# General Public License for more details.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# You should have received a copy of the GNU General Public License 
-# along with this program. If not, see <http://www.gnu.org/licenses/>. 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
 import functools
@@ -25,9 +26,9 @@ def create(filename, manufacturer_id, image_type, file_version, header_string):
 	with open(filename, "rb") as f:
 		data = f.read()
 
-	# zobj = zlib.compressobj(level=zlib.Z_BEST_COMPRESSION)
-	# zdata = zobj.compress(data)
-	# zdata += zobj.flush()
+	zobj = zlib.compressobj(level=zlib.Z_BEST_COMPRESSION)
+	zdata = zobj.compress(data)
+	zdata += zobj.flush()
 
 	image = zigpy.ota.image.OTAImage(
 		header=zigpy.ota.image.OTAImageHeader(
@@ -46,8 +47,7 @@ def create(filename, manufacturer_id, image_type, file_version, header_string):
 		),
 		subelements=[
 			zigpy.ota.image.SubElement(
-			    # To compress, zdata should uncommented and changed data=data yto data=zdata
-				tag_id=zigpy.ota.image.ElementTagId.UPGRADE_IMAGE, data=data,
+				tag_id=zigpy.ota.image.ElementTagId.UPGRADE_IMAGE, data=zdata,
 			)
 		],
 	)
