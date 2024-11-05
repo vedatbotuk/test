@@ -15,17 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "esp_ota_ops.h"
+#include "ota.h"
 #include "esp_timer.h"
 #include "esp_log.h"
 #include "esp_check.h"
-#include "esp_zigbee_core.h"
-#include "zlib.h"
-// TODO which lib we should use for OTA
-#include <stdio.h>
 #include <string.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 static const char *TAG_OTA = "OTA_UPDATE";
 
@@ -36,34 +30,6 @@ uint8_t *ota_header_ = NULL;
 size_t ota_header_size_ = 0;
 bool ota_upgrade_subelement_ = false;
 bool ota_initialized = false;
-
-typedef struct
-{
-    const esp_partition_t *part; // Pointer to the OTA partition
-    esp_ota_handle_t handle;     // Handle to manage OTA writin
-    z_stream zlib_stream;
-    bool zlib_init;
-    // const esp_partition_t *part;
-    // esp_ota_handle_t handle;
-} CompressedOTA;
-
-void print_bytes(const char *tag, const unsigned char *data, size_t size)
-{
-    char buffer[48]; // Buffer to hold a line of hex output (16 bytes * 3 characters + spaces)
-    size_t line_len = 0;
-
-    for (size_t i = 0; i < size; i++)
-    {
-        line_len += snprintf(&buffer[line_len], sizeof(buffer) - line_len, "%02X ", data[i]);
-
-        // Print a line every 16 bytes or at the end of data
-        if ((i + 1) % 16 == 0 || i + 1 == size)
-        {
-            ESP_LOGI(tag, "%s", buffer);
-            line_len = 0; // Reset line length for the next line
-        }
-    }
-}
 
 bool CompressedOTA_start(CompressedOTA *ctx)
 {
@@ -95,32 +61,6 @@ bool CompressedOTA_start(CompressedOTA *ctx)
         ESP_LOGE(TAG_OTA, "zlib init failed: %d", ret);
         return false;
     }
-
-    // // Check if OTA is already in progress
-    // if (ctx->part != NULL)
-    // {
-    //     ESP_LOGE(TAG_OTA, "OTA already started");
-    //     ctx->part = NULL;
-    //     esp_ota_abort(ctx->handle);
-    //     return false;
-    // }
-
-    // // Find the next OTA partition
-    // ctx->part = esp_ota_get_next_update_partition(NULL);
-    // if (ctx->part == NULL)
-    // {
-    //     ESP_LOGE(TAG_OTA, "No next OTA partition");
-    //     return false;
-    // }
-
-    // // Begin OTA on the selected partition
-    // esp_err_t err = esp_ota_begin(ctx->part, OTA_WITH_SEQUENTIAL_WRITES, &ctx->handle);
-    // if (err != ESP_OK)
-    // {
-    //     ESP_LOGE(TAG_OTA, "Error starting OTA: %d", err);
-    //     ctx->part = NULL;
-    //     return false;
-    // }
 
     return true;
 }
@@ -161,7 +101,6 @@ bool CompressedOTA_write(CompressedOTA *ctx, const uint8_t *data, size_t size, b
         // If there is data to write, write it to the OTA partition
         if (available > 0)
         {
-            print_bytes(TAG_OTA, buf, available);
             esp_err_t err = esp_ota_write(ctx->handle, buf, available);
             if (err != ESP_OK)
             {
@@ -282,9 +221,6 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
                 {
                     ESP_LOGE(TAG_OTA, "Failed to write data chunk.");
                 }
-                break;
-                // ret = esp_ota_write(s_ota_handle, payload, payload_size);
-                ESP_RETURN_ON_ERROR(ret, TAG_OTA, "Failed to write OTA data to partition, status: %s", esp_err_to_name(ret));
             }
             break;
         case ESP_ZB_ZCL_OTA_UPGRADE_STATUS_APPLY:
