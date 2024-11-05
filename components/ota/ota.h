@@ -34,9 +34,6 @@ extern "C"
     // TODO following function musst not be defined here. The will be used locally in ota.c
     size_t min_size_t(size_t a, size_t b);
     void clear_ota_header(void);
-    esp_err_t decompress_payload(const uint8_t *compressed_data, size_t compressed_size,
-                                 uint8_t *decompressed_data, size_t decompressed_buffer_size,
-                                 size_t *decompressed_size);
     esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t messsage);
 
 #ifdef __cplusplus
