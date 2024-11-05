@@ -132,19 +132,19 @@ void clear_ota_header()
     ota_header_ = NULL;
 }
 
-esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t messsage)
+esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t message)
 {
     static uint32_t total_size = 0;
     static uint32_t offset = 0;
     static int64_t start_time = 0;
-    const uint8_t *payload = (const uint8_t *)messsage.payload;
-    size_t payload_size = messsage.payload_size;
+    const uint8_t *payload = (const uint8_t *)message.payload;
+    size_t payload_size = message.payload_size;
     static CompressedOTA ota_ctx; // Static to retain context across calls
 
     esp_err_t ret = ESP_OK;
-    if (messsage.info.status == ESP_ZB_ZCL_STATUS_SUCCESS)
+    if (message.info.status == ESP_ZB_ZCL_STATUS_SUCCESS)
     {
-        switch (messsage.upgrade_status)
+        switch (message.upgrade_status)
         {
         case ESP_ZB_ZCL_OTA_UPGRADE_STATUS_START:
             ESP_LOGI(TAG_OTA, "-- OTA upgrade start");
@@ -180,8 +180,8 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
             }
             break;
         case ESP_ZB_ZCL_OTA_UPGRADE_STATUS_RECEIVE:
-            total_size = messsage.ota_header.image_size;
-            offset += messsage.payload_size;
+            total_size = message.ota_header.image_size;
+            offset += message.payload_size;
 
             ESP_LOGI(TAG_OTA, "OTA [%ld/%ld]", offset, total_size);
 
@@ -234,8 +234,8 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
             ESP_LOGI(TAG_OTA, "-- OTA Finish");
             ESP_LOGI(TAG_OTA,
                      "-- OTA Information: version: 0x%lx, manufactor code: 0x%x, image type: 0x%x, total size: %ld bytes, cost time: %lld ms,",
-                     messsage.ota_header.file_version, messsage.ota_header.manufacturer_code, messsage.ota_header.image_type,
-                     messsage.ota_header.image_size, (esp_timer_get_time() - start_time) / 1000);
+                     message.ota_header.file_version, message.ota_header.manufacturer_code, message.ota_header.image_type,
+                     message.ota_header.image_size, (esp_timer_get_time() - start_time) / 1000);
             ret = esp_ota_end(s_ota_handle);
             ESP_RETURN_ON_ERROR(ret, TAG_OTA, "Failed to end OTA partition, status: %s", esp_err_to_name(ret));
             ret = esp_ota_set_boot_partition(s_ota_partition);
@@ -244,7 +244,7 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
             esp_restart();
             break;
         default:
-            ESP_LOGI(TAG_OTA, "OTA status: %d", messsage.upgrade_status);
+            ESP_LOGI(TAG_OTA, "OTA status: %d", message.upgrade_status);
             break;
         }
     }
