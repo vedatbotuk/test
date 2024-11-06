@@ -184,11 +184,11 @@ static void esp_zb_task(void *pvParameters)
     ESP_LOGI(TAG, "Enable LIGHT_SLEEP");
 #endif
 #ifdef ROUTER_DEVICE
-    esp_zb_set_tx_power(10);
+    esp_zb_set_tx_power(20);
 #endif
 #ifdef END_DEVICE
-    // TODO: Set the TX power for the end device only for the test
-    esp_zb_set_tx_power(0);
+    // TODO: Maybe -5dBm is not enough for the end device
+    esp_zb_set_tx_power(-5);
 #endif
 
     /* create cluster lists for this endpoint */
