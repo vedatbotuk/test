@@ -162,6 +162,14 @@ else()
     message(STATUS "Appending sdkconfig.light_sleep_gpio_off to SET_SDKCONFIG_DEFAULTS")
 endif()
 
+# Check production-specific configurations to the file for prod devices
+if(DEV_PROD STREQUAL "prod")
+    list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.prod")
+    message(STATUS "Appending sdkconfig.prod to SET_SDKCONFIG_DEFAULTS")
+    add_compile_options(-msave-restore)
+    message(STATUS "Added -msave-restore to compile options")
+endif()
+
 # Create a new file with the name "sdkconfig.defaults"
 set(SDKCONFIG_DEVICE_FILE "${CMAKE_SOURCE_DIR}/sdkconfig.defaults")
 
