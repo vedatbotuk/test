@@ -26,19 +26,19 @@ jobs:
           echo "main_firmware_version=$MAIN_FIRMWARE_VERSION" >> $GITHUB_ENV
           echo "main_version=$MAIN_VERSION" >> $GITHUB_ENV
 
-      - name: Get FIRMWARE_VERSION and VERSION from develop
-        id: develop_values
+      - name: Get FIRMWARE_VERSION and VERSION from dev
+        id: dev_values
         run: |
-          # Extract values from develop branch (current branch)
-          DEVELOP_FIRMWARE_VERSION=$(grep "^FIRMWARE_VERSION=" settings.conf | cut -d '=' -f 2)
-          DEVELOP_VERSION=$(grep "^VERSION=" settings.conf | cut -d '=' -f 2)
-          echo "develop_firmware_version=$DEVELOP_FIRMWARE_VERSION" >> $GITHUB_ENV
-          echo "develop_version=$DEVELOP_VERSION" >> $GITHUB_ENV
+          # Extract values from dev branch (current branch)
+          DEV_FIRMWARE_VERSION=$(grep "^FIRMWARE_VERSION=" settings.conf | cut -d '=' -f 2)
+          DEV_VERSION=$(grep "^VERSION=" settings.conf | cut -d '=' -f 2)
+          echo "dev_firmware_version=$DEV_FIRMWARE_VERSION" >> $GITHUB_ENV
+          echo "dev_version=$DEV_VERSION" >> $GITHUB_ENV
 
       - name: Check if versions have changed
         run: |
-          # Compare versions from develop and main
-          if [[ "$main_firmware_version" == "$develop_firmware_version" ]] && [[ "$main_version" == "$develop_version" ]]; then
+          # Compare versions from dev and main
+          if [[ "$main_firmware_version" == "$dev_firmware_version" ]] && [[ "$main_version" == "$dev_version" ]]; then
             echo "Error: FIRMWARE_VERSION and VERSION have not changed."
             exit 1
           else
