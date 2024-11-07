@@ -46,8 +46,8 @@ void zb_report_temp()
     temp_measurement_cmd_req.zcl_basic_cmd.src_endpoint = DEVICE_ENDPOINT;
     temp_measurement_cmd_req.address_mode = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT;
     temp_measurement_cmd_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT;
-    temp_measurement_cmd_req.cluster_role = ESP_ZB_ZCL_CLUSTER_SERVER_ROLE;
     temp_measurement_cmd_req.attributeID = ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID;
+    temp_measurement_cmd_req.manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC;
 
     /* Request sending new phase voltage */
     esp_err_t state = esp_zb_zcl_report_attr_cmd_req(&temp_measurement_cmd_req);
