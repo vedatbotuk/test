@@ -14,7 +14,7 @@ jobs:
           PR_BODY: "${{ github.event.pull_request.body }}"
         run: |
           # Check the PR description for any unchecked to-do items
-          if echo "$PR_BODY" | grep '- \[ \]'; then
+          if echo "$PR_BODY" | grep '\- \[ \]'; then
             echo "Error: Found incomplete to-do items in PR description."
             exit 1
           else
