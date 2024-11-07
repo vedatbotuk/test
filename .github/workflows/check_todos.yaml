@@ -7,13 +7,17 @@ jobs:
   check_pr_description:
     runs-on: ubuntu-latest
     steps:
-      - name: Check for unchecked to-do items in PR description
+      - name: Check for unchecked to-do items in PR comments
         env:
-          PR_BODY: "${{ github.event.pull_request.body }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if echo "$PR_BODY" | grep '- \[ \]'; then
-            echo "Error: Found incomplete to-do items in PR description."
+          comments=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "${{ github.event.pull_request.comments_url }}" | jq -r '.[].body')
+          
+          if echo "$comments" | grep '- \[ \]'; then
+            echo "Error: Found incomplete to-do items in PR comments."
             exit 1
           else
-            echo "No incomplete to-do items found in PR description."
+            echo "No incomplete to-do items found in PR comments."
           fi
