@@ -1,31 +1,22 @@
-name: Block merge if todos are incomplete in PR comments
+name: Block merge if todos are incomplete in PR description
 
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
-  issue_comment:
-    types: [created, edited]
 
 jobs:
-  check_pr_comments:
+  check_pr_description:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check for unchecked to-do items in PR comments
+      - name: Check for unchecked to-do items in PR description
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
-          REPO: ${{ github.repository }}
+          PR_BODY: "${{ github.event.pull_request.body }}"
         run: |
-          # Fetch all comments in the pull request
-          comments=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/$REPO/issues/$PR_NUMBER/comments" | jq -r '.[].body')
-
-          # Check each comment for unchecked to-do items
-          if echo "$comments" | grep '- \[ \]'; then
-            echo "Error: Found incomplete to-do items in PR comments."
+          # Check the PR description for any unchecked to-do items
+          if echo "$PR_BODY" | grep '- \[ \]'; then
+            echo "Error: Found incomplete to-do items in PR description."
             exit 1
           else
-            echo "All to-do items are complete in PR comments."
+            echo "All to-do items are complete in PR description."
           fi
