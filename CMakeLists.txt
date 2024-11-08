@@ -56,6 +56,13 @@ else()
     message(FATAL_ERROR "Settings file not found: ${SETTINGS_FILE}")
 endif()
 
+#### ######## ####
+#### Get Time ####
+# Get time for FIRMWARE_DATE
+string(TIMESTAMP CURRENT_DATE "%Y%m%d")
+message(STATUS "Current date: ${CURRENT_DATE}")
+add_definitions(-DCURRENT_DATE="${CURRENT_DATE}")
+
 
 
 #### ######### ####

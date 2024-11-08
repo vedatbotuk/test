@@ -65,6 +65,12 @@ else
     exit 1
 fi
 
+# Extract each variable from settings.conf
+FIRMWARE_VERSION=$(grep -oP '^FIRMWARE_VERSION=\K.*' settings.conf)
+VERSION=$(grep -oP '^VERSION=\K.*' settings.conf)
+MANUFACTURER=$(grep -oP '^MANUFACTURER=\K.*' settings.conf)
+HW_VERSION=$(grep -oP '^HW_VERSION=\K.*' settings.conf)
+
 echo ""
 echo "----------------------------------------"
 echo "Starting the build process..."
@@ -93,11 +99,6 @@ echo "----------------------------------------"
       # Add the data to OTA Index file
       echo "Adding data to OTA Index file..."
 
-      # Extract each variable from settings.conf
-      VERSION=$(grep -oP '^VERSION=\K.*' settings.conf)
-      MANUFACTURER=$(grep -oP '^MANUFACTURER=\K.*' settings.conf)
-      HW_VERSION=$(grep -oP '^HW_VERSION=\K.*' settings.conf)
-
       # Convert MODEL_ID to decimal and store it in a variable
       MODEL_ID_DECIMAL=$((2#$MODEL_ID))
 
@@ -120,10 +121,9 @@ echo "----------------------------------------"
       echo "    \"manufacturerCode\": $MANUFACTURER," >> "$BOTUK_INDEX"
       echo "    \"imageType\": $MODEL_ID_DECIMAL," >> "$BOTUK_INDEX"
       echo "    \"sha512\": \"$SHA512\"," >> "$BOTUK_INDEX"
-      echo "    \"url\": \"images/$FILE_NAME\"," >> "$BOTUK_INDEX"
+      echo "    \"url\": \"https://github.com/vedatbotuk/zigbee-with-esp32h2/releases/download/${FIRMWARE_VERSION}_${VERSION}/${FILE_NAME}\"," >> "$BOTUK_INDEX"
       echo "    \"otaHeaderString\": \"\"" >> "$BOTUK_INDEX"
       echo "  }," >> "$BOTUK_INDEX"
-
 
       # Indicate completion of the build
       echo "Build completed for MODEL_ID: $MODEL_ID"

@@ -36,14 +36,13 @@ static const char *TAG_CREATE_CLUSTER = "Create_Cluster";
 RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
 uint8_t test_attr;
 
-void convert_version(const char *version_string, char firmware_version[16])
+void convert_version(const char *version_string, char *firmware_version, size_t buffer_size)
 {
     int length = strlen(version_string);
 
-    // Limit the length to fit within firmware_version size, leaving space for the length byte
-    if (length > 14)
-    { // 15 chars - 1 for the length byte
-        length = 14;
+    if (length > buffer_size - 2)
+    {
+        length = buffer_size - 2; // Adjust length to fit within the buffer
     }
 
     // Set the first element to the length
@@ -56,7 +55,7 @@ void convert_version(const char *version_string, char firmware_version[16])
     }
 
     // Optional: fill the rest of the array with zeros if desired
-    for (int i = length + 1; i < 16; i++)
+    for (int i = length + 1; i < buffer_size; i++)
     {
         firmware_version[i] = 0;
     }
@@ -72,7 +71,9 @@ void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
 
     uint8_t running_version = 1;
     char firmware_version[16];
-    convert_version(FIRMWARE_VERSION, firmware_version);
+    char firmware_date[10];
+    convert_version(FIRMWARE_VERSION, firmware_version, sizeof(firmware_version));
+    convert_version(CURRENT_DATE, firmware_date, sizeof(firmware_date));
 
     /* basic cluster create with fully customized */
     esp_zb_attribute_list_t *esp_zb_basic_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_BASIC);
@@ -82,6 +83,7 @@ void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_ZCL_VERSION_ID, &test_attr);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_POWER_SOURCE_ID, &power_source);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_APPLICATION_VERSION_ID, &running_version);
+    esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_DATE_CODE_ID, firmware_date);
     esp_zb_cluster_update_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_ZCL_VERSION_ID, &test_attr);
     esp_zb_cluster_list_add_basic_cluster(esp_zb_cluster_list, esp_zb_basic_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
@@ -89,6 +91,7 @@ void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     ESP_LOGI(TAG_CREATE_CLUSTER, "Model: %s", model);
     ESP_LOGI(TAG_CREATE_CLUSTER, "Manufacturer: %s", manufacturer);
     ESP_LOGI(TAG_CREATE_CLUSTER, "Firmware Version: %s", firmware_version);
+    ESP_LOGI(TAG_CREATE_CLUSTER, "Firmware Date: %s", firmware_date);
 }
 
 void create_identify_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)

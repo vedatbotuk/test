@@ -54,7 +54,7 @@ void zb_report_battery_level()
     battery_level_measurement_cmd_req.address_mode = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT;
     battery_level_measurement_cmd_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_POWER_CONFIG;
     battery_level_measurement_cmd_req.attributeID = ESP_ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID;
-    battery_level_measurement_cmd_req.cluster_role = ESP_ZB_ZCL_CLUSTER_SERVER_ROLE;
+    battery_level_measurement_cmd_req.manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC;
 
     esp_err_t state1 = esp_zb_zcl_report_attr_cmd_req(&battery_level_measurement_cmd_req);
     /* Check for error */
