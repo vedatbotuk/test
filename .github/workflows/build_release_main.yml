@@ -64,17 +64,22 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: pulls } = await github.pulls.list({
+            const { data: pulls } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'closed',
               base: 'main',
-              per_page: 10 // Adjust to capture more or fewer PRs
+              per_page: 100 // Adjust as needed
             });
 
-            const releaseNotes = pulls
-              .filter(pr => pr.merged_at) // Only include merged PRs
-              .map(pr => `- ${pr.title} (#${pr.number}) by ${pr.user.login}`)
+            // Filter only merged pull requests
+            const mergedPulls = pulls.filter(pr => pr.merged_at);
+
+            // If you want to fetch PRs since the last tag, you can add logic here
+            // For simplicity, we're listing the latest merged PRs
+
+            const releaseNotes = mergedPulls
+              .map(pr => `- ${pr.title} (#${pr.number}) by @${pr.user.login}`)
               .join('\n');
 
             core.setOutput('release_notes', releaseNotes);
