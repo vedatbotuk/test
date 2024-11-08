@@ -20,11 +20,10 @@ jobs:
       - name: Load FIRMWARE_VERSION and VERSION from settings.conf
         id: load_settings
         run: |
-          # Source the settings.conf file to load variables
           source settings.conf
           echo "FIRMWARE_VERSION=$FIRMWARE_VERSION" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          
+
       # Set up environment
       - name: Set up environment
         run: |
@@ -34,10 +33,10 @@ jobs:
       
       # Run the prod script
       - name: Make prod script executable
-        run: chmod +x ./scripts/prod.sh # Ensure the script is executable
+        run: chmod +x ./scripts/prod.sh 
 
       - name: Run the production script
-        run: ./scripts/prod.sh # Execute script
+        run: ./scripts/prod.sh 
 
       - name: List Files in ota Directory
         run: ls -al ota
@@ -59,6 +58,26 @@ jobs:
           git tag ${{ env.TAG }}
           git push origin ${{ env.TAG }}
 
+      # Generate release notes from commits
+      - name: Generate Release Notes
+        id: generate_release_notes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: commits } = await github.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: 'main',
+              per_page: 10 // Adjust as needed
+            });
+
+            const releaseNotes = commits
+              .map(commit => `- ${commit.commit.message} (by ${commit.commit.author.name})`)
+              .join('\n');
+
+            core.setOutput('release_notes', releaseNotes);
+
+      # Create GitHub Release with Release Notes
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -67,11 +86,16 @@ jobs:
         with:
           tag_name: ${{ env.TAG }}
           release_name: "${{ env.FIRMWARE_VERSION }}_${{ env.VERSION }}"
-          body: "Automated release for changes merged into main. Release Tag: ${{ env.TAG }}"
+          body: |
+            Automated release for changes merged into main.
+            
+            ## Release Notes
+            ${{ steps.generate_release_notes.outputs.release_notes }}
           draft: false
           prerelease: false
          
-      - name: Create Release and Upload Binary
+      # Upload Binary Files to the Release
+      - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG }}
