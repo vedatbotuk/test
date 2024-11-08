@@ -58,21 +58,23 @@ jobs:
           git tag ${{ env.TAG }}
           git push origin ${{ env.TAG }}
 
-      # Generate release notes from commits
-      - name: Generate Release Notes
+      # Generate release notes from merged pull requests
+      - name: Generate Release Notes from Merged Pull Requests
         id: generate_release_notes
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: commits } = await github.repos.listCommits({
+            const { data: pulls } = await github.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: 'main',
-              per_page: 10 // Adjust as needed
+              state: 'closed',
+              base: 'main',
+              per_page: 10 // Adjust to capture more or fewer PRs
             });
 
-            const releaseNotes = commits
-              .map(commit => `- ${commit.commit.message} (by ${commit.commit.author.name})`)
+            const releaseNotes = pulls
+              .filter(pr => pr.merged_at) // Only include merged PRs
+              .map(pr => `- ${pr.title} (#${pr.number}) by ${pr.user.login}`)
               .join('\n');
 
             core.setOutput('release_notes', releaseNotes);
