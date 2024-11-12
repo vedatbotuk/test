@@ -78,7 +78,7 @@ void measure_temp_hum()
         {
             ESP_LOGI(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
-        vTaskDelay(pdMS_TO_TICKS(60000));
+        vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minute
     }
 }
 #endif
@@ -100,7 +100,7 @@ void measure_battery()
         {
             ESP_LOGI(TAG, "Device is not connected! Could not measure the battery level");
         }
-        vTaskDelay(pdMS_TO_TICKS(3600000));
+        vTaskDelay(pdMS_TO_TICKS(600000)); // 600000 ms = 10 minutes
     }
 }
 #endif
