@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   build-release-main:
@@ -58,31 +59,38 @@ jobs:
           git tag ${{ env.TAG }}
           git push origin ${{ env.TAG }}
 
-      # Generate release notes from merged pull requests
-      - name: Generate Release Notes from Merged Pull Requests
+      # Generate release notes from new merged pull requests since last tag
+      - name: Generate Release Notes from Commits Since Last Tag
         id: generate_release_notes
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: pulls } = await github.rest.pulls.list({
+            const latestTagResponse = await github.rest.repos.getLatestRelease({
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'closed',
-              base: 'main',
-              per_page: 100 // Adjust as needed
+              repo: context.repo.repo
             });
 
-            // Filter only merged pull requests
-            const mergedPulls = pulls.filter(pr => pr.merged_at);
+            const latestTag = latestTagResponse.data.tag_name;
 
-            // If you want to fetch PRs since the last tag, you can add logic here
-            // For simplicity, we're listing the latest merged PRs
+            const { data: commits } = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              since: latestTagResponse.data.published_at
+            });
 
-            const releaseNotes = mergedPulls
-              .map(pr => `- ${pr.title} (#${pr.number}) by @${pr.user.login}`)
+            // Filter and format commits to get merged PRs only
+            const mergedPulls = commits
+              .filter(commit => commit.commit.message.includes('Merge pull request'))
+              .map(commit => {
+                const prNumber = commit.commit.message.match(/#(\d+)/)?.[1];
+                return prNumber
+                  ? `- ${commit.commit.message.split('\n')[0]} by @${commit.author.login} (#${prNumber})`
+                  : `- ${commit.commit.message.split('\n')[0]} by @${commit.author.login}`;
+              })
               .join('\n');
 
-            core.setOutput('release_notes', releaseNotes);
+            core.setOutput('release_notes', mergedPulls || "No new changes since last tag.");
+
 
       # Create GitHub Release with Release Notes
       - name: Create GitHub Release
