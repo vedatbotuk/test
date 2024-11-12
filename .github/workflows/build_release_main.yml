@@ -65,6 +65,7 @@ jobs:
         with:
           script: |
             const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'closed',
               base: 'main',
