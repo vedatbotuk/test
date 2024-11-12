@@ -151,7 +151,7 @@ esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t m
             start_time = esp_timer_get_time();
             s_ota_partition = esp_ota_get_next_update_partition(NULL);
             assert(s_ota_partition);
-            ret = esp_ota_begin(s_ota_partition, OTA_WITH_SEQUENTIAL_WRITES, &s_ota_handle);
+            ret = esp_ota_begin(s_ota_partition, 0, &s_ota_handle);
             clear_ota_header();
             ota_upgrade_subelement_ = false;
             ota_data_len_ = 0;
