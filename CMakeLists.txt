@@ -135,14 +135,18 @@ endif()
 
 #### Set specific sdkconfig ####
 #### ###################### ####
+# Set the default configurations for the device
+set(SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.main")
+message(STATUS "Setting SET_SDKCONFIG_DEFAULTS to sdkconfig.main")
+
 # Check the first number of MODEL_ID
 string(SUBSTRING ${MODEL_ID} 0 1 FIRST_NUM)
 if(FIRST_NUM EQUAL "1")
-    set(SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.end_device")
-    message(STATUS "Setting SET_SDKCONFIG_DEFAULTS to sdkconfig.end_device")
+    list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.end_device")
+    message(STATUS "Appending SET_SDKCONFIG_DEFAULTS to sdkconfig.end_device")
 else()
-    set(SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.router")
-    message(STATUS "Setting SET_SDKCONFIG_DEFAULTS to sdkconfig.router")
+    list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.router")
+    message(STATUS "Appending SET_SDKCONFIG_DEFAULTS to sdkconfig.router")
 endif()
 
 # Check the sixth number of MODEL_ID
@@ -150,6 +154,16 @@ string(SUBSTRING ${MODEL_ID} 5 1 SIXTH_NUM)
 if(SIXTH_NUM EQUAL "1")
     list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep")
     message(STATUS "Appending sdkconfig.light_sleep to SET_SDKCONFIG_DEFAULTS")
+
+    # Check the tenth number of MODEL_ID
+    string(SUBSTRING ${MODEL_ID} 9 1 TENTH_NUM)
+    if(TENTH_NUM EQUAL "1")
+        list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep_gpio_on")
+        message(STATUS "Appending sdkconfig.light_sleep_gpio_on to SET_SDKCONFIG_DEFAULTS")
+    else()
+        list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep_gpio_off")
+        message(STATUS "Appending sdkconfig.light_sleep_gpio_off to SET_SDKCONFIG_DEFAULTS")
+    endif()
 endif()
 
 # Check the seventh number of MODEL_ID
@@ -157,16 +171,6 @@ string(SUBSTRING ${MODEL_ID} 6 1 SEVENTH_NUM)
 if(SEVENTH_NUM EQUAL "1")
     list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.deep_sleep")
     message(STATUS "Appending sdkconfig.deep_sleep to SET_SDKCONFIG_DEFAULTS")
-endif()
-
-# Check the tenth number of MODEL_ID
-string(SUBSTRING ${MODEL_ID} 9 1 TENTH_NUM)
-if(TENTH_NUM EQUAL "1")
-    list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep_gpio_on")
-    message(STATUS "Appending sdkconfig.light_sleep_gpio_on to SET_SDKCONFIG_DEFAULTS")
-else()
-    list(APPEND SET_SDKCONFIG_DEFAULTS "sdkconfig_defaults/sdkconfig.light_sleep_gpio_off")
-    message(STATUS "Appending sdkconfig.light_sleep_gpio_off to SET_SDKCONFIG_DEFAULTS")
 endif()
 
 # Check production-specific configurations to the file for prod devices
@@ -191,7 +195,7 @@ file(WRITE ${SDKCONFIG_DEVICE_FILE}
 # Append each SET_SDKCONFIG_DEFAULTS file to the sdkconfig.defaults file
 foreach(SDKCONFIG_DEFAULTS ${SET_SDKCONFIG_DEFAULTS})
     file(READ ${SDKCONFIG_DEFAULTS} SDKCONFIG_CONTENT)
-    file(APPEND ${SDKCONFIG_DEVICE_FILE} "\n# Contents of ${SDKCONFIG_DEFAULTS}\n${SDKCONFIG_CONTENT}")
+    file(APPEND ${SDKCONFIG_DEVICE_FILE} "\n###\n### Contents of ${SDKCONFIG_DEFAULTS}\n${SDKCONFIG_CONTENT}")
 endforeach()
 
 message(STATUS "Created sdkconfig.defaults with default configurations")
