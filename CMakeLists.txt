@@ -36,6 +36,7 @@ if(EXISTS ${SETTINGS_FILE})
     parse_settings("HW_VERSION" HW_VERSION)
     parse_settings("VERSION" VERSION)
     parse_settings("MANUFACTURER" MANUFACTURER)
+    parse_settings("ZIGBEE_CHANNEL" ZIGBEE_CHANNEL)
 
     # Print the values for debugging
     message(STATUS "FIRMWARE_VERSION: ${FIRMWARE_VERSION}")
@@ -46,11 +47,13 @@ if(EXISTS ${SETTINGS_FILE})
     message(STATUS "HW_VERSION: ${HW_VERSION}")
     message(STATUS "VERSION: ${VERSION}")
     message(STATUS "MANUFACTURER: ${MANUFACTURER}")
+    message(STATUS "ZIGBEE_CHANNEL: ${ZIGBEE_CHANNEL}")
 
     # Add other settings as preprocessor definitions
     add_definitions(-DFIRMWARE_VERSION="${FIRMWARE_VERSION}")
     add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
     add_definitions(-DED_KEEP_ALIVE=${ED_KEEP_ALIVE})
+    add_definitions(-DZIGBEE_CHANNEL=${ZIGBEE_CHANNEL})
 
 else()
     message(FATAL_ERROR "Settings file not found: ${SETTINGS_FILE}")

@@ -18,9 +18,9 @@
 #include "esp_zigbee_core.h"
 
 /* Zigbee configuration */
-#define INSTALLCODE_POLICY_ENABLE false                /* enable the install code policy for security */
-#define ED_AGING_TIMEOUT ESP_ZB_ED_AGING_TIMEOUT_64MIN /* End device ages time */
-#define ESP_ZB_PRIMARY_CHANNEL_MASK (1l << 25)         /* Zigbee primary channel mask use in the example */
+#define INSTALLCODE_POLICY_ENABLE false                    /* enable the install code policy for security */
+#define ED_AGING_TIMEOUT ESP_ZB_ED_AGING_TIMEOUT_64MIN     /* End device ages time */
+#define ESP_ZB_PRIMARY_CHANNEL_MASK (1l << ZIGBEE_CHANNEL) /* Zigbee primary channel mask use in the example */
 
 #ifdef END_DEVICE
 #define ESP_ZB_ZED_CONFIG()                               \
