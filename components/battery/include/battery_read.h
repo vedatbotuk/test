@@ -23,13 +23,8 @@ extern "C"
 {
 #endif
 
-    // extern const static char *TAG_VOL;
-    extern const int VOLTAGE_MAX;
-    extern const int VOLTAGE_MIN;
-
     esp_err_t voltage_calculate_init(void);
     esp_err_t voltage_calculate_deinit(void);
-    int calc_battery_percentage(int adc);
     esp_err_t get_battery_level();
 
 #ifdef __cplusplus
