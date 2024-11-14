@@ -176,11 +176,11 @@ static void esp_zb_task(void *pvParameters)
 #endif
     /* The order in the following 3 lines must not be changed. */
 #ifdef LIGHT_SLEEP
-    sleep_enable();
+    esp_zb_sleep_enable(true);
 #endif
     esp_zb_init(&zb_nwk_cfg);
 #ifdef LIGHT_SLEEP
-    sleep_configure();
+    esp_zb_sleep_set_threshold(2000);
     ESP_LOGI(TAG, "Enable LIGHT_SLEEP");
 #endif
 #ifdef ROUTER_DEVICE
