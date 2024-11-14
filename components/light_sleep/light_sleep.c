@@ -16,6 +16,7 @@
  */
 
 #include "light_sleep.h"
+#include "esp_pm.h"
 
 esp_err_t esp_zb_power_save_init(void)
 {
