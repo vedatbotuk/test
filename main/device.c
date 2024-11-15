@@ -61,7 +61,6 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 void measure_temp_hum()
 {
-    /* Measure temperature loop*/
     while (1)
     {
         connected = connection_status();
@@ -76,7 +75,7 @@ void measure_temp_hum()
         }
         else
         {
-            ESP_LOGI(TAG, "Device is not connected! Could not measure the temperature and humidity");
+            ESP_LOGW(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
         vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minute
     }
@@ -86,7 +85,6 @@ void measure_temp_hum()
 #ifdef BATTERY
 void measure_battery()
 {
-    /* Measure battery loop*/
     while (1)
     {
         connected = connection_status();
@@ -98,18 +96,11 @@ void measure_battery()
         }
         else
         {
-            ESP_LOGI(TAG, "Device is not connected! Could not measure the battery level");
+            ESP_LOGW(TAG, "Device is not connected! Could not measure the battery level");
         }
         vTaskDelay(pdMS_TO_TICKS(600000)); // 600000 ms = 10 minutes
     }
 }
-#endif
-
-#ifdef SENSOR_WATERLEAK
-// TODO
-// Button callback function for waterleak
-// vTaskDelay(pdMS_TO_TICKS(100)); /*This sleep is necessary for the get_button()*/
-// check_waterleak();
 #endif
 
 #ifdef LIGHT_ON_OFF
@@ -176,18 +167,17 @@ static void esp_zb_task(void *pvParameters)
 #endif
     /* The order in the following 3 lines must not be changed. */
 #ifdef LIGHT_SLEEP
-    sleep_enable();
+    esp_zb_sleep_enable(true);
 #endif
     esp_zb_init(&zb_nwk_cfg);
 #ifdef LIGHT_SLEEP
-    sleep_configure();
+    esp_zb_sleep_set_threshold(2000);
     ESP_LOGI(TAG, "Enable LIGHT_SLEEP");
 #endif
 #ifdef ROUTER_DEVICE
     esp_zb_set_tx_power(20);
 #endif
 #ifdef END_DEVICE
-    // TODO: Maybe -5dBm is not enough for the end device
     esp_zb_set_tx_power(5);
 #endif
 
@@ -256,7 +246,6 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_zb_power_save_init());
 #endif
 #ifdef LIGHT_ON_OFF
-    // light_driver_init(LIGHT_DEFAULT_OFF);
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY

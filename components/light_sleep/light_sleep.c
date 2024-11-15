@@ -15,11 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include "light_sleep.h"
 #include "esp_pm.h"
-#include "esp_private/esp_clk.h"
-#include "esp_zigbee_core.h"
 
 esp_err_t esp_zb_power_save_init(void)
 {
@@ -36,14 +33,4 @@ esp_err_t esp_zb_power_save_init(void)
     rc = esp_pm_configure(&pm_config);
 #endif
     return rc;
-}
-
-void sleep_enable()
-{
-    esp_zb_sleep_enable(true);
-}
-
-void sleep_configure()
-{
-    esp_zb_sleep_set_threshold(2000);
 }

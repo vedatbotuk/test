@@ -25,7 +25,7 @@ extern "C"
 {
 #endif
 
-    esp_err_t get_dht22_data();
+    static esp_err_t read_dht22_data();
     void check_temperature();
     void check_humidity();
 
