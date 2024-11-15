@@ -25,39 +25,22 @@ static const char *TAG = "UPDATE_TEMP_CLUSTER";
 void zb_update_temp(int16_t temperature)
 {
     esp_zb_lock_acquire(portMAX_DELAY);
-    esp_zb_zcl_status_t state = esp_zb_zcl_set_attribute_val(DEVICE_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID, &temperature, false);
+    esp_zb_zcl_status_t state = esp_zb_zcl_set_attribute_val(
+        DEVICE_ENDPOINT,
+        ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+        ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
+        &temperature,
+        false);
     esp_zb_lock_release();
 
     /* Check for error */
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
-        ESP_LOGE(TAG, "Setting temp attribute failed!");
-        return;
+        ESP_LOGE(TAG, "Setting temperature attribute failed!");
     }
-
-    ESP_LOGI(TAG, "Setting temp attribute success");
-    return;
-}
-
-// TODO - Report battery attribute does not work. Probably does not work also this function.
-void zb_report_temp()
-{
-    static esp_zb_zcl_report_attr_cmd_t temp_measurement_cmd_req = {};
-    temp_measurement_cmd_req.zcl_basic_cmd.src_endpoint = DEVICE_ENDPOINT;
-    temp_measurement_cmd_req.address_mode = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT;
-    temp_measurement_cmd_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT;
-    temp_measurement_cmd_req.attributeID = ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID;
-    temp_measurement_cmd_req.manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC;
-
-    /* Request sending new phase voltage */
-    esp_err_t state = esp_zb_zcl_report_attr_cmd_req(&temp_measurement_cmd_req);
-    /* Check for error */
-    if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
+    else
     {
-        ESP_LOGE(TAG, "Report temp attribute report command failed!");
-        return;
+        ESP_LOGI(TAG, "Setting temperature attribute success");
     }
-
-    ESP_LOGI(TAG, "Report temp attribute success");
-    return;
 }
