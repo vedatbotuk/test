@@ -41,6 +41,6 @@ void zb_update_hum(int humidity)
     }
     else
     {
-        ESP_LOGI(TAG, "Setting humidity attribute success");
+        ESP_LOGW(TAG, "Setting humidity attribute failed with %x", state);
     }
 }

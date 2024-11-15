@@ -41,6 +41,6 @@ void zb_update_temp(int16_t temperature)
     }
     else
     {
-        ESP_LOGI(TAG, "Setting temperature attribute success");
+        ESP_LOGW(TAG, "Setting temperature attribute failed with %x", state);
     }
 }
