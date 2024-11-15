@@ -1,17 +1,17 @@
-/* 
+/*
  * selforganized_802.15.4_network_with_esp32
  * Copyright (c) 2024 Vedat Botuk.
- * 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -27,15 +27,15 @@ void zb_update_waterleak(uint16_t leak)
     esp_zb_zcl_status_t state = esp_zb_zcl_set_attribute_val(DEVICE_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_IAS_ZONE, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_IAS_ZONE_ZONESTATUS_ID, &leak, false);
 
     /* Check for error */
-    if (state != ESP_ZB_ZCL_STATUS_SUCCESS) {
-        ESP_LOGW(TAG, "Setting waterleak attribute failed with %x", state);
-        return;
+    if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
+    {
+        ESP_LOGI(TAG, "Setting waterleak attribute success");
     }
-
-    ESP_LOGI(TAG, "Setting waterleak attribute success");
-    return;
+    else
+    {
+        ESP_LOGW(TAG, "Setting waterleak attribute failed with %x", state);
+    }
 }
-
 
 void zb_report_waterleak(uint16_t leak)
 {
@@ -50,5 +50,4 @@ void zb_report_waterleak(uint16_t leak)
     esp_zb_zcl_ias_zone_status_change_notif_cmd_req(&waterleak_chg_not_cmd);
 
     ESP_LOGI(TAG, "Report waterleak command success");
-    return;
 }
