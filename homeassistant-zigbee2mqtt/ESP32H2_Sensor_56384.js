@@ -6,14 +6,14 @@ const ota = require('zigbee-herdsman-converters/lib/ota');
 const e = exposes.presets;
 
 const definition = {
-  zigbeeModel: ['56384'], // Model ID as per device's Zigbee data.
-  model: 'ESP32H2_Sensor', // Vendor model number for the light device.
-  vendor: 'Botuk', // Vendor name (e.g., Philips, IKEA, etc.)
-  description: 'Simple on/off light device', // Short description of the device
-  fromZigbee: [fz.on_off, fz.temperature, fz.battery], // Handles incoming Zigbee messages for on/off states
-  toZigbee: [tz.on_off], // Used to control the light (on/off commands)
+  zigbeeModel: ['56384'],
+  model: 'ESP32H2_Sensor',
+  vendor: 'Botuk',
+  description: 'Simple on/off light device',
+  fromZigbee: [fz.on_off, fz.temperature, fz.battery],
+  toZigbee: [tz.on_off],
   configure: async (device, coordinatorEndpoint, logger) => {
-    const endpoint = device.getEndpoint(10); // Endpoint for the light control
+    const endpoint = device.getEndpoint(10);
     const bindClusters = ['genOnOff', 'msTemperatureMeasurement', 'genPowerCfg'];
 
     // Bind clusters to ensure proper reporting
@@ -21,10 +21,10 @@ const definition = {
 
     // Configure reporting for temperature, battery, and on/off state
     await reporting.temperature(endpoint, { min: 300, max: 65000, change: 100 });
-    await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 2 });
+    await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
     await reporting.onOff(endpoint, { min: 0, max: 3600, change: 0 });
   },
-  exposes: [e.switch(), e.temperature(), e.battery()], // Expose the on/off switch for the device
+  exposes: [e.switch(), e.temperature(), e.battery()],
   ota: ota.zigbeeOTA
 };
 
