@@ -44,7 +44,7 @@
 #include "temperature_humidity.h"
 #endif
 
-#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+#ifdef LIGHT_ON_OFF
 #include "light_on_off.h"
 #endif
 
@@ -61,7 +61,6 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 void measure_temp_hum()
 {
-    /* Measure temperature loop*/
     while (1)
     {
         connected = connection_status();
@@ -76,7 +75,7 @@ void measure_temp_hum()
         }
         else
         {
-            ESP_LOGI(TAG, "Device is not connected! Could not measure the temperature and humidity");
+            ESP_LOGW(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
         vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minute
     }
@@ -86,7 +85,6 @@ void measure_temp_hum()
 #ifdef BATTERY
 void measure_battery()
 {
-    /* Measure battery loop*/
     while (1)
     {
         connected = connection_status();
@@ -98,21 +96,14 @@ void measure_battery()
         }
         else
         {
-            ESP_LOGI(TAG, "Device is not connected! Could not measure the battery level");
+            ESP_LOGW(TAG, "Device is not connected! Could not measure the battery level");
         }
         vTaskDelay(pdMS_TO_TICKS(600000)); // 600000 ms = 10 minutes
     }
 }
 #endif
 
-#ifdef SENSOR_WATERLEAK
-// TODO
-// Button callback function for waterleak
-// vTaskDelay(pdMS_TO_TICKS(100)); /*This sleep is necessary for the get_button()*/
-// check_waterleak();
-#endif
-
-#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+#ifdef LIGHT_ON_OFF
 static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t *message)
 {
     esp_err_t ret = ESP_OK;
@@ -139,7 +130,7 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
 }
 #endif
 
-#if defined OTA_UPDATE || defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+#if defined OTA_UPDATE || defined LIGHT_ON_OFF
 static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id, const void *message)
 {
     esp_err_t ret = ESP_OK;
@@ -150,7 +141,7 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
         ret = zb_ota_upgrade_status_handler(*(esp_zb_zcl_ota_upgrade_value_message_t *)message);
         break;
 #endif
-#if defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+#ifdef LIGHT_ON_OFF
     case ESP_ZB_CORE_SET_ATTR_VALUE_CB_ID:
         ret = zb_attribute_handler((esp_zb_zcl_set_attr_value_message_t *)message);
         break;
@@ -176,18 +167,17 @@ static void esp_zb_task(void *pvParameters)
 #endif
     /* The order in the following 3 lines must not be changed. */
 #ifdef LIGHT_SLEEP
-    sleep_enable();
+    esp_zb_sleep_enable(true);
 #endif
     esp_zb_init(&zb_nwk_cfg);
 #ifdef LIGHT_SLEEP
-    sleep_configure();
+    esp_zb_sleep_set_threshold(2000);
     ESP_LOGI(TAG, "Enable LIGHT_SLEEP");
 #endif
 #ifdef ROUTER_DEVICE
     esp_zb_set_tx_power(20);
 #endif
 #ifdef END_DEVICE
-    // TODO: Maybe -5dBm is not enough for the end device
     esp_zb_set_tx_power(5);
 #endif
 
@@ -220,9 +210,7 @@ static void esp_zb_task(void *pvParameters)
     create_ota_cluster(esp_zb_cluster_list);
     ESP_LOGI(TAG, "Create OTA_UPDATE Cluster");
 #endif
-#ifdef AUTOMATIC_IRRIGATION
-    create_water_pump_switch_cluster(esp_zb_cluster_list);
-#endif
+
 #ifdef LIGHT_ON_OFF
     create_light_switch_cluster(esp_zb_cluster_list);
 #endif
@@ -236,7 +224,7 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_ep_list_add_ep(esp_zb_ep_list, esp_zb_cluster_list, endpoint_config);
 
     esp_zb_device_register(esp_zb_ep_list);
-#if defined OTA_UPDATE || defined AUTOMATIC_IRRIGATION || defined LIGHT_ON_OFF
+#if defined OTA_UPDATE || defined LIGHT_ON_OFF
     esp_zb_core_action_handler_register(zb_action_handler);
 #endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
@@ -258,7 +246,6 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_zb_power_save_init());
 #endif
 #ifdef LIGHT_ON_OFF
-    // light_driver_init(LIGHT_DEFAULT_OFF);
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY

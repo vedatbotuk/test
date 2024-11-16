@@ -15,36 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-#include <esp_err.h>
-#include <stdbool.h>
+#ifndef ZB_TEMP_SENSOR_H
+#define ZB_TEMP_SENSOR_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+void zb_update_temp(int temperature);
+void zb_update_hum(int humidity);
+void zb_update_battery_level(int level, int voltage);
+void zb_update_waterleak(uint16_t leak);
+void zb_report_waterleak(uint16_t leak);
 
-/* light intensity level */
-#define LIGHT_DEFAULT_ON 1
-#define LIGHT_DEFAULT_OFF 0
-
-/* LED strip configuration */
-#define CONFIG_EXAMPLE_STRIP_LED_GPIO 8
-
-    /**
-     * @brief Set light power (on/off).
-     *
-     * @param  power  The light power to be set
-     */
-    void relay_set_power(bool power);
-
-    /**
-     * @brief color light driver init, be invoked where you want to use color light
-     *
-     * @param power power on/off
-     */
-    esp_err_t reley_init(bool power);
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
+#endif // ZB_TEMP_SENSOR_H

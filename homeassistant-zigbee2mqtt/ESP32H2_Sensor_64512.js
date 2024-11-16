@@ -6,25 +6,25 @@ const ota = require('zigbee-herdsman-converters/lib/ota');
 const e = exposes.presets;
 
 const definition = {
-  zigbeeModel: ['56384'],
+  zigbeeModel: ['64512'],
   model: 'ESP32H2_Sensor',
   vendor: 'Botuk',
-  description: 'Simple on/off light device',
+  description: 'Temp/Hum Sensor',
   fromZigbee: [fz.on_off, fz.temperature, fz.battery],
   toZigbee: [tz.on_off],
   configure: async (device, coordinatorEndpoint, logger) => {
     const endpoint = device.getEndpoint(10);
-    const bindClusters = ['genOnOff', 'msTemperatureMeasurement', 'genPowerCfg'];
+    const bindClusters = ['msTemperatureMeasurement', 'msHumidityMeasurement', 'genPowerCfg'];
 
     // Bind clusters to ensure proper reporting
     await device.bind(endpoint, coordinatorEndpoint, bindClusters);
 
-    // Configure reporting for temperature, battery, and on/off state
-    await reporting.temperature(endpoint, { min: 300, max: 65000, change: 100 });
+    // Configure reporting for temperature, humidity, battery
+    await reporting.temperature(endpoint, { min: 60, max: 3600, change: 100 });
+    await reporting.humidity(endpoint, { min: 60, max: 3600, change: 100 });
     await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
-    await reporting.onOff(endpoint, { min: 0, max: 3600, change: 0 });
   },
-  exposes: [e.switch(), e.temperature(), e.battery()],
+  exposes: [e.temperature(), e.humidity(), e.battery()],
   ota: ota.zigbeeOTA
 };
 

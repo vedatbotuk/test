@@ -15,25 +15,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VOLTAGE_CALCULATE_H
-#define VOLTAGE_CALCULATE_H
+#ifndef OTA_UPDATE_H
+#define OTA_UPDATE_H
+
+#include "esp_zigbee_core.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    // extern const static char *TAG_VOL;
-    extern const int VOLTAGE_MAX;
-    extern const int VOLTAGE_MIN;
-
-    esp_err_t voltage_calculate_init(void);
-    esp_err_t voltage_calculate_deinit(void);
-    int calc_battery_percentage(int adc);
-    esp_err_t get_battery_level();
+    esp_err_t zb_ota_upgrade_status_handler(esp_zb_zcl_ota_upgrade_value_message_t message);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* VOLTAGE_CALCULATE_H */
+#endif /* OTA_UPDATE_H */

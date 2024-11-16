@@ -15,7 +15,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "macros.h"
 #include "dht22.h"
 #include "temperature_humidity.h"
 #include "esp_log.h"
@@ -23,37 +22,36 @@
 
 static const char *TAG_TEMP_HUM = "TEMPERATURE_HUMIDITY_CHECK";
 
-float _temperature, _humidity;
+static float temperature = 0.0f;
+static float humidity = 0.0f;
 
-uint8_t _timer = 0;
-
-esp_err_t get_dht22_data()
+static esp_err_t read_dht22_data()
 {
-    if (dht_read_float_data(DHT_TYPE_AM2301, GPIO_NUM_0, &_humidity, &_temperature) == ESP_OK)
+    esp_err_t result = dht_read_float_data(DHT_TYPE_AM2301, GPIO_NUM_0, &humidity, &temperature);
+    if (result == ESP_OK)
     {
-        ESP_LOGI(TAG_TEMP_HUM, "Temperature : %.1f ℃", _temperature);
-        ESP_LOGI(TAG_TEMP_HUM, "Humidity : %.1f %%", _humidity);
+        ESP_LOGI(TAG_TEMP_HUM, "Temperature : %.1f ℃", temperature);
+        ESP_LOGI(TAG_TEMP_HUM, "Humidity : %.1f %%", humidity);
     }
     else
     {
         ESP_LOGW(TAG_TEMP_HUM, "Could not read data from DHT22 Sensor.");
-        return ESP_ERR_INVALID_ARG;
     }
-    return ESP_OK;
+    return result;
 }
 
 void check_temperature()
 {
 #if defined SENSOR_TEMPERATURE
-    get_dht22_data();
+    read_dht22_data();
 #endif
-    zb_update_temp((int16_t)(_temperature * 100));
+    zb_update_temp((int16_t)(temperature * 100));
 }
 
 void check_humidity()
 {
 #if !defined SENSOR_TEMPERATURE
-    get_dht22_data();
+    read_dht22_data();
 #endif
-    zb_update_hum((uint16_t)(_humidity * 100));
+    zb_update_hum((uint16_t)(humidity * 100));
 }
