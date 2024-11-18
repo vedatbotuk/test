@@ -20,7 +20,7 @@
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_log.h"
 
-static const char *TAG = "UPDATE_HUMIDITY_CLUSTER";
+static const char *TAG_ZB_UPDATE_HUM = "UPDATE_HUMIDITY_CLUSTER";
 
 void zb_update_hum(int humidity)
 {
@@ -37,10 +37,6 @@ void zb_update_hum(int humidity)
     /* Check for error */
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
-        ESP_LOGE(TAG, "Setting humidity attribute failed!");
-    }
-    else
-    {
-        ESP_LOGW(TAG, "Setting humidity attribute failed with %x", state);
+        ESP_LOGE(TAG_ZB_UPDATE_HUM, "Setting humidity attribute failed with %x", state);
     }
 }
