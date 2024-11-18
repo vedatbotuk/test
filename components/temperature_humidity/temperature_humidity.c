@@ -19,6 +19,7 @@
 #include "temperature_humidity.h"
 #include "esp_log.h"
 #include "update_cluster.h"
+#include "macros.h"
 
 static const char *TAG_TEMP_HUM = "TEMPERATURE_HUMIDITY_CHECK";
 

@@ -20,7 +20,7 @@
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_log.h"
 
-static const char *TAG = "UPDATE_BATTERY_CLUSTER";
+static const char *TAG_ZB_UPDATE_BATT = "UPDATE_BATTERY_CLUSTER";
 
 void zb_update_battery_level(uint8_t level, int8_t voltage)
 {
@@ -42,20 +42,15 @@ void zb_update_battery_level(uint8_t level, int8_t voltage)
         false);
     esp_zb_lock_release();
 
-    if (state_level == ESP_ZB_ZCL_STATUS_SUCCESS && state_voltage == ESP_ZB_ZCL_STATUS_SUCCESS)
+    /* Check for error */
+    if (state_level != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
-        ESP_LOGI(TAG, "Writing battery level success");
+        ESP_LOGE(TAG_ZB_UPDATE_BATT, "Setting battery level attribute failed with %x", state_level);
     }
-    else
-    {
-        if (state_level != ESP_ZB_ZCL_STATUS_SUCCESS)
-        {
-            ESP_LOGE(TAG, "Setting battery level attribute failed!");
-        }
 
-        if (state_voltage != ESP_ZB_ZCL_STATUS_SUCCESS)
-        {
-            ESP_LOGE(TAG, "Setting battery voltage attribute failed!");
-        }
+    /* Check for error */
+    if (state_voltage != ESP_ZB_ZCL_STATUS_SUCCESS)
+    {
+        ESP_LOGE(TAG_ZB_UPDATE_BATT, "Setting battery voltage attribute failed with %x", state_voltage);
     }
 }

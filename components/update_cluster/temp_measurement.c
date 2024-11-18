@@ -20,7 +20,7 @@
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_log.h"
 
-static const char *TAG = "UPDATE_TEMP_CLUSTER";
+static const char *TAG_ZB_UPDATE_TEMP = "UPDATE_TEMP_CLUSTER";
 
 void zb_update_temp(int16_t temperature)
 {
@@ -37,10 +37,6 @@ void zb_update_temp(int16_t temperature)
     /* Check for error */
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
-        ESP_LOGE(TAG, "Setting temperature attribute failed!");
-    }
-    else
-    {
-        ESP_LOGW(TAG, "Setting temperature attribute failed with %x", state);
+        ESP_LOGE(TAG_ZB_UPDATE_TEMP, "Setting temperature attribute failed with %x", state);
     }
 }
