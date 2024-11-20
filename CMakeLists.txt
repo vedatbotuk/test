@@ -222,14 +222,19 @@ project(${FILE_NAME})
 
 #### ###################### ####
 #### Create OTA-Update File ####
-set(MY_DIR ${CMAKE_SOURCE_DIR}/ota)
-file(MAKE_DIRECTORY ${MY_DIR})
+# Check the seccond number of MODEL_ID
+string(SUBSTRING ${MODEL_ID} 1 1 SECOND_NUM)
+if(SECOND_NUM EQUAL "1")
+    message(STATUS "OTA is not enabled, won't create OTA file.")
+    set(MY_DIR ${CMAKE_SOURCE_DIR}/ota)
+    file(MAKE_DIRECTORY ${MY_DIR})
 
-set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
-add_custom_target(RunPostBuildScript ALL
-    COMMAND ${CMAKE_COMMAND} -E echo  "Running Python script..."
-    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m ${MANUFACTURER} -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
-)
-add_dependencies(RunPostBuildScript ${FILE_NAME}.elf)
+    set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
+    add_custom_target(RunPostBuildScript ALL
+        COMMAND ${CMAKE_COMMAND} -E echo  "Running Python script..."
+        COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m ${MANUFACTURER} -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
+    )
+    add_dependencies(RunPostBuildScript ${FILE_NAME}.elf)
+endif()
 #### Create OTA-Update File ####
 #### ###################### ####
