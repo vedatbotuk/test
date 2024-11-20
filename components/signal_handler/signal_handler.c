@@ -29,7 +29,7 @@ bool conn = false;
 uint8_t deepsleep_cnt = 0;
 #endif
 
-void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
+static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 {
     ESP_RETURN_ON_FALSE(esp_zb_bdb_start_top_level_commissioning(mode_mask) == ESP_OK, , TAG_SIGNAL_HANDLER, "Failed to start Zigbee bdb commissioning");
 }
@@ -40,7 +40,7 @@ bool connection_status()
 }
 
 #ifdef MIX_SLEEP
-void deep_sleep_check()
+static void deep_sleep_check()
 {
     if (deepsleep_cnt >= 10)
     {
