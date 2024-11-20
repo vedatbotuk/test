@@ -45,17 +45,41 @@ static void deep_sleep_check()
     if (deepsleep_cnt >= 10)
     {
         deepsleep_cnt = 0;
-        /* Start the one-shot timer */
         ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
         start_deep_sleep();
     }
     else
     {
         deepsleep_cnt += 1;
-        ESP_LOGI(TAG_SIGNAL_HANDLER, "deep-sleep counter for not connecting: %d", deepsleep_cnt);
+        ESP_LOGI(TAG_SIGNAL_HANDLER, "Deep-sleep counter for not connecting: %d", deepsleep_cnt);
     }
 }
 #endif
+
+static void handle_commissioning_failure(esp_err_t err_status)
+{
+    conn = false;
+    ESP_LOGW(TAG_SIGNAL_HANDLER, "Failed to initialize Zigbee stack (status: %d)", err_status);
+#ifdef MIX_SLEEP
+    esp_zb_scheduler_alarm((esp_zb_callback_t)bdb_start_top_level_commissioning_cb, ESP_ZB_BDB_MODE_NETWORK_STEERING, 1000);
+    deep_sleep_check();
+#endif
+}
+
+static void handle_successful_join()
+{
+    conn = true;
+    esp_zb_ieee_addr_t extended_pan_id;
+    esp_zb_get_extended_pan_id(extended_pan_id);
+    ESP_LOGI(TAG_SIGNAL_HANDLER, "Joined network successfully (Extended PAN ID: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x, PAN ID: 0x%04hx, Channel:%d, Short Address: 0x%04hx)",
+             extended_pan_id[7], extended_pan_id[6], extended_pan_id[5], extended_pan_id[4],
+             extended_pan_id[3], extended_pan_id[2], extended_pan_id[1], extended_pan_id[0],
+             esp_zb_get_pan_id(), esp_zb_get_current_channel(), esp_zb_get_short_address());
+#ifdef DEEP_SLEEP
+    ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
+    start_deep_sleep();
+#endif
+}
 
 void create_signal_handler(esp_zb_app_signal_t signal_struct)
 {
@@ -63,6 +87,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
     esp_err_t err_status = signal_struct.esp_err_status;
     esp_zb_app_signal_type_t sig_type = *p_sg_p;
     esp_zb_zdo_signal_leave_params_t *leave_params = NULL;
+
     switch (sig_type)
     {
     case ESP_ZB_ZDO_SIGNAL_SKIP_STARTUP:
@@ -84,7 +109,6 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
             {
                 conn = true;
 #ifdef DEEP_SLEEP
-                /* Start the one-shot timer */
                 ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
                 start_deep_sleep();
 #endif
@@ -93,30 +117,13 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         }
         else
         {
-            /* commissioning failed */
-            conn = false;
-            ESP_LOGW(TAG_SIGNAL_HANDLER, "Failed to initialize Zigbee stack (status: %d)", err_status);
-#ifdef MIX_SLEEP
-            esp_zb_scheduler_alarm((esp_zb_callback_t)bdb_start_top_level_commissioning_cb, ESP_ZB_BDB_MODE_NETWORK_STEERING, 1000);
-            deep_sleep_check();
-#endif
+            handle_commissioning_failure(err_status);
         }
         break;
     case ESP_ZB_BDB_SIGNAL_STEERING:
         if (err_status == ESP_OK)
         {
-            conn = true;
-            esp_zb_ieee_addr_t extended_pan_id;
-            esp_zb_get_extended_pan_id(extended_pan_id);
-            ESP_LOGI(TAG_SIGNAL_HANDLER, "Joined network successfully (Extended PAN ID: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x, PAN ID: 0x%04hx, Channel:%d, Short Address: 0x%04hx)",
-                     extended_pan_id[7], extended_pan_id[6], extended_pan_id[5], extended_pan_id[4],
-                     extended_pan_id[3], extended_pan_id[2], extended_pan_id[1], extended_pan_id[0],
-                     esp_zb_get_pan_id(), esp_zb_get_current_channel(), esp_zb_get_short_address());
-#ifdef DEEP_SLEEP
-            /* Start the one-shot timer */
-            ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
-            start_deep_sleep();
-#endif
+            handle_successful_join();
         }
         else
         {
@@ -148,18 +155,17 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         {
             if (*(uint8_t *)esp_zb_app_signal_get_params(p_sg_p))
             {
-                ESP_LOGI(TAG, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
+                ESP_LOGI(TAG_SIGNAL_HANDLER, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
             }
             else
             {
-                ESP_LOGW(TAG, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
+                ESP_LOGW(TAG_SIGNAL_HANDLER, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
             }
         }
         break;
 #endif
 #endif
     default:
-// TODO: BUG When no sleep implemented will printed the following log the whole time.
 #ifdef LIGHT_SLEEP
         ESP_LOGI(TAG_SIGNAL_HANDLER, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
 #endif
