@@ -149,6 +149,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         ESP_LOGI(TAG_SIGNAL_HANDLER, "Zigbee can sleep");
         esp_zb_sleep_now();
         break;
+#endif
 #ifdef ROUTER_DEVICE
     case ESP_ZB_NWK_SIGNAL_PERMIT_JOIN_STATUS:
         if (err_status == ESP_OK)
@@ -163,7 +164,6 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
             }
         }
         break;
-#endif
 #endif
     default:
 #ifdef LIGHT_SLEEP

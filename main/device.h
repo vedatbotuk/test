@@ -19,10 +19,10 @@
 
 /* Zigbee configuration */
 #define INSTALLCODE_POLICY_ENABLE false                    /* enable the install code policy for security */
-#define ED_AGING_TIMEOUT ESP_ZB_ED_AGING_TIMEOUT_64MIN     /* End device ages time */
 #define ESP_ZB_PRIMARY_CHANNEL_MASK (1l << ZIGBEE_CHANNEL) /* Zigbee primary channel mask use in the example */
 
 #ifdef END_DEVICE
+#define ED_AGING_TIMEOUT ESP_ZB_ED_AGING_TIMEOUT_64MIN /* End device ages time */
 #define ESP_ZB_ZED_CONFIG()                               \
     {                                                     \
         .esp_zb_role = ESP_ZB_DEVICE_TYPE_ED,             \
@@ -34,7 +34,7 @@
     }
 #endif
 #ifdef ROUTER_DEVICE
-#define MAX_CHILDREN 10
+#define MAX_CHILDREN 20
 #define ESP_ZB_ZR_CONFIG()                                \
     {                                                     \
         .esp_zb_role = ESP_ZB_DEVICE_TYPE_ROUTER,         \
