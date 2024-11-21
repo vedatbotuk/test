@@ -7,7 +7,7 @@ const e = exposes.presets;
 
 const definition = {
   zigbeeModel: ['64512'],
-  model: 'ESP32H2_Sensor',
+  model: '64512',
   vendor: 'Botuk',
   description: 'Temp/Hum Sensor',
   fromZigbee: [fz.on_off, fz.temperature, fz.battery],
@@ -20,8 +20,8 @@ const definition = {
     await device.bind(endpoint, coordinatorEndpoint, bindClusters);
 
     // Configure reporting for temperature, humidity, battery
-    await reporting.temperature(endpoint, { min: 60, max: 3600, change: 100 });
-    await reporting.humidity(endpoint, { min: 60, max: 3600, change: 100 });
+    await reporting.temperature(endpoint, { min: 300, max: 3600, change: 100 });
+    await reporting.humidity(endpoint, { min: 300, max: 3600, change: 100 });
     await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
   },
   exposes: [e.temperature(), e.humidity(), e.battery()],
