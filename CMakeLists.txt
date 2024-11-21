@@ -37,6 +37,7 @@ if(EXISTS ${SETTINGS_FILE})
     parse_settings("VERSION" VERSION)
     parse_settings("MANUFACTURER" MANUFACTURER)
     parse_settings("ZIGBEE_CHANNEL" ZIGBEE_CHANNEL)
+    parse_settings("DEEP_SLEEP_TIME" DEEP_SLEEP_TIME)
 
     # Print the values for debugging
     message(STATUS "FIRMWARE_VERSION: ${FIRMWARE_VERSION}")
@@ -48,12 +49,14 @@ if(EXISTS ${SETTINGS_FILE})
     message(STATUS "VERSION: ${VERSION}")
     message(STATUS "MANUFACTURER: ${MANUFACTURER}")
     message(STATUS "ZIGBEE_CHANNEL: ${ZIGBEE_CHANNEL}")
+    message(STATUS "DEEP_SLEEP_TIME: ${DEEP_SLEEP_TIME}")
 
     # Add other settings as preprocessor definitions
     add_definitions(-DFIRMWARE_VERSION="${FIRMWARE_VERSION}")
     add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
     add_definitions(-DED_KEEP_ALIVE=${ED_KEEP_ALIVE})
     add_definitions(-DZIGBEE_CHANNEL=${ZIGBEE_CHANNEL})
+    add_definitions(-DDEEP_SLEEP_TIME=${DEEP_SLEEP_TIME})
 
 else()
     message(FATAL_ERROR "Settings file not found: ${SETTINGS_FILE}")

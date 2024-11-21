@@ -32,6 +32,10 @@
 #include "light_sleep.h"
 #endif
 
+#ifdef DEEP_SLEEP
+#include "deep_sleep.h"
+#endif
+
 #ifdef BATTERY
 #include "battery_read.h"
 #endif
@@ -244,6 +248,9 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
 #ifdef LIGHT_SLEEP
     ESP_ERROR_CHECK(esp_zb_power_save_init());
+#endif
+#ifdef DEEP_SLEEP
+    zb_deep_sleep_init();
 #endif
 #ifdef LIGHT_ON_OFF
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
