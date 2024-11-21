@@ -142,21 +142,21 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         ESP_LOGI(TAG_SIGNAL_HANDLER, "Zigbee can sleep");
         esp_zb_sleep_now();
         break;
+#endif
 #ifdef ROUTER_DEVICE
     case ESP_ZB_NWK_SIGNAL_PERMIT_JOIN_STATUS:
         if (err_status == ESP_OK)
         {
             if (*(uint8_t *)esp_zb_app_signal_get_params(p_sg_p))
             {
-                ESP_LOGI(TAG, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
+                ESP_LOGI(TAG_SIGNAL_HANDLER, "Network(0x%04hx) is open for %d seconds", esp_zb_get_pan_id(), *(uint8_t *)esp_zb_app_signal_get_params(p_sg_p));
             }
             else
             {
-                ESP_LOGW(TAG, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
+                ESP_LOGW(TAG_SIGNAL_HANDLER, "Network(0x%04hx) closed, devices joining not allowed.", esp_zb_get_pan_id());
             }
         }
         break;
-#endif
 #endif
     default:
 // TODO: BUG When no sleep implemented will printed the following log the whole time.
