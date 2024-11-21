@@ -37,6 +37,7 @@ if(EXISTS ${SETTINGS_FILE})
     parse_settings("VERSION" VERSION)
     parse_settings("MANUFACTURER" MANUFACTURER)
     parse_settings("ZIGBEE_CHANNEL" ZIGBEE_CHANNEL)
+    parse_settings("DEEP_SLEEP_TIME" DEEP_SLEEP_TIME)
 
     # Print the values for debugging
     message(STATUS "FIRMWARE_VERSION: ${FIRMWARE_VERSION}")
@@ -48,12 +49,14 @@ if(EXISTS ${SETTINGS_FILE})
     message(STATUS "VERSION: ${VERSION}")
     message(STATUS "MANUFACTURER: ${MANUFACTURER}")
     message(STATUS "ZIGBEE_CHANNEL: ${ZIGBEE_CHANNEL}")
+    message(STATUS "DEEP_SLEEP_TIME: ${DEEP_SLEEP_TIME}")
 
     # Add other settings as preprocessor definitions
     add_definitions(-DFIRMWARE_VERSION="${FIRMWARE_VERSION}")
     add_definitions(-DDEVICE_ENDPOINT=${DEVICE_ENDPOINT})
     add_definitions(-DED_KEEP_ALIVE=${ED_KEEP_ALIVE})
     add_definitions(-DZIGBEE_CHANNEL=${ZIGBEE_CHANNEL})
+    add_definitions(-DDEEP_SLEEP_TIME=${DEEP_SLEEP_TIME})
 
 else()
     message(FATAL_ERROR "Settings file not found: ${SETTINGS_FILE}")
@@ -222,14 +225,19 @@ project(${FILE_NAME})
 
 #### ###################### ####
 #### Create OTA-Update File ####
-set(MY_DIR ${CMAKE_SOURCE_DIR}/ota)
-file(MAKE_DIRECTORY ${MY_DIR})
+# Check the seccond number of MODEL_ID
+string(SUBSTRING ${MODEL_ID} 1 1 SECOND_NUM)
+if(SECOND_NUM EQUAL "1")
+    message(STATUS "OTA is not enabled, won't create OTA file.")
+    set(MY_DIR ${CMAKE_SOURCE_DIR}/ota)
+    file(MAKE_DIRECTORY ${MY_DIR})
 
-set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
-add_custom_target(RunPostBuildScript ALL
-    COMMAND ${CMAKE_COMMAND} -E echo  "Running Python script..."
-    COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m ${MANUFACTURER} -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
-)
-add_dependencies(RunPostBuildScript ${FILE_NAME}.elf)
+    set(PYTHON_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/create_ota.py)
+    add_custom_target(RunPostBuildScript ALL
+        COMMAND ${CMAKE_COMMAND} -E echo  "Running Python script..."
+        COMMAND ${CMAKE_COMMAND} -E env python3 ${PYTHON_SCRIPT} -m ${MANUFACTURER} -i ${MODEL_ID_DECIMAL} -v ${VERSION} ${CMAKE_BINARY_DIR}/${FILE_NAME}.bin > ${CMAKE_SOURCE_DIR}/ota/${FILE_NAME}.ota
+    )
+    add_dependencies(RunPostBuildScript ${FILE_NAME}.elf)
+endif()
 #### Create OTA-Update File ####
 #### ###################### ####

@@ -7,7 +7,7 @@ const e = exposes.presets;
 
 const definition = {
   zigbeeModel: ['56384'],
-  model: 'ESP32H2_Sensor',
+  model: '56384',
   vendor: 'Botuk',
   description: 'Simple on/off light device',
   fromZigbee: [fz.on_off, fz.temperature, fz.battery],
@@ -20,8 +20,8 @@ const definition = {
     await device.bind(endpoint, coordinatorEndpoint, bindClusters);
 
     // Configure reporting for temperature, battery, and on/off state
-    await reporting.temperature(endpoint, { min: 300, max: 65000, change: 100 });
-    await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
+    await reporting.temperature(endpoint, { min: 600, max: 65000, change: 100 });
+    await reporting.batteryPercentageRemaining(endpoint, { min: 600, max: 65000, change: 1 });
     await reporting.onOff(endpoint, { min: 0, max: 3600, change: 0 });
   },
   exposes: [e.switch(), e.temperature(), e.battery()],

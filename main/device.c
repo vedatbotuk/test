@@ -32,6 +32,10 @@
 #include "light_sleep.h"
 #endif
 
+#ifdef DEEP_SLEEP
+#include "deep_sleep.h"
+#endif
+
 #ifdef BATTERY
 #include "battery_read.h"
 #endif
@@ -44,7 +48,7 @@
 #include "temperature_humidity.h"
 #endif
 
-#ifdef LIGHT_ON_OFF
+#ifdef SWITCH
 #include "light_on_off.h"
 #endif
 
@@ -103,7 +107,7 @@ void measure_battery()
 }
 #endif
 
-#ifdef LIGHT_ON_OFF
+#ifdef SWITCH
 static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t *message)
 {
     esp_err_t ret = ESP_OK;
@@ -130,7 +134,7 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
 }
 #endif
 
-#if defined OTA_UPDATE || defined LIGHT_ON_OFF
+#if defined OTA_UPDATE || defined SWITCH
 static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id, const void *message)
 {
     esp_err_t ret = ESP_OK;
@@ -141,7 +145,7 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
         ret = zb_ota_upgrade_status_handler(*(esp_zb_zcl_ota_upgrade_value_message_t *)message);
         break;
 #endif
-#ifdef LIGHT_ON_OFF
+#ifdef SWITCH
     case ESP_ZB_CORE_SET_ATTR_VALUE_CB_ID:
         ret = zb_attribute_handler((esp_zb_zcl_set_attr_value_message_t *)message);
         break;
@@ -211,7 +215,7 @@ static void esp_zb_task(void *pvParameters)
     ESP_LOGI(TAG, "Create OTA_UPDATE Cluster");
 #endif
 
-#ifdef LIGHT_ON_OFF
+#ifdef SWITCH
     create_light_switch_cluster(esp_zb_cluster_list);
 #endif
 
@@ -224,7 +228,7 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_ep_list_add_ep(esp_zb_ep_list, esp_zb_cluster_list, endpoint_config);
 
     esp_zb_device_register(esp_zb_ep_list);
-#if defined OTA_UPDATE || defined LIGHT_ON_OFF
+#if defined OTA_UPDATE || defined SWITCH
     esp_zb_core_action_handler_register(zb_action_handler);
 #endif
     esp_zb_set_primary_network_channel_set(ESP_ZB_PRIMARY_CHANNEL_MASK);
@@ -245,7 +249,10 @@ void app_main(void)
 #ifdef LIGHT_SLEEP
     ESP_ERROR_CHECK(esp_zb_power_save_init());
 #endif
-#ifdef LIGHT_ON_OFF
+#ifdef DEEP_SLEEP
+    zb_deep_sleep_init();
+#endif
+#ifdef SWITCH
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY

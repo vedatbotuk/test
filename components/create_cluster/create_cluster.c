@@ -30,13 +30,11 @@
 static char *manufacturer = "\x05"
                             "Botuk";
 static char *model = "\x05" TOSTRING(MODEL_ID_MAP);
-
 static const char *TAG_CREATE_CLUSTER = "Create_Cluster";
+static RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
+static uint8_t test_attr;
 
-RTC_DATA_ATTR uint8_t lastBatteryPercentageRemaining = 0x8C;
-uint8_t test_attr;
-
-void convert_version(const char *version_string, char *firmware_version, size_t buffer_size)
+static void convert_version(const char *version_string, char *firmware_version, size_t buffer_size)
 {
     int length = strlen(version_string);
 
