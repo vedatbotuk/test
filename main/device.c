@@ -51,7 +51,7 @@
 #endif
 
 #ifdef SWITCH
-#include "light_on_off.h"
+#include "switch.h"
 #endif
 
 static const char *TAG = "DEVICE";
