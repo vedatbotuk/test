@@ -194,3 +194,20 @@ void create_light_switch_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
     esp_zb_on_off_cluster_add_attr(esp_zb_light_swt_cluster, ESP_ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, &undefined_value);
     esp_zb_cluster_list_add_on_off_cluster(esp_zb_cluster_list, esp_zb_light_swt_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 }
+
+void create_time_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
+{
+    uint32_t undefined_value;
+    esp_zb_attribute_list_t *esp_zb_time_cluster = esp_zb_zcl_attr_list_create(ESP_ZB_ZCL_CLUSTER_ID_TIME);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_TIME_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_TIME_STATUS_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_TIME_ZONE_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_DST_START_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_DST_END_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_DST_SHIFT_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_STANDARD_TIME_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_LOCAL_TIME_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_LAST_SET_TIME_ID, &undefined_value);
+    esp_zb_time_cluster_add_attr(esp_zb_time_cluster, ESP_ZB_ZCL_ATTR_TIME_VALID_UNTIL_TIME_ID, &undefined_value);
+    esp_zb_cluster_list_add_time_cluster(esp_zb_cluster_list, esp_zb_time_cluster, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+}

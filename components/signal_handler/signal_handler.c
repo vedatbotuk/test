@@ -29,6 +29,25 @@ bool conn = false;
 uint8_t deepsleep_cnt = 0;
 #endif
 
+#define ARRAY_LENGTH(arr) (sizeof(arr) / sizeof(arr[0]))
+
+static void read_server_time()
+{
+    ESP_LOGI(TAG_SIGNAL_HANDLER, "Read server time");
+    esp_zb_zcl_read_attr_cmd_t read_req;
+    read_req.address_mode = ESP_ZB_APS_ADDR_MODE_16_ENDP_PRESENT;
+
+    uint16_t attributes[] = {ESP_ZB_ZCL_ATTR_TIME_LOCAL_TIME_ID};
+    read_req.attr_number = ARRAY_LENGTH(attributes);
+    read_req.attr_field = attributes;
+
+    read_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_TIME;
+    read_req.zcl_basic_cmd.dst_endpoint = DEVICE_ENDPOINT;
+    read_req.zcl_basic_cmd.src_endpoint = DEVICE_ENDPOINT;
+    read_req.zcl_basic_cmd.dst_addr_u.addr_short = 0x0000;
+    esp_zb_zcl_read_attr_cmd_req(&read_req);
+}
+
 static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 {
     ESP_RETURN_ON_FALSE(esp_zb_bdb_start_top_level_commissioning(mode_mask) == ESP_OK, , TAG_SIGNAL_HANDLER, "Failed to start Zigbee bdb commissioning");
@@ -113,6 +132,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
                 start_deep_sleep();
 #endif
                 ESP_LOGI(TAG_SIGNAL_HANDLER, "Device rebooted");
+                read_server_time();
             }
         }
         else
@@ -124,6 +144,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
         if (err_status == ESP_OK)
         {
             handle_successful_join();
+            read_server_time();
         }
         else
         {
