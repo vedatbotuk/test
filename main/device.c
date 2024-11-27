@@ -23,6 +23,8 @@
 #include "update_cluster.h"
 #include "create_cluster.h"
 #include "signal_handler.h"
+#include <time.h>
+#include <sys/time.h>
 
 #ifdef OTA_UPDATE
 #include "ota.h"
@@ -134,12 +136,54 @@ static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t 
 }
 #endif
 
-#if defined OTA_UPDATE || defined SWITCH
+static void esp_app_zb_attribute_handler(uint16_t cluster_id, const esp_zb_zcl_attribute_t *attribute)
+{
+    if (cluster_id == ESP_ZB_ZCL_CLUSTER_ID_TIME)
+    {
+        ESP_LOGI(TAG, "Server time recieved %lu", *(uint32_t *)attribute->data.value);
+        struct timeval tv;
+        tv.tv_sec = *(uint32_t *)attribute->data.value + 946684800 - 1080; // after adding OTA cluster time shifted to 1080 sec... strange issue ...
+        settimeofday(&tv, NULL);
+        zb_update_current_time(*(uint32_t *)attribute->data.value);
+    }
+}
+
+static esp_err_t zb_read_attr_resp_handler(const esp_zb_zcl_cmd_read_attr_resp_message_t *message)
+{
+    ESP_RETURN_ON_FALSE(message, ESP_FAIL, TAG, "Empty message");
+    ESP_RETURN_ON_FALSE(message->info.status == ESP_ZB_ZCL_STATUS_SUCCESS, ESP_ERR_INVALID_ARG, TAG, "Received message: error status(%d)",
+                        message->info.status);
+
+    ESP_LOGI(TAG, "Read attribute response: from address(0x%x) src endpoint(%d) to dst endpoint(%d) cluster(0x%x)",
+             message->info.src_address.u.short_addr, message->info.src_endpoint,
+             message->info.dst_endpoint, message->info.cluster);
+
+    esp_zb_zcl_read_attr_resp_variable_t *variable = message->variables;
+    while (variable)
+    {
+        ESP_LOGI(TAG, "Read attribute response: status(%d), cluster(0x%x), attribute(0x%x), type(0x%x), value(%d)",
+                 variable->status, message->info.cluster,
+                 variable->attribute.id, variable->attribute.data.type,
+                 variable->attribute.data.value ? *(uint8_t *)variable->attribute.data.value : 0);
+        if (variable->status == ESP_ZB_ZCL_STATUS_SUCCESS)
+        {
+            esp_app_zb_attribute_handler(message->info.cluster, &variable->attribute);
+        }
+
+        variable = variable->next;
+    }
+
+    return ESP_OK;
+}
+
 static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id, const void *message)
 {
     esp_err_t ret = ESP_OK;
     switch (callback_id)
     {
+    case ESP_ZB_CORE_CMD_READ_ATTR_RESP_CB_ID:
+        ret = zb_read_attr_resp_handler((esp_zb_zcl_cmd_read_attr_resp_message_t *)message);
+        break;
 #ifdef OTA_UPDATE
     case ESP_ZB_CORE_OTA_UPGRADE_VALUE_CB_ID:
         ret = zb_ota_upgrade_status_handler(*(esp_zb_zcl_ota_upgrade_value_message_t *)message);
@@ -156,7 +200,6 @@ static esp_err_t zb_action_handler(esp_zb_core_action_callback_id_t callback_id,
     }
     return ret;
 }
-#endif
 
 static void esp_zb_task(void *pvParameters)
 {
@@ -190,6 +233,7 @@ static void esp_zb_task(void *pvParameters)
 
     create_basic_cluster(esp_zb_cluster_list);
     create_identify_cluster(esp_zb_cluster_list);
+    create_time_cluster(esp_zb_cluster_list);
 #ifdef SENSOR_TEMPERATURE
     create_temp_cluster(esp_zb_cluster_list);
     ESP_LOGI(TAG, "Create SENSOR_TEMPERATURE Cluster");
@@ -236,6 +280,24 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_stack_main_loop();
 }
 
+static void update_rtc_time()
+{
+    while (1)
+    {
+        time_t now;
+        struct tm timeinfo;
+        time(&now);
+        localtime_r(&now, &timeinfo);
+        // ESP_LOGI(TAG, "Current time: %s", asctime(&timeinfo));
+        connected = connection_status();
+        if (connected)
+        {
+            zb_update_current_time(now);
+        }
+        vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minutes
+    }
+}
+
 void app_main(void)
 {
     ESP_LOGI(TAG, "--- Application Start ---");
@@ -262,4 +324,5 @@ void app_main(void)
     xTaskCreate(measure_battery, "measure_battery", 4096, NULL, 4, NULL);
 #endif
     xTaskCreate(esp_zb_task, "Zigbee_main", 4 * 1024, NULL, 10, NULL);
+    xTaskCreate(update_rtc_time, "update_rtc_time", 4096, NULL, 5, NULL);
 }
