@@ -74,9 +74,15 @@ void measure_temp_hum()
         {
 #ifdef SENSOR_TEMPERATURE
             check_temperature();
+            // int temperature = rand() % 3100; // Generate a random temperature between 0 and 30
+            // zb_update_temp(temperature);
+            // zb_report_temp();
 #endif
 #ifdef SENSOR_HUMIDITY
             check_humidity();
+            // int humidity = rand() % 3100; // Generate a random temperature between 0 and 30
+            // zb_update_hum(humidity);
+            // zb_report_hum();
 #endif
         }
         else
@@ -99,12 +105,38 @@ void measure_battery()
             voltage_calculate_init();
             get_battery_level();
             voltage_calculate_deinit();
+            // int battery = rand() % 200; // Generate a random temperature between 0 and 30
+            // int voltage = rand() % 3;   // Generate a random temperature between 0 and 30
+            // zb_update_battery_level(battery, voltage);
+            // zb_report_battery_level();
         }
         else
         {
             ESP_LOGW(TAG, "Device is not connected! Could not measure the battery level");
         }
         vTaskDelay(pdMS_TO_TICKS(600000)); // 900000 ms = 15 minutes
+    }
+}
+#endif
+
+#ifdef SENSOR_WATERLEAK
+void waterleak_loop()
+{
+    while (1)
+    {
+        connected = connection_status();
+        if (connected)
+        {
+            get_waterleak_status();
+            // int waterleak = rand() % 2; // Generate a random waterleak status between 0 and 1
+            // zb_update_waterleak(waterleak);
+            // zb_report_waterleak(waterleak);
+        }
+        else
+        {
+            ESP_LOGW(TAG, "Device is not connected! Could not measure the waterleak status");
+        }
+        vTaskDelay(pdMS_TO_TICKS(10000)); // 10000 ms = 10 seconds
     }
 }
 #endif
@@ -322,6 +354,9 @@ void app_main(void)
 #endif
 #ifdef BATTERY
     xTaskCreate(measure_battery, "measure_battery", 4096, NULL, 4, NULL);
+#endif
+#ifdef SENSOR_WATERLEAK
+    xTaskCreate(waterleak_loop, "waterleak_loop", 4096, NULL, 3, NULL);
 #endif
     xTaskCreate(esp_zb_task, "Zigbee_main", 4 * 1024, NULL, 10, NULL);
     xTaskCreate(update_rtc_time, "update_rtc_time", 4096, NULL, 5, NULL);
