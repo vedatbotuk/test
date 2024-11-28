@@ -54,3 +54,24 @@ void zb_update_battery_level(uint8_t level, int8_t voltage)
         ESP_LOGE(TAG_ZB_UPDATE_BATT, "Setting battery voltage attribute failed with %x", state_voltage);
     }
 }
+
+void zb_report_battery_level()
+{
+    static esp_zb_zcl_report_attr_cmd_t battery_level_cmd_req = {};
+    battery_level_cmd_req.zcl_basic_cmd.src_endpoint = DEVICE_ENDPOINT;
+    battery_level_cmd_req.address_mode = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT;
+    battery_level_cmd_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_POWER_CONFIG;
+    battery_level_cmd_req.attributeID = ESP_ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_PERCENTAGE_REMAINING_ID;
+    battery_level_cmd_req.direction = ESP_ZB_ZCL_CMD_DIRECTION_TO_CLI;
+    battery_level_cmd_req.manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC;
+
+    /* Request sending new phase voltage */
+    esp_zb_lock_acquire(portMAX_DELAY);
+    esp_err_t state = esp_zb_zcl_report_attr_cmd_req(&battery_level_cmd_req);
+    esp_zb_lock_release();
+    /* Check for error */
+    if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
+    {
+        ESP_LOGE(TAG_ZB_UPDATE_BATT, "Reporting battery level failed with %x", state);
+    }
+}

@@ -20,20 +20,24 @@
 #include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_log.h"
 
-static const char *TAG = "UPDATE_WATERLEAK_CLUSTER";
+static const char *TAG_ZB_UPDATE_WATER = "UPDATE_WATERLEAK_CLUSTER";
 
 void zb_update_waterleak(uint16_t leak)
 {
-    esp_zb_zcl_status_t state = esp_zb_zcl_set_attribute_val(DEVICE_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_IAS_ZONE, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_IAS_ZONE_ZONESTATUS_ID, &leak, false);
+    esp_zb_lock_acquire(portMAX_DELAY);
+    esp_zb_zcl_status_t state = esp_zb_zcl_set_attribute_val(
+        DEVICE_ENDPOINT,
+        ESP_ZB_ZCL_CLUSTER_ID_IAS_ZONE,
+        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+        ESP_ZB_ZCL_ATTR_IAS_ZONE_ZONESTATUS_ID,
+        &leak,
+        false);
+    esp_zb_lock_release();
 
     /* Check for error */
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
-        ESP_LOGI(TAG, "Setting waterleak attribute success");
-    }
-    else
-    {
-        ESP_LOGW(TAG, "Setting waterleak attribute failed with %x", state);
+        ESP_LOGE(TAG_ZB_UPDATE_WATER, "Setting waterleak attribute failed with %x", state);
     }
 }
 
@@ -47,7 +51,7 @@ void zb_report_waterleak(uint16_t leak)
     waterleak_chg_not_cmd.delay = 1;
 
     /* Request sending */
+    esp_zb_lock_acquire(portMAX_DELAY);
     esp_zb_zcl_ias_zone_status_change_notif_cmd_req(&waterleak_chg_not_cmd);
-
-    ESP_LOGI(TAG, "Report waterleak command success");
+    esp_zb_lock_release();
 }
