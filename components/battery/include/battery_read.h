@@ -23,8 +23,6 @@ extern "C"
 {
 #endif
 
-    esp_err_t voltage_calculate_init(void);
-    esp_err_t voltage_calculate_deinit(void);
     esp_err_t get_battery_level();
 
 #ifdef __cplusplus

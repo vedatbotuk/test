@@ -9,7 +9,7 @@ const definition = {
   zigbeeModel: ['30976'],
   model: '30976',
   vendor: 'Botuk',
-  description: 'Test temperature, humidity, and water leak sensor with OTA support',
+  description: 'Test router temperature, humidity, and water leak sensor with OTA support',
   fromZigbee: [
     fz.temperature,
     fz.humidity,

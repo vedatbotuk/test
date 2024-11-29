@@ -21,10 +21,14 @@
 #include "update_cluster.h"
 #include "macros.h"
 
+#if !defined SIMULATE
 static const char *TAG_TEMP_HUM = "TEMPERATURE_HUMIDITY_CHECK";
 
 static float temperature = 0.0f;
 static float humidity = 0.0f;
+static bool check_first_implemented = false;
+static bool first_implemented_temperature = false;
+static bool first_implemented_humidity = false;
 
 static esp_err_t read_dht22_data()
 {
@@ -40,19 +44,36 @@ static esp_err_t read_dht22_data()
     }
     return result;
 }
+#endif
 
 void check_temperature()
 {
-#if defined SENSOR_TEMPERATURE
-    read_dht22_data();
-#endif
+#if !defined SIMULATE
+    if (check_first_implemented == false || first_implemented_temperature == true)
+    {
+        read_dht22_data();
+        check_first_implemented = true;
+        first_implemented_temperature = true;
+    }
     zb_update_temp((int16_t)(temperature * 100));
+#else
+    int temperature = rand() % 3100; // Generate a random temperature between 0 and 30
+    zb_update_temp(temperature);
+#endif
 }
 
 void check_humidity()
 {
-#if !defined SENSOR_TEMPERATURE
-    read_dht22_data();
-#endif
+#if !defined SIMULATE
+    if (check_first_implemented == false || first_implemented_humidity == true)
+    {
+        read_dht22_data();
+        check_first_implemented = true;
+        first_implemented_humidity = true;
+    }
     zb_update_hum((uint16_t)(humidity * 100));
+#else
+    int humidity = rand() % 3100; // Generate a random temperature between 0 and 30
+    zb_update_hum(humidity);
+#endif
 }

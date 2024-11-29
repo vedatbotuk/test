@@ -19,6 +19,10 @@
 #include "esp_zigbee_core.h"
 #include "esp_check.h"
 #ifdef DEEP_SLEEP
+#include "temperature_humidity.h"
+#include "battery_read.h"
+#include "waterleak.h"
+#include "update_cluster.h"
 #include "deep_sleep.h"
 #endif
 
@@ -95,6 +99,21 @@ static void handle_successful_join()
              extended_pan_id[3], extended_pan_id[2], extended_pan_id[1], extended_pan_id[0],
              esp_zb_get_pan_id(), esp_zb_get_current_channel(), esp_zb_get_short_address());
 #ifdef DEEP_SLEEP
+#ifdef SENSOR_TEMPERATURE
+    check_temperature();
+    zb_report_temp();
+#endif
+#ifdef SENSOR_HUMIDITY
+    check_humidity();
+    zb_report_hum();
+#endif
+#ifdef SENSOR_WATERLEAK
+    check_waterleak();
+#endif
+#ifdef BATTERY
+    get_battery_level();
+    zb_report_battery_level();
+#endif
     ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
     start_deep_sleep();
 #endif
@@ -128,6 +147,21 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
             {
                 conn = true;
 #ifdef DEEP_SLEEP
+#ifdef SENSOR_TEMPERATURE
+                check_temperature();
+                zb_report_temp();
+#endif
+#ifdef SENSOR_HUMIDITY
+                check_humidity();
+                zb_report_hum();
+#endif
+#ifdef SENSOR_WATERLEAK
+                check_waterleak();
+#endif
+#ifdef BATTERY
+                get_battery_level();
+                zb_report_battery_level();
+#endif
                 ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
                 start_deep_sleep();
 #endif

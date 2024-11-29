@@ -64,6 +64,7 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
     create_signal_handler(*signal_struct);
 }
 
+#if !defined DEEP_SLEEP
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
 void measure_temp_hum()
 {
@@ -73,27 +74,17 @@ void measure_temp_hum()
         if (connected)
         {
 #ifdef SENSOR_TEMPERATURE
-#if not defined SIMULATE
             check_temperature();
-#else
-            int temperature = rand() % 3100; // Generate a random temperature between 0 and 30
-            zb_update_temp(temperature);
-#endif
 #endif
 #ifdef SENSOR_HUMIDITY
-#if not defined SIMULATE
             check_humidity();
-#else
-            int humidity = rand() % 3100; // Generate a random temperature between 0 and 30
-            zb_update_hum(humidity);
-#endif
 #endif
         }
         else
         {
             ESP_LOGW(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
-#if not defined SIMULATE
+#if !defined SIMULATE
         vTaskDelay(pdMS_TO_TICKS(60000)); // 300000 ms = 5 minutes
 #else
         vTaskDelay(pdMS_TO_TICKS(30000)); // 30000 ms = 30 seconds
@@ -110,21 +101,13 @@ void measure_battery()
         connected = connection_status();
         if (connected)
         {
-#if not defined SIMULATE
-            voltage_calculate_init();
             get_battery_level();
-            voltage_calculate_deinit();
-#else
-            int battery = rand() % 200; // Generate a random temperature between 0 and 30
-            int voltage = rand() % 3;   // Generate a random temperature between 0 and 30
-            zb_update_battery_level(battery, voltage);
-#endif
         }
         else
         {
             ESP_LOGW(TAG, "Device is not connected! Could not measure the battery level");
         }
-#if not defined SIMULATE
+#if !defined SIMULATE
         vTaskDelay(pdMS_TO_TICKS(600000)); // 900000 ms = 15 minutes
 #else
         vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minutes
@@ -141,13 +124,7 @@ void waterleak_loop()
         connected = connection_status();
         if (connected)
         {
-#if not defined SIMULATE
-            get_waterleak_status();
-#else
-            int waterleak = rand() % 2; // Generate a random waterleak status between 0 and 1
-            zb_update_waterleak(waterleak);
-            zb_report_waterleak(waterleak);
-#endif
+            check_waterleak();
         }
         else
         {
@@ -156,6 +133,7 @@ void waterleak_loop()
         vTaskDelay(pdMS_TO_TICKS(10000)); // 10000 ms = 10 seconds
     }
 }
+#endif
 #endif
 
 #ifdef SWITCH
@@ -366,6 +344,7 @@ void app_main(void)
 #ifdef SWITCH
     ESP_LOGI(TAG, "Deferred driver initialization %s", light_driver_init(LIGHT_DEFAULT_OFF) ? "failed" : "successful");
 #endif
+#if !defined DEEP_SLEEP
 #if defined SENSOR_TEMPERATURE || defined SENSOR_HUMIDITY
     xTaskCreate(measure_temp_hum, "measure_temp_hum", 4096, NULL, 5, NULL);
 #endif
@@ -373,7 +352,16 @@ void app_main(void)
     xTaskCreate(measure_battery, "measure_battery", 4096, NULL, 4, NULL);
 #endif
 #ifdef SENSOR_WATERLEAK
-    xTaskCreate(waterleak_loop, "waterleak_loop", 4096, NULL, 3, NULL);
+    if (button_init() == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Button init successful");
+        xTaskCreate(waterleak_loop, "waterleak_loop", 4096, NULL, 3, NULL);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Button init failed");
+    }
+#endif
 #endif
     xTaskCreate(esp_zb_task, "Zigbee_main", 4 * 1024, NULL, 10, NULL);
     xTaskCreate(update_rtc_time, "update_rtc_time", 4096, NULL, 5, NULL);
