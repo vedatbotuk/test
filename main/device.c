@@ -76,13 +76,13 @@ void measure_temp_hum()
             check_temperature();
             // int temperature = rand() % 3100; // Generate a random temperature between 0 and 30
             // zb_update_temp(temperature);
-            // zb_report_temp();
+            // // zb_report_temp();
 #endif
 #ifdef SENSOR_HUMIDITY
             check_humidity();
             // int humidity = rand() % 3100; // Generate a random temperature between 0 and 30
             // zb_update_hum(humidity);
-            // zb_report_hum();
+            // // zb_report_hum();
 #endif
         }
         else
@@ -90,6 +90,7 @@ void measure_temp_hum()
             ESP_LOGW(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
         vTaskDelay(pdMS_TO_TICKS(60000)); // 300000 ms = 5 minutes
+        // vTaskDelay(pdMS_TO_TICKS(30000)); // 30000 ms = 30 seconds
     }
 }
 #endif
@@ -108,13 +109,14 @@ void measure_battery()
             // int battery = rand() % 200; // Generate a random temperature between 0 and 30
             // int voltage = rand() % 3;   // Generate a random temperature between 0 and 30
             // zb_update_battery_level(battery, voltage);
-            // zb_report_battery_level();
+            // // zb_report_battery_level();
         }
         else
         {
             ESP_LOGW(TAG, "Device is not connected! Could not measure the battery level");
         }
         vTaskDelay(pdMS_TO_TICKS(600000)); // 900000 ms = 15 minutes
+        // vTaskDelay(pdMS_TO_TICKS(60000));  // 60000 ms = 1 minutes
     }
 }
 #endif
@@ -129,6 +131,7 @@ void waterleak_loop()
         {
             get_waterleak_status();
             // int waterleak = rand() % 2; // Generate a random waterleak status between 0 and 1
+            // // UPDATE AND REPORT SHOULD BE ACTIVE
             // zb_update_waterleak(waterleak);
             // zb_report_waterleak(waterleak);
         }
