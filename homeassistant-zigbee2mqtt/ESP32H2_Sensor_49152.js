@@ -7,7 +7,7 @@ const definition = {
   description: 'test end device ota', // Description of the device, copy from vendor site. (only used for documentation and startup logging)
   extend: [],
   meta: {},
-  configure: async (device, coordinatorEndpoint, logger) => {
+  configure: async (device, coordinatorEndpoint) => {
     const endpoint = device.getEndpoint(10);
   },
   ota: ota.zigbeeOTA,

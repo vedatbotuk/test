@@ -10,21 +10,45 @@ const definition = {
   model: '56384',
   vendor: 'Botuk',
   description: 'Simple on/off light device',
-  fromZigbee: [fz.on_off, fz.temperature, fz.battery],
+  fromZigbee: [
+    fz.on_off,
+    fz.temperature,
+    fz.battery
+  ],
   toZigbee: [tz.on_off],
-  configure: async (device, coordinatorEndpoint, logger) => {
+  configure: async (device, coordinatorEndpoint) => {
     const endpoint = device.getEndpoint(10);
-    const bindClusters = ['genOnOff', 'msTemperatureMeasurement', 'genPowerCfg'];
+    const bindClusters = [
+      'genOnOff',
+      'msTemperatureMeasurement',
+      'genPowerCfg'
+    ];
+
+    if (!endpoint) {
+      return; // Endpoint not available; cannot proceed with configuration
+    }
 
     // Bind clusters to ensure proper reporting
-    await device.bind(endpoint, coordinatorEndpoint, bindClusters);
+    try {
+      await reporting.bind(endpoint, coordinatorEndpoint, bindClusters);
+    } catch (error) {
+      // Handle binding failure silently
+    }
 
     // Configure reporting for temperature, battery, and on/off state
-    await reporting.temperature(endpoint, { min: 600, max: 65000, change: 100 });
-    await reporting.batteryPercentageRemaining(endpoint, { min: 600, max: 65000, change: 1 });
-    await reporting.onOff(endpoint, { min: 0, max: 3600, change: 0 });
+    try {
+      await reporting.temperature(endpoint, { min: 600, max: 65000, change: 100 });
+      await reporting.batteryPercentageRemaining(endpoint, { min: 600, max: 65000, change: 1 });
+      await reporting.onOff(endpoint, { min: 0, max: 3600, change: 0 });
+    } catch (error) {
+      // Handle reporting configuration failure silently
+    }
   },
-  exposes: [e.switch(), e.temperature(), e.battery()],
+  exposes: [
+    e.switch(),
+    e.temperature(),
+    e.battery()
+  ],
   ota: ota.zigbeeOTA
 };
 
