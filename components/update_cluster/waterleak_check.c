@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include "esp_zigbee_core.h"
-#include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_log.h"
 
 static const char *TAG_ZB_UPDATE_WATER = "UPDATE_WATERLEAK_CLUSTER";
