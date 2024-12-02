@@ -15,20 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEEP_SLEEP_H
-#define DEEP_SLEEP_H
+#ifndef RANDOM_UTILS_H
+#define RANDOM_UTILS_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+// Initializes the random number generator
+void random_utils_init(void);
 
-  static const int before_deep_sleep_time_sec = 10;
-  void start_deep_sleep(void);
-  void zb_deep_sleep_init(void);
+// Generates a random number
+int random_utils_generate(int max_value);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* DEEP_SLEEP_H */
+#endif // RANDOM_UTILS_H

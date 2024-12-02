@@ -24,6 +24,8 @@
 #include "esp_log.h"
 #include "esp_adc/adc_oneshot.h"
 #include "update_cluster.h"
+#include "random_utils.h"
+#include "macros.h"
 
 #if !defined SIMULATE
 const static char *TAG_VOL = "VOLTAGE";
@@ -86,12 +88,13 @@ esp_err_t get_battery_level(void)
 
     ESP_LOGI(TAG_VOL, "Battery level: %d %%", battery_lev);
     ESP_LOGI(TAG_VOL, "Battery voltage: %d mV", battery_vol);
-    zb_update_battery_level((uint8_t)(2 * battery_lev), (uint8_t)(battery_vol));
 #else
-    int battery = rand() % 200; // Generate a random temperature between 0 and 30
-    int voltage = rand() % 3;   // Generate a random temperature between 0 and 30
-    zb_update_battery_level(battery, voltage);
+    int battery_lev = random_utils_generate(101); // Generate a random temperature between 0 and 100
+    int battery_vol = random_utils_generate(4);   // Generate a random temperature between 0 and 3
 #endif
-
+    zb_update_battery_level((uint8_t)(2 * battery_lev), (uint8_t)(battery_vol));
+#ifdef DEEP_SLEEP
+    zb_report_battery_level();
+#endif
     return ESP_OK;
 }

@@ -20,10 +20,11 @@
 #include "esp_log.h"
 #include "update_cluster.h"
 #include "macros.h"
+#include "random_utils.h"
 
-#if !defined SIMULATE
 static const char *TAG_TEMP_HUM = "TEMPERATURE_HUMIDITY_CHECK";
 
+#if !defined SIMULATE
 static float temperature = 0.0f;
 static float humidity = 0.0f;
 static bool check_first_implemented = false;
@@ -55,10 +56,13 @@ void check_temperature()
         check_first_implemented = true;
         first_implemented_temperature = true;
     }
-    zb_update_temp((int16_t)(temperature * 100));
 #else
-    int temperature = rand() % 3100; // Generate a random temperature between 0 and 30
-    zb_update_temp(temperature);
+    int temperature = random_utils_generate(41); // Generate a random temperature between 0 and 30
+    ESP_LOGI(TAG_TEMP_HUM, "SIMULATE Temperature : %u ℃", temperature);
+#endif
+    zb_update_temp((int16_t)(temperature * 100));
+#ifdef DEEP_SLEEP
+    zb_report_temp();
 #endif
 }
 
@@ -71,9 +75,12 @@ void check_humidity()
         check_first_implemented = true;
         first_implemented_humidity = true;
     }
-    zb_update_hum((uint16_t)(humidity * 100));
 #else
-    int humidity = rand() % 3100; // Generate a random temperature between 0 and 30
-    zb_update_hum(humidity);
+    int humidity = random_utils_generate(101); // Generate a random temperature between 0 and 100
+    ESP_LOGI(TAG_TEMP_HUM, "SIMULATE Humidity : %u %%", humidity);
+#endif
+    zb_update_hum((uint16_t)(humidity * 100));
+#ifdef DEEP_SLEEP
+    zb_report_hum();
 #endif
 }

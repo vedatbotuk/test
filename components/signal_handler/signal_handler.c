@@ -101,18 +101,15 @@ static void handle_successful_join()
 #ifdef DEEP_SLEEP
 #ifdef SENSOR_TEMPERATURE
     check_temperature();
-    zb_report_temp();
 #endif
 #ifdef SENSOR_HUMIDITY
     check_humidity();
-    zb_report_hum();
 #endif
 #ifdef SENSOR_WATERLEAK
-    check_waterleak();
+    // check_waterleak();
 #endif
 #ifdef BATTERY
     get_battery_level();
-    zb_report_battery_level();
 #endif
     ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
     start_deep_sleep();
@@ -149,18 +146,15 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
 #ifdef DEEP_SLEEP
 #ifdef SENSOR_TEMPERATURE
                 check_temperature();
-                zb_report_temp();
 #endif
 #ifdef SENSOR_HUMIDITY
                 check_humidity();
-                zb_report_hum();
 #endif
 #ifdef SENSOR_WATERLEAK
-                check_waterleak();
+                // check_waterleak();
 #endif
 #ifdef BATTERY
                 get_battery_level();
-                zb_report_battery_level();
 #endif
                 ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
                 start_deep_sleep();
@@ -203,6 +197,11 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
     case ESP_ZB_COMMON_SIGNAL_CAN_SLEEP:
         ESP_LOGI(TAG_SIGNAL_HANDLER, "Zigbee can sleep");
         esp_zb_sleep_now();
+        break;
+#endif
+#ifdef DEEP_SLEEP
+    case ESP_ZB_COMMON_SIGNAL_CAN_SLEEP:
+        ESP_LOGI(TAG_SIGNAL_HANDLER, "Can  deep-sleep");
         break;
 #endif
 #ifdef ROUTER_DEVICE

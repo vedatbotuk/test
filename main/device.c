@@ -25,6 +25,7 @@
 #include "signal_handler.h"
 #include <time.h>
 #include <sys/time.h>
+#include "random_utils.h"
 
 #ifdef OTA_UPDATE
 #include "ota.h"
@@ -335,6 +336,7 @@ void app_main(void)
 
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_zb_platform_config(&config));
+
 #ifdef LIGHT_SLEEP
     ESP_ERROR_CHECK(esp_zb_power_save_init());
 #endif

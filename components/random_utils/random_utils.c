@@ -15,20 +15,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEEP_SLEEP_H
-#define DEEP_SLEEP_H
+#include <stdlib.h>
+#include "random_utils.h"
+#include "esp_timer.h"
+#include "esp_system.h"
+#include "esp_random.h"
 
-#ifdef __cplusplus
-extern "C"
+void random_utils_init(void)
 {
-#endif
-
-  static const int before_deep_sleep_time_sec = 10;
-  void start_deep_sleep(void);
-  void zb_deep_sleep_init(void);
-
-#ifdef __cplusplus
 }
-#endif
 
-#endif /* DEEP_SLEEP_H */
+int random_utils_generate(int max_value)
+{
+  // Gather more entropy from multiple sources
+  uint32_t seed = esp_random() ^ esp_timer_get_time();
+  seed ^= (esp_random() << 16); // Mix additional hardware RNG bits
+  srand(seed);                  // Initialize the random number generator
+
+  // Generate a random number within the range [0, max_value)
+  return rand() % max_value;
+}
