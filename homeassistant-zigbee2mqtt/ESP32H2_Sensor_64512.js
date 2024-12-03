@@ -10,21 +10,48 @@ const definition = {
   model: '64512',
   vendor: 'Botuk',
   description: 'Temp/Hum Sensor',
-  fromZigbee: [fz.on_off, fz.temperature, fz.battery],
-  toZigbee: [tz.on_off],
-  configure: async (device, coordinatorEndpoint, logger) => {
+  fromZigbee: [
+    fz.on_off,
+    fz.temperature,
+    fz.battery
+  ],
+  toZigbee: [
+    tz.on_off
+  ],
+
+  configure: async (device, coordinatorEndpoint) => {
     const endpoint = device.getEndpoint(10);
-    const bindClusters = ['msTemperatureMeasurement', 'msHumidityMeasurement', 'genPowerCfg'];
+    const bindClusters = [
+      'msTemperatureMeasurement',
+      'msRelativeHumidity',
+      'genPowerCfg'
+    ];
+
+    if (!endpoint) {
+      return; // Endpoint not available; cannot proceed with configuration
+    }
 
     // Bind clusters to ensure proper reporting
-    await device.bind(endpoint, coordinatorEndpoint, bindClusters);
+    try {
+      await reporting.bind(endpoint, coordinatorEndpoint, bindClusters);
+    } catch (error) {
+      // Handle binding failure silently
+    }
 
-    // Configure reporting for temperature, humidity, battery
-    await reporting.temperature(endpoint, { min: 300, max: 3600, change: 100 });
-    await reporting.humidity(endpoint, { min: 300, max: 3600, change: 100 });
-    await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
+    // Configure reporting for temperature, humidity, and battery
+    try {
+      await reporting.temperature(endpoint, { min: 300, max: 3600, change: 100 });
+      await reporting.humidity(endpoint, { min: 300, max: 3600, change: 100 });
+      await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
+    } catch (error) {
+      // Handle reporting configuration failure silently
+    }
   },
-  exposes: [e.temperature(), e.humidity(), e.battery()],
+  exposes: [
+    e.temperature(),
+    e.humidity(),
+    e.battery()
+  ],
   ota: ota.zigbeeOTA
 };
 

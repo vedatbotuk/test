@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 #include "esp_zigbee_core.h"
-#include "zcl/esp_zigbee_zcl_power_config.h"
 #include "esp_log.h"
 
 static const char *TAG_ZB_UPDATE_HUM = "UPDATE_HUMIDITY_CLUSTER";
@@ -38,5 +37,27 @@ void zb_update_hum(int humidity)
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
         ESP_LOGE(TAG_ZB_UPDATE_HUM, "Setting humidity attribute failed with %x", state);
+    }
+}
+
+void zb_report_hum()
+{
+    static esp_zb_zcl_report_attr_cmd_t hum_measurement_cmd_req = {};
+    hum_measurement_cmd_req.zcl_basic_cmd.src_endpoint = DEVICE_ENDPOINT;
+    hum_measurement_cmd_req.address_mode = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT;
+    hum_measurement_cmd_req.clusterID = ESP_ZB_ZCL_CLUSTER_ID_REL_HUMIDITY_MEASUREMENT;
+    hum_measurement_cmd_req.attributeID = ESP_ZB_ZCL_ATTR_REL_HUMIDITY_MEASUREMENT_VALUE_ID;
+    hum_measurement_cmd_req.direction = ESP_ZB_ZCL_CMD_DIRECTION_TO_CLI;
+    hum_measurement_cmd_req.manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC;
+
+    /* Request sending new phase voltage */
+    esp_zb_lock_acquire(portMAX_DELAY);
+    esp_err_t state = esp_zb_zcl_report_attr_cmd_req(&hum_measurement_cmd_req);
+    esp_zb_lock_release();
+
+    /* Check for error */
+    if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
+    {
+        ESP_LOGE(TAG_ZB_UPDATE_HUM, "Reporting humidity attribute failed with %x", state);
     }
 }

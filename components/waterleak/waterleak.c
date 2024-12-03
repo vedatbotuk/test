@@ -19,16 +19,22 @@
 #include "update_cluster.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "random_utils.h"
 
 #define INPUT_PIN GPIO_NUM_22
+
 static const char *TAG = "WATERLEAK_CHECK";
+
+#if !defined SIMULATE
 
 bool _water_detected = false;
 uint8_t _button_cnt = 0;
 bool _btn_init_status;
+#endif
 
 esp_err_t check_waterleak(void)
 {
+#if !defined SIMULATE
     if (_btn_init_status == false)
     {
         if (button_init() == ESP_OK)
@@ -73,6 +79,12 @@ esp_err_t check_waterleak(void)
     }
 
     _button_cnt++;
+#else
+    int waterleak = random_utils_generate(2); // Generate a random waterleak status between 0 and 1
+    ESP_LOGI(TAG, "SIMULATE Waterleak : %u", waterleak);
+    zb_update_waterleak(waterleak);
+    zb_report_waterleak(waterleak);
+#endif
     return ESP_OK;
 }
 

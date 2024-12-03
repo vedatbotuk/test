@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS "light_on_off.c"
+    SRCS "switch.c"
     INCLUDE_DIRS include
     PRIV_REQUIRES driver
     )

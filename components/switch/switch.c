@@ -16,7 +16,7 @@
  */
 
 #include "esp_log.h"
-#include "light_on_off.h"
+#include "switch.h"
 #include "driver/gpio.h"
 
 void light_driver_set_power(bool power)

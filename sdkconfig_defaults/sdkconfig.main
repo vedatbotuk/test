@@ -43,3 +43,14 @@ CONFIG_ESPTOOLPY_FLASHSIZE="4MB"
 CONFIG_IEEE802154_RECEIVE_DONE_HANDLER=y
 CONFIG_IEEE802154_CCA_THRESHOLD=-80
 # end of IEEE802154
+
+#
+# TIMER
+#
+# With this option enabled, esp_timer_dump() prints more data about timers in the output log
+CONFIG_ESP_TIMER_PROFILING=y
+
+# NEWLIB_NANO_FORMAT is enabled by default on ESP32-C2
+# This example needs 64-bit integer formatting, this is why this option is disabled
+# TODO this func is in prod y
+CONFIG_NEWLIB_NANO_FORMAT=n
