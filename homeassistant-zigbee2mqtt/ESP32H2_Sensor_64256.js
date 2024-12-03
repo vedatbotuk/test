@@ -6,19 +6,17 @@ const ota = require('zigbee-herdsman-converters/lib/ota');
 const e = exposes.presets;
 
 const definition = {
-  zigbeeModel: ['64512'],
-  model: '64512',
+  zigbeeModel: ['64256'],
+  model: '64256',
   vendor: 'Botuk',
-  description: 'Temp/Hum Sensor',
+  description: 'Test router deep-sleep, temperature, humidity, and water leak sensor with OTA support',
   fromZigbee: [
-    fz.on_off,
     fz.temperature,
+    fz.humidity,
+    fz.ias_water_leak_alarm_1,
     fz.battery
   ],
-  toZigbee: [
-    tz.on_off
-  ],
-
+  toZigbee: [], // No specific commands to send for this device
   configure: async (device, coordinatorEndpoint) => {
     const endpoint = device.getEndpoint(10);
     const bindClusters = [
@@ -37,22 +35,15 @@ const definition = {
     } catch (error) {
       // Handle binding failure silently
     }
-
-    // Configure reporting for temperature, humidity, and battery
-    try {
-      await reporting.temperature(endpoint, { min: 300, max: 3600, change: 100 });
-      await reporting.humidity(endpoint, { min: 300, max: 3600, change: 100 });
-      await reporting.batteryPercentageRemaining(endpoint, { min: 3600, max: 65000, change: 1 });
-    } catch (error) {
-      // Handle reporting configuration failure silently
-    }
   },
   exposes: [
     e.temperature(),
     e.humidity(),
-    e.battery()
+    e.battery(),
+    e.water_leak(), // Water leakage detection
   ],
   ota: ota.zigbeeOTA
 };
 
 module.exports = definition;
+
