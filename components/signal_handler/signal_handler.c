@@ -89,7 +89,7 @@ static void get_sensor_data()
     check_humidity();
 #endif
 #ifdef SENSOR_WATERLEAK
-    // check_waterleak();
+    check_waterleak();
 #endif
 #ifdef BATTERY
     get_battery_level();
