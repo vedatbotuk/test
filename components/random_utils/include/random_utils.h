@@ -15,18 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VOLTAGE_CALCULATE_H
-#define VOLTAGE_CALCULATE_H
+#ifndef RANDOM_UTILS_H
+#define RANDOM_UTILS_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+// Generates a random number
+int random_utils_generate(int max_value);
 
-    esp_err_t get_battery_level();
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* VOLTAGE_CALCULATE_H */
+#endif // RANDOM_UTILS_H

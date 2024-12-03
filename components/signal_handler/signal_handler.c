@@ -19,6 +19,10 @@
 #include "esp_zigbee_core.h"
 #include "esp_check.h"
 #ifdef DEEP_SLEEP
+#include "temperature_humidity.h"
+#include "battery_read.h"
+#include "waterleak.h"
+#include "update_cluster.h"
 #include "deep_sleep.h"
 #endif
 
@@ -75,12 +79,30 @@ static void deep_sleep_check()
 }
 #endif
 
+#ifdef DEEP_SLEEP
+static void get_sensor_data()
+{
+#ifdef SENSOR_TEMPERATURE
+    check_temperature();
+#endif
+#ifdef SENSOR_HUMIDITY
+    check_humidity();
+#endif
+#ifdef SENSOR_WATERLEAK
+    // check_waterleak();
+#endif
+#ifdef BATTERY
+    get_battery_level();
+#endif
+}
+#endif
+
 static void handle_commissioning_failure(esp_err_t err_status)
 {
     conn = false;
     ESP_LOGW(TAG_SIGNAL_HANDLER, "Failed to initialize Zigbee stack (status: %d)", err_status);
-#ifdef MIX_SLEEP
     esp_zb_scheduler_alarm((esp_zb_callback_t)bdb_start_top_level_commissioning_cb, ESP_ZB_BDB_MODE_NETWORK_STEERING, 1000);
+#ifdef MIX_SLEEP
     deep_sleep_check();
 #endif
 }
@@ -95,6 +117,7 @@ static void handle_successful_join()
              extended_pan_id[3], extended_pan_id[2], extended_pan_id[1], extended_pan_id[0],
              esp_zb_get_pan_id(), esp_zb_get_current_channel(), esp_zb_get_short_address());
 #ifdef DEEP_SLEEP
+    get_sensor_data();
     ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
     start_deep_sleep();
 #endif
@@ -128,6 +151,7 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
             {
                 conn = true;
 #ifdef DEEP_SLEEP
+                get_sensor_data();
                 ESP_LOGI(TAG_SIGNAL_HANDLER, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
                 start_deep_sleep();
 #endif
@@ -165,10 +189,12 @@ void create_signal_handler(esp_zb_app_signal_t signal_struct)
             esp_zb_factory_reset();
         }
         break;
-#ifdef LIGHT_SLEEP
+#if defined LIGHT_SLEEP || DEEP_SLEEP
     case ESP_ZB_COMMON_SIGNAL_CAN_SLEEP:
         ESP_LOGI(TAG_SIGNAL_HANDLER, "Zigbee can sleep");
+#ifdef LIGHT_SLEEP
         esp_zb_sleep_now();
+#endif
         break;
 #endif
 #ifdef ROUTER_DEVICE

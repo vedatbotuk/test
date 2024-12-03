@@ -73,5 +73,9 @@ void zb_report_battery_level()
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
         ESP_LOGE(TAG_ZB_UPDATE_BATT, "Reporting battery level failed with %x", state);
+        return;
     }
+
+    ESP_LOGI(TAG_ZB_UPDATE_BATT, "Report battery attribute success");
+    return;
 }
