@@ -18,9 +18,6 @@
 #ifndef RANDOM_UTILS_H
 #define RANDOM_UTILS_H
 
-// Initializes the random number generator
-void random_utils_init(void);
-
 // Generates a random number
 int random_utils_generate(int max_value);
 

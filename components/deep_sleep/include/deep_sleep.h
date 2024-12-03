@@ -23,7 +23,7 @@ extern "C"
 {
 #endif
 
-  static const int before_deep_sleep_time_sec = 10;
+  static const int before_deep_sleep_time_sec = 5;
   void start_deep_sleep(void);
   void zb_deep_sleep_init(void);
 

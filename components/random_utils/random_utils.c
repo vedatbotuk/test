@@ -21,10 +21,6 @@
 #include "esp_system.h"
 #include "esp_random.h"
 
-void random_utils_init(void)
-{
-}
-
 int random_utils_generate(int max_value)
 {
   // Gather more entropy from multiple sources

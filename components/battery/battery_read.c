@@ -27,8 +27,9 @@
 #include "random_utils.h"
 #include "macros.h"
 
-#if !defined SIMULATE
 const static char *TAG_VOL = "VOLTAGE";
+
+#if !defined SIMULATE
 
 #define VOLTAGE_MAX 3000
 #define VOLTAGE_MIN 1500
@@ -91,6 +92,8 @@ esp_err_t get_battery_level(void)
 #else
     int battery_lev = random_utils_generate(101); // Generate a random temperature between 0 and 100
     int battery_vol = random_utils_generate(4);   // Generate a random temperature between 0 and 3
+    ESP_LOGI(TAG_VOL, "SIMULATE Battery level: %d %%", battery_lev);
+    ESP_LOGI(TAG_VOL, "SIMULATE Battery voltage: %d mV", battery_vol);
 #endif
     zb_update_battery_level((uint8_t)(2 * battery_lev), (uint8_t)(battery_vol));
 #ifdef DEEP_SLEEP

@@ -24,7 +24,7 @@ static const char *TAG_ZB_UPDATE_BATT = "UPDATE_BATTERY_CLUSTER";
 
 void zb_update_battery_level(uint8_t level, int8_t voltage)
 {
-    // esp_zb_lock_acquire(portMAX_DELAY);
+    esp_zb_lock_acquire(portMAX_DELAY);
     esp_zb_zcl_status_t state_level = esp_zb_zcl_set_attribute_val(
         DEVICE_ENDPOINT,
         ESP_ZB_ZCL_CLUSTER_ID_POWER_CONFIG,
@@ -40,7 +40,7 @@ void zb_update_battery_level(uint8_t level, int8_t voltage)
         ESP_ZB_ZCL_ATTR_POWER_CONFIG_BATTERY_VOLTAGE_ID,
         &voltage,
         false);
-    // esp_zb_lock_release();
+    esp_zb_lock_release();
 
     /* Check for error */
     if (state_level != ESP_ZB_ZCL_STATUS_SUCCESS)
@@ -66,9 +66,9 @@ void zb_report_battery_level()
     battery_level_cmd_req.manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC;
 
     /* Request sending new phase voltage */
-    // esp_zb_lock_acquire(portMAX_DELAY);
+    esp_zb_lock_acquire(portMAX_DELAY);
     esp_err_t state = esp_zb_zcl_report_attr_cmd_req(&battery_level_cmd_req);
-    // esp_zb_lock_release();
+    esp_zb_lock_release();
     /* Check for error */
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
