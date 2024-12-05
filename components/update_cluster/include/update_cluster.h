@@ -27,5 +27,6 @@ void zb_report_battery_level();
 void zb_update_waterleak(uint16_t leak);
 void zb_report_waterleak(uint16_t leak);
 void zb_update_current_time(uint32_t current_time);
+void zb_update_local_time(uint32_t local_time);
 
 #endif // ZB_TEMP_SENSOR_H
