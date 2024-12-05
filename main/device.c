@@ -319,6 +319,7 @@ static void update_rtc_time()
         if (connected)
         {
             zb_update_current_time(now);
+            zb_update_local_time(now);
         }
         vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minutes
     }
