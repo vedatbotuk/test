@@ -82,16 +82,16 @@ static void deep_sleep_check()
 #ifdef DEEP_SLEEP
 static void get_sensor_data()
 {
-#ifdef SENSOR_TEMPERATURE
+#ifdef TEMPERATURE_FEATURES
     check_temperature();
 #endif
-#ifdef SENSOR_HUMIDITY
+#ifdef HUMIDITY_FEATURES
     check_humidity();
 #endif
-#ifdef SENSOR_WATERLEAK
+#ifdef WATERLEAK_FEATURES
     check_waterleak();
 #endif
-#ifdef BATTERY
+#ifdef BATTERY_FEATURES
     get_battery_level();
 #endif
 }

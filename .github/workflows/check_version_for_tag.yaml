@@ -38,8 +38,8 @@ jobs:
       - name: Check if versions have changed
         run: |
           # Compare versions from dev and main
-          if [[ "$main_firmware_version" == "$dev_firmware_version" ]] && [[ "$main_version" == "$dev_version" ]]; then
-            echo "Error: FIRMWARE_VERSION and VERSION have not changed."
+          if [[ "$main_firmware_version" == "$dev_firmware_version" ]] || [[ "$main_version" == "$dev_version" ]]; then
+            echo "Error: FIRMWARE_VERSION or VERSION have not changed."
             exit 1
           else
             echo "Success: FIRMWARE_VERSION or VERSION has changed."

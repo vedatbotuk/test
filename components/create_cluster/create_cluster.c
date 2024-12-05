@@ -61,7 +61,7 @@ static void convert_version(const char *version_string, char *firmware_version, 
 
 void create_basic_cluster(esp_zb_cluster_list_t *esp_zb_cluster_list)
 {
-#ifdef BATTERY
+#ifdef BATTERY_FEATURES
     uint8_t power_source = 3;
 #else
     uint8_t power_source = 1;
