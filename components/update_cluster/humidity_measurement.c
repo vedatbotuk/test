@@ -37,7 +37,10 @@ void zb_update_hum(int humidity)
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
         ESP_LOGE(TAG_ZB_UPDATE_HUM, "Setting humidity attribute failed with %x", state);
+        return;
     }
+    ESP_LOGI(TAG_ZB_UPDATE_HUM, "Set humidity attribute success");
+    return;
 }
 
 void zb_report_hum()
@@ -59,5 +62,8 @@ void zb_report_hum()
     if (state != ESP_ZB_ZCL_STATUS_SUCCESS)
     {
         ESP_LOGE(TAG_ZB_UPDATE_HUM, "Reporting humidity attribute failed with %x", state);
+        return;
     }
+    ESP_LOGI(TAG_ZB_UPDATE_HUM, "Report humidity attribute success");
+    return;
 }
