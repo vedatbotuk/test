@@ -85,7 +85,7 @@ void measure_temp_hum()
         {
             ESP_LOGW(TAG, "Device is not connected! Could not measure the temperature and humidity");
         }
-#if !defined SIMULATE
+#if !defined TESTING
         vTaskDelay(pdMS_TO_TICKS(60000)); // 300000 ms = 5 minutes
 #else
         vTaskDelay(pdMS_TO_TICKS(30000)); // 30000 ms = 30 seconds
@@ -108,7 +108,7 @@ void measure_battery()
         {
             ESP_LOGW(TAG, "Device is not connected! Could not measure the battery level");
         }
-#if !defined SIMULATE
+#if !defined TESTING
         vTaskDelay(pdMS_TO_TICKS(600000)); // 900000 ms = 15 minutes
 #else
         vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minutes
@@ -319,6 +319,7 @@ static void update_rtc_time()
         if (connected)
         {
             zb_update_current_time(now);
+            zb_update_local_time(now);
         }
         vTaskDelay(pdMS_TO_TICKS(60000)); // 60000 ms = 1 minutes
     }
