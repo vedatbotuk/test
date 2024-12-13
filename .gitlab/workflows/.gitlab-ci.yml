@@ -5,6 +5,19 @@ stages:
   - prepare
   - deploy
 
+.deploy_rule: &deploy_rule
+  rules:
+    - if: $CI_JOB_STATUS == "success"  # Only run if critical_job is successful
+      when: always
+    - if: $CI_JOB_STATUS == "failed"  # Prevent main_job from running if critical_job fails
+      when: never
+  # run only after merging to main. This should be acrivated later.
+  # rules:
+  #  - if: $CI_COMMIT_TAG
+  #    when: never
+  #  - if: '$CI_COMMIT_BRANCH == "main"'
+  #    when: always
+
 restrict_pr_to_main:
   stage: validate
   only:
@@ -112,19 +125,6 @@ build_prod:
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
-
-.deploy_rule: &deploy_rule
-  rules:
-    - if: $CI_JOB_STATUS == "success"  # Only run if critical_job is successful
-      when: always
-    - if: $CI_JOB_STATUS == "failed"  # Prevent main_job from running if critical_job fails
-      when: never
-  # run only after merging to main. This should be acrivated later.
-  # rules:
-  #  - if: $CI_COMMIT_TAG
-  #    when: never
-  #  - if: '$CI_COMMIT_BRANCH == "main"'
-  #    when: always
 
 prepare:
   stage: prepare
