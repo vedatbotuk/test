@@ -129,13 +129,6 @@ build_prod:
     # - if: '$CI_COMMIT_BRANCH == "main"'
     #   when: always
 
-  # run only after merging to main. This should be acrivated later.
-  # rules:
-  #  - if: $CI_COMMIT_TAG
-  #    when: never
-  #  - if: '$CI_COMMIT_BRANCH == "main"'
-  #    when: always
-
 prepare:
   stage: prepare
   rules: *common_rule
@@ -248,6 +241,6 @@ cleanup_deploy_success:
   <<: *cleanup_job
 
 cleanup_deploy_failure:
-  needs: ["build_prod"]
+  # needs: ["build_prod"]
   when: on_failure
   <<: *cleanup_job
