@@ -133,6 +133,7 @@ build_prod:
 prepare:
   stage: prepare
   rules: *deploy_rule
+  needs: [check_firmware_version]
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
