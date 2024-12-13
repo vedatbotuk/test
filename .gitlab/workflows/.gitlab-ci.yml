@@ -59,6 +59,7 @@ check_firmware_version:
       when: never
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
+  allow_failure: false
   script:
     - git fetch origin main:main
 
