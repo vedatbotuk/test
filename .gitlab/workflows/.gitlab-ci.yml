@@ -113,13 +113,25 @@ build_prod:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
 
-prepare:
-  stage: prepare
+.deploy_rule: &deploy_rule
   rules:
+    - if: $CI_JOB_STATUS == "failed"
+      when: never
     - if: $CI_COMMIT_TAG
       when: never
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
+    - when: on_success
+  # run only after merging to main. This should be acrivated later.
+  # rules:
+  #  - if: $CI_COMMIT_TAG
+  #    when: never
+  #  - if: '$CI_COMMIT_BRANCH == "main"'
+  #    when: always
+
+prepare:
+  stage: prepare
+  rules: *deploy_rule
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
@@ -145,14 +157,7 @@ deploy:
     - job: prepare
       artifacts: true
     - job: check_firmware_version
-  rules:
-    - if: $CI_JOB_STATUS == "failed"
-      when: never
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
-    - when: on_success
+  rules: *deploy_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
   #  - if: $CI_COMMIT_TAG
