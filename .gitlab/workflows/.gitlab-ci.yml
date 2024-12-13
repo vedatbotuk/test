@@ -114,14 +114,19 @@ build_prod:
       when: always
 
 .common_rule: &common_rule
-    # - if: '$CI_JOB_STATUS == "success"'  # Only run if the critical job is successful
-    #   when: always
-    # - if: '$CI_JOB_STATUS == "failed"'  # Prevent main_job from running if critical_job fails
-    #   when: never
+    - if: '$CI_JOB_STATUS == "success"'  # Only run if the critical job is successful
+      when: always
+    - if: '$CI_JOB_STATUS == "failed"'  # Prevent main_job from running if critical_job fails
+      when: never
     - if: $CI_COMMIT_TAG
       when: never
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
+    - when: on_success
+    # - if: $CI_COMMIT_TAG
+    #   when: never
+    # - if: '$CI_COMMIT_BRANCH == "main"'
+    #   when: always
 
   # run only after merging to main. This should be acrivated later.
   # rules:
@@ -132,11 +137,7 @@ build_prod:
 
 prepare:
   stage: prepare
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
+  rules: *common_rule
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
@@ -155,17 +156,14 @@ prepare:
 deploy:
   variables:
     PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$FIRMWARE_VERSION/1.0.0"
+
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
     - job: prepare
       artifacts: true
     - job: check_firmware_version
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
+  rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
   #  - if: $CI_COMMIT_TAG
