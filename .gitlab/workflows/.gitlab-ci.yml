@@ -244,7 +244,7 @@ deploy:
 #   <<: *cleanup_job
 
 # Cleanup job
-cleanup-job:
+cleanup_job:
   stage: cleanup
   script:
     - echo "Cleaning up temporary files or resources"
