@@ -115,9 +115,9 @@ build_prod:
       when: always
 
 .common_rule: &common_rule
-    - if: '$CI_JOB_STATUS == "success"'  # Only run if the critical job is successful
+    - if: '$CI_JOB_STATUS == "success"'
       when: always
-    - if: '$CI_JOB_STATUS == "failed"'  # Prevent main_job from running if critical_job fails
+    - if: '$CI_JOB_STATUS == "failed"'
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -228,17 +228,24 @@ deploy:
       - ota/*
     expire_in: 1 hour
 
-# a YAML anchor reduces repetition
-.cleanup_job: &cleanup_job
+# # a YAML anchor reduces repetition
+# .cleanup_job: &cleanup_job
+#   stage: cleanup
+#   script:
+#     - echo Cleaned up deployment
+
+# cleanup_deploy_success:
+#   when: on_success
+#   <<: *cleanup_job
+
+# cleanup_deploy_failure:
+#   # needs: ["build_prod"]
+#   when: on_failure
+#   <<: *cleanup_job
+
+# Cleanup job
+cleanup-job:
   stage: cleanup
   script:
-    - echo Cleaned up deployment
-
-cleanup_deploy_success:
-  when: on_success
-  <<: *cleanup_job
-
-cleanup_deploy_failure:
-  # needs: ["build_prod"]
-  when: on_failure
-  <<: *cleanup_job
+    - echo "Cleaning up temporary files or resources"
+  when: always  # Runs whether the pipeline succeeds or fails
