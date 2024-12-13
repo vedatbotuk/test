@@ -244,7 +244,7 @@ deploy:
 #   when: on_failure
 #   <<: *cleanup_job
 
-restrict_pr_to_main2:
+cleanup:
   stage: cleanup
   only:
     - merge_requests
