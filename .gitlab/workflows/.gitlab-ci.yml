@@ -1,8 +1,8 @@
 stages:
   - validate
+  - prod
   - prepare
   - build
-  - prod
 
 restrict_pr_to_main:
   stage: validate
