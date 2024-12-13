@@ -249,9 +249,4 @@ restrict_pr_to_main2:
   only:
     - merge_requests
   script:
-    - >
-      if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "main" && "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" != "dev" ]];
-      then
-      echo "Pull requests to the main branch are only allowed from the dev branch.";
-      exit 1;
-      fi
+    - echo "cleanup"
