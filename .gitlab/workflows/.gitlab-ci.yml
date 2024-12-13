@@ -146,9 +146,9 @@ needs:
     artifacts: true
   - job: check_firmware_version
 rules:
-  - if: 'CI_COMMIT_TAG # Skip the job if it’s a tagged commit
+  - if: $CI_COMMIT_TAG
     when: never
-  - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"' # Run for MRs targeting 'main'
+  - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
     when: always
   - when: on_success # Default: run when previous jobs succeed
   # run only after merging to main. This should be acrivated later.
