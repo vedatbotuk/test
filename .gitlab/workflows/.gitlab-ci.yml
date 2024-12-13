@@ -243,7 +243,7 @@ cleanup_deploy_success:
   <<: *cleanup_job
 
 cleanup_deploy_failure:
-  needs: ["check_firmware_version"]
+  needs: ["build_prod", "deploy"]
   when: on_failure
   <<: *cleanup_job
 
