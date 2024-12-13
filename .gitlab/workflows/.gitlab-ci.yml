@@ -144,8 +144,6 @@ deploy:
   needs:
     - job: prepare
       artifacts: true
-    - job: restrict_pr_to_main
-    - job: check_pr_description
   rules:
     - if: $CI_COMMIT_TAG
       when: never
