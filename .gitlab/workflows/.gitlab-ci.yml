@@ -6,14 +6,8 @@ stages:
   - prepare
   - deploy
 
-# Cleanup job
-cleanup_job:
-  stage: cleanup
-  script:
-    - echo "Cleaning up temporary files or resources"
-
 restrict_pr_to_main:
-  stage: validate
+  stage: clean
   only:
     - merge_requests
   script:
