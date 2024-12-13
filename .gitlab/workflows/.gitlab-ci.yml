@@ -7,7 +7,7 @@ stages:
   - deploy
 
 restrict_pr_to_main:
-  stage: clean
+  stage: cleanup
   only:
     - merge_requests
   script:
