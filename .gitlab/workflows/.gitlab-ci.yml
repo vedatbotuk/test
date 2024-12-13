@@ -238,6 +238,7 @@ deploy:
     - echo Cleaned up deployment
 
 cleanup_deploy_success:
+  needs: ["prod, deploy"]
   when: on_success
   <<: *cleanup_job
 
