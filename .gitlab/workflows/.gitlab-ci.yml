@@ -237,8 +237,8 @@ deploy:
   script:
     - echo Cleaned up deployment
 
-cleanup_deploy_success:
-  needs: ["build_prod", "deploy"]
+cleanup_success:
+  # needs: ["build_prod", "deploy"]
   when: on_success
   <<: *cleanup_job
 
