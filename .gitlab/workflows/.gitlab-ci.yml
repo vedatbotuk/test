@@ -229,24 +229,26 @@ deploy:
       - ota/*
     expire_in: 1 hour
 
-# # a YAML anchor reduces repetition
-# .cleanup_job: &cleanup_job
-#   stage: cleanup
-#   script:
-#     - echo Cleaned up deployment
-
-# cleanup_deploy_success:
-#   when: on_success
-#   <<: *cleanup_job
-
-# cleanup_deploy_failure:
-#   # needs: ["build_prod"]
-#   when: on_failure
-#   <<: *cleanup_job
-
-cleanup:
+# a YAML anchor reduces repetition
+.cleanup_job: &cleanup_job
   stage: cleanup
   only:
-    - merge_requests
+  - merge_requests
   script:
-    - echo "cleanup"
+    - echo Cleaned up deployment
+
+cleanup_deploy_success:
+  when: on_success
+  <<: *cleanup_job
+
+cleanup_deploy_failure:
+  # needs: ["build_prod"]
+  when: on_failure
+  <<: *cleanup_job
+
+# cleanup:
+#   stage: cleanup
+#   only:
+#     - merge_requests
+#   script:
+#     - echo "cleanup"
