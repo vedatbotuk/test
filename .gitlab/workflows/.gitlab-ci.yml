@@ -138,7 +138,7 @@ deploy:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
-    - job: prepare_job
+    - job: prepare
       artifacts: true
     - job: restrict_pr_to_main
     - job: check_pr_description
