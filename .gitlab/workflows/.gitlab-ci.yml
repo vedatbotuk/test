@@ -18,6 +18,18 @@ restrict_pr_to_main:
       exit 1;
       fi
 
+restrict_pr_to_main:
+  stage: validate
+  only:
+    - merge_requests
+  script:
+    - >
+      if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "main" && "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" != "dev" ]];
+      then
+      echo "Pull requests to the main branch are only allowed from the dev branch.";
+      exit 1;
+      fi
+
 check_pr_description:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
