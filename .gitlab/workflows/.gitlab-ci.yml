@@ -90,6 +90,7 @@ check_firmware_version:
 build_dev:
   stage: build
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  needs: [restrict_pr_to_main]
   script:
     - echo "Repository already checked out by GitLab Runner."
     # - source $HOME/esp/esp-idf/export.sh
@@ -102,6 +103,7 @@ build_dev:
 build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  needs: [restrict_pr_to_main]
   script:
     - echo "Repository checked out by GitLab Runner"
     # - source $HOME/esp/esp-idf/export.sh
