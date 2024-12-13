@@ -1,10 +1,17 @@
 stages:
+  - cleanup
   - validate
   - build
   - prod
   - prepare
   - deploy
-  - cleanup
+
+# Cleanup job
+cleanup_job:
+  stage: cleanup
+  script:
+    - echo "Cleaning up temporary files or resources"
+  when: always  # Runs whether the pipeline succeeds or fails
 
 restrict_pr_to_main:
   stage: validate
@@ -243,9 +250,3 @@ deploy:
 #   when: on_failure
 #   <<: *cleanup_job
 
-# Cleanup job
-cleanup_job:
-  stage: cleanup
-  script:
-    - echo "Cleaning up temporary files or resources"
-  when: always  # Runs whether the pipeline succeeds or fails
