@@ -113,8 +113,7 @@ build_prod:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
 
-.deploy_rule:
-  rules:
+.common_rule: &common_rule
     - if: '$CI_JOB_STATUS == "success"'  # Only run if the critical job is successful
       when: always
     - if: '$CI_JOB_STATUS == "failed"'  # Prevent main_job from running if critical_job fails
@@ -133,7 +132,7 @@ build_prod:
 
 prepare:
   stage: prepare
-  extends: .deploy_rule
+  rules: *common_rule
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
@@ -159,7 +158,7 @@ deploy:
     - job: prepare
       artifacts: true
     - job: check_firmware_version
-  extends: .deploy_rule
+  rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
   #  - if: $CI_COMMIT_TAG
