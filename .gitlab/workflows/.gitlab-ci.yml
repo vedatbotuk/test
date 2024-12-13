@@ -91,9 +91,9 @@ build_dev:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
     - echo "Repository already checked out by GitLab Runner."
-    - source $HOME/esp/esp-idf/export.sh
-    - idf.py set-target esp32h2
-    - idf.py build
+    # - source $HOME/esp/esp-idf/export.sh
+    # - idf.py set-target esp32h2
+    # - idf.py build
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev" || ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev")'
       when: always
@@ -103,9 +103,9 @@ build_prod:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
     - echo "Repository checked out by GitLab Runner"
-    - source $HOME/esp/esp-idf/export.sh
-    - chmod +x ./scripts/prod.sh
-    - ./scripts/prod.sh
+    # - source $HOME/esp/esp-idf/export.sh
+    # - chmod +x ./scripts/prod.sh
+    # - ./scripts/prod.sh
   artifacts:
     paths:
       - ./ota/*
@@ -164,17 +164,17 @@ deploy:
   #    when: always
   script:
     # Run the prod script
-    - chmod +x ./scripts/prod.sh
-    - ./scripts/prod.sh
+    # - chmod +x ./scripts/prod.sh
+    # - ./scripts/prod.sh
     # DEBUG LINES
-    # - mkdir ota
-    # - touch ota/botuk_index1.json
-    # - touch ota/botuk_index2.json
-    # - touch ota/botuk_index3.json
-    # - pwd
-    # - ls /builds/vedatbotuk/botuk_zigbee
-    # - ls /builds/vedatbotuk/botuk_zigbee/ota
-    # - ls ota
+    - mkdir ota
+    - touch ota/botuk_index1.json
+    - touch ota/botuk_index2.json
+    - touch ota/botuk_index3.json
+    - pwd
+    - ls /builds/vedatbotuk/botuk_zigbee
+    - ls /builds/vedatbotuk/botuk_zigbee/ota
+    - ls ota
 
     # Create and push tag
     - git config user.name "gitlab-ci-bot"
