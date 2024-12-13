@@ -1,10 +1,11 @@
 stages:
-  - cleanup
   - validate
   - build
   - prod
   - prepare
   - deploy
+  - cleanup
+
 
 restrict_pr_to_main:
   stage: validate
