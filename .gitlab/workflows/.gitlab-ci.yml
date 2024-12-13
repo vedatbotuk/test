@@ -113,7 +113,7 @@ build_prod:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
 
-.deploy-rule: &deploy_rule
+.deploy_rule:
   rules:
     - if: '$CI_JOB_STATUS == "success"'  # Only run if the critical job is successful
       when: always
