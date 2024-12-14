@@ -118,6 +118,8 @@ build_prod:
   needs:
     - validate_tracker
   rules:
+    - if: $CI_JOB_STATUS == "failed"
+      when: always # Trigger if validate fails
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
   script:
@@ -132,9 +134,9 @@ build_prod:
 
 .common_rule: &common_rule
     - if: '$CI_JOB_STATUS == "success"'
-      when: always
-    - if: '$CI_JOB_STATUS == "failed"'
-      when: never
+      when: on_success
+    # - if: '$CI_JOB_STATUS == "failed"'
+    #   when: never
     - if: $CI_COMMIT_TAG
       when: never
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
