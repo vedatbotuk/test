@@ -233,8 +233,8 @@ deploy:
 .cleanup_job: &cleanup_job
   stage: cleanup
   rules: *common_rule
-  only:
-  - merge_requests
+  # only:
+  # - merge_requests
   script:
     - echo Cleaned up deployment
 
