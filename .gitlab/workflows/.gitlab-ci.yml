@@ -114,7 +114,6 @@ build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
-    - validate_tracker
     - restrict_pr_to_main
     - check_pr_description
     - check_firmware_version
@@ -149,7 +148,6 @@ build_prod:
 prepare:
   stage: prepare
   needs:
-    - validate_tracker
     - restrict_pr_to_main
     - check_pr_description
     - check_firmware_version
