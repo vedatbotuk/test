@@ -233,7 +233,7 @@ deploy:
 .common_rule_pr_to_main: &common_rule_pr_to_main
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
 
-.common_rule_pr_to_main: &common_rule_pr_to_main
+.common_rule_pr_to_dev: &common_rule_pr_to_dev
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"'
 
 # a YAML anchor reduces repetition
