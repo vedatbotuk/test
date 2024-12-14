@@ -279,13 +279,13 @@ cleanup_deploy_failure:
   <<: *cleanup_job
 
 cleanup_dev_success:
-  needs: ["deploy"]
+  needs: ["build_dev"]
   rules: *common_rule_pr_to_dev
   when: on_success
   <<: *cleanup_job
 
 cleanup_dev_failure:
-  needs: ["deploy"]
+  needs: ["build_dev"]
   rules: *common_rule_pr_to_dev
   when: on_failure
   <<: *cleanup_job
