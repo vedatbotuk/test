@@ -116,7 +116,7 @@ build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
-    - validate_tracker
+    - track
   rules:
     - if: $CI_JOB_STATUS == "failed"
       when: always # Trigger if validate fails
@@ -148,7 +148,7 @@ build_prod:
 prepare:
   stage: prepare
   needs:
-    - validate_tracker
+    - track
   rules: *common_rule
   script:
     # Load settings from settings.conf
