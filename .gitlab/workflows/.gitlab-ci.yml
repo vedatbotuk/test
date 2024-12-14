@@ -230,22 +230,22 @@ deploy:
     expire_in: 1 hour
 
 # a YAML anchor reduces repetition
-# .cleanup_job: &cleanup_job
-#   stage: cleanup
-#   only:
-#   - merge_requests
-#   script:
-#     - echo Cleaned up deployment
+.cleanup_job: &cleanup_job
+  stage: cleanup
+  only:
+  - merge_requests
+  script:
+    - echo Cleaned up deployment
 
 # cleanup_dev_success:
 #   needs: ["build_dev"]
 #   when: on_success
 #   <<: *cleanup_job
 
-cleanup_dev_failure:
-  needs: ["build_dev"]
-  when: on_failure
-  <<: *cleanup_job
+# cleanup_dev_failure:
+#   needs: ["build_dev"]
+#   when: on_failure
+#   <<: *cleanup_job
 
 cleanup_prod_success:
   needs: ["build_prod"]
