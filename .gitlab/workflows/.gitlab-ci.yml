@@ -237,8 +237,13 @@ deploy:
   script:
     - echo Cleaned up deployment
 
-cleanup_success:
+cleanup_prod_success:
   needs: ["build_prod"]
+  when: on_success
+  <<: *cleanup_job
+
+cleanup_deploy_success:
+  needs: ["build_deploy"]
   when: on_success
   <<: *cleanup_job
 
