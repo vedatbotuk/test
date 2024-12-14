@@ -114,6 +114,8 @@ build_dev:
 build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  needs:
+    - validate_tracker
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
@@ -142,6 +144,8 @@ build_prod:
 
 prepare:
   stage: prepare
+  needs:
+    - validate_tracker
   rules: *common_rule
   script:
     # Load settings from settings.conf
