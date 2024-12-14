@@ -232,6 +232,7 @@ deploy:
 # a YAML anchor reduces repetition
 .cleanup_job: &cleanup_job
   stage: cleanup
+  rules: *common_rule
   only:
   - merge_requests
   script:
