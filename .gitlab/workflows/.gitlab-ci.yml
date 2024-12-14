@@ -92,7 +92,7 @@ build_dev:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
     rules:
     - if: '$CI_COMMIT_BRANCH == "main" || ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main")'
-      when: never
+      when: always
   script:
     - echo "Repository already checked out by GitLab Runner."
     # - source $HOME/esp/esp-idf/export.sh
@@ -230,17 +230,17 @@ deploy:
     expire_in: 1 hour
 
 # a YAML anchor reduces repetition
-.cleanup_job: &cleanup_job
-  stage: cleanup
-  only:
-  - merge_requests
-  script:
-    - echo Cleaned up deployment
+# .cleanup_job: &cleanup_job
+#   stage: cleanup
+#   only:
+#   - merge_requests
+#   script:
+#     - echo Cleaned up deployment
 
-cleanup_dev_success:
-  needs: ["build_dev"]
-  when: on_success
-  <<: *cleanup_job
+# cleanup_dev_success:
+#   needs: ["build_dev"]
+#   when: on_success
+#   <<: *cleanup_job
 
 cleanup_dev_failure:
   needs: ["build_dev"]
