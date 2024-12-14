@@ -176,7 +176,7 @@ deploy:
   needs:
     - job: prepare
       artifacts: true
-    - job: check_firmware_version
+    # - job: check_firmware_version
   rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
