@@ -1,5 +1,6 @@
 stages:
   - validate
+  - track
   - build
   - prod
   - prepare
@@ -87,7 +88,7 @@ check_firmware_version:
       fi
 
 validate_tracker:
-  stage: validate
+  stage: track
   script:
     - echo "Aggregating validate stage results..."
     # Fail this job if any of the validate jobs failed
