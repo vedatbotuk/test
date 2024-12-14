@@ -239,8 +239,8 @@ deploy:
 # a YAML anchor reduces repetition
 .cleanup_job: &cleanup_job
   stage: cleanup
-  only:
-  - merge_requests
+  # only:
+  # - merge_requests
   script:
     - echo Cleaned up deployment
 
