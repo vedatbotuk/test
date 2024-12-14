@@ -85,7 +85,19 @@ check_firmware_version:
       else
       echo "Success: FIRMWARE_VERSION or VERSION has changed.";
       fi
-  allow_failure: false
+
+validate_tracker:
+  stage: validate
+  script:
+    - echo "Aggregating validate stage results..."
+    # Fail this job if any of the validate jobs failed
+    - if [ "$CI_JOB_STATUS" = "failed" ]; then exit 1; else exit 0; fi
+  needs:
+    - restrict_pr_to_main
+    - check_pr_description
+    - check_firmware_version
+  allow_failure: true # Allow pipeline to continue regardless of success/failure
+
 
 build_dev:
   stage: build
@@ -102,6 +114,9 @@ build_dev:
 build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
   script:
     - echo "Repository checked out by GitLab Runner"
     # - source $HOME/esp/esp-idf/export.sh
@@ -111,9 +126,6 @@ build_prod:
     paths:
       - ./ota/*
     expire_in: 1 hour
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
 
 .common_rule: &common_rule
     - if: '$CI_JOB_STATUS == "success"'
