@@ -242,18 +242,18 @@ cleanup_prod_success:
   when: on_success
   <<: *cleanup_job
 
+cleanup_prod_failure:
+  needs: ["build_prod"]
+  when: on_failure
+  <<: *cleanup_job
+
 cleanup_deploy_success:
-  needs: ["build_deploy"]
+  needs: ["deploy"]
   when: on_success
   <<: *cleanup_job
 
 cleanup_deploy_failure:
   needs: ["deploy"]
-  when: on_failure
-  <<: *cleanup_job
-
-cleanup_prod_failure:
-  needs: ["build_prod"]
   when: on_failure
   <<: *cleanup_job
 
