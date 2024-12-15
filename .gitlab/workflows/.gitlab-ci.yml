@@ -121,6 +121,8 @@ build_prod:
   rules:
     - if: $CI_JOB_STATUS == "failed"
       when: always # Run if validate fails
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always # Run if targeting main branch
   # rules:
   #   - if: $CI_JOB_STATUS == "failed"
   #     when: always # Trigger if validate fails
@@ -160,6 +162,8 @@ deploy:
   rules:
     - if: $CI_JOB_STATUS == "success"
       when: always # Run if validate fails
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always # Run if targeting main branch
   # rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
