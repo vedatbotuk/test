@@ -247,41 +247,65 @@ deploy:
 #   when: on_failure
 #   <<: *cleanup_job
 
-cleanup_prod_success:
-  needs: ["build_prod"]
+cleanup_success:
+  stage: cleanup
+  needs:
+    - build_prod
+    - deploy
   rules: *common_rule_pr_to_main
   when: on_success
   <<: *cleanup_job
+  script:
+    - echo "Cleanup after successful build or deploy"
+    - # Add any cleanup logic here
 
-cleanup_prod_failure:
-  needs: ["build_prod"]
+cleanup_failure:
+  stage: cleanup
+  needs:
+    - build_prod
+    - deploy
   rules: *common_rule_pr_to_main
   when: on_failure
   <<: *cleanup_job
+  script:
+    - echo "Cleanup after failed build or deploy"
+    - # Add any cleanup logic here
 
-cleanup_deploy_success:
-  needs: ["deploy"]
-  rules: *common_rule_pr_to_main
-  when: on_success
-  <<: *cleanup_job
+# cleanup_prod_success:
+#   needs: ["build_prod"]
+#   rules: *common_rule_pr_to_main
+#   when: on_success
+#   <<: *cleanup_job
 
-cleanup_deploy_failure:
-  needs: ["deploy"]
-  rules: *common_rule_pr_to_main
-  when: on_failure
-  <<: *cleanup_job
+# cleanup_prod_failure:
+#   needs: ["build_prod"]
+#   rules: *common_rule_pr_to_main
+#   when: on_failure
+#   <<: *cleanup_job
 
-cleanup_dev_success:
-  needs: ["build_dev"]
-  rules: *common_rule_pr_to_dev
-  when: on_success
-  <<: *cleanup_job
+# cleanup_deploy_success:
+#   needs: ["deploy"]
+#   rules: *common_rule_pr_to_main
+#   when: on_success
+#   <<: *cleanup_job
 
-cleanup_dev_failure:
-  needs: ["build_dev"]
-  rules: *common_rule_pr_to_dev
-  when: on_failure
-  <<: *cleanup_job
+# cleanup_deploy_failure:
+#   needs: ["deploy"]
+#   rules: *common_rule_pr_to_main
+#   when: on_failure
+#   <<: *cleanup_job
+
+# cleanup_dev_success:
+#   needs: ["build_dev"]
+#   rules: *common_rule_pr_to_dev
+#   when: on_success
+#   <<: *cleanup_job
+
+# cleanup_dev_failure:
+#   needs: ["build_dev"]
+#   rules: *common_rule_pr_to_dev
+#   when: on_failure
+#   <<: *cleanup_job
 
 # cleanup:
 #   stage: cleanup
