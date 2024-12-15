@@ -88,6 +88,9 @@ check_firmware_version:
 
 val_tracker:
   stage: val_tracker
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  # rules:
+  #   - when: always # Ensure this job is never skipped
   needs:
     - restrict_pr_to_main
     - check_pr_description
@@ -115,11 +118,9 @@ build_prod:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
     - val_tracker
-  rules:
-    - if: $CI_JOB_STATUS == "failed"
-      when: on_failure # Trigger if validate fails
-    - if: $CI_JOB_STATUS == "success"
-      when: on_success # Trigger if validate succeeds
+  # rules:
+  #   - if: $CI_JOB_STATUS == "failed"
+  #     when: always # Trigger if validate fails
   #   - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
   #     when: always
   script:
@@ -154,11 +155,6 @@ deploy:
   needs:
     - val_tracker
   # rules: *common_rule
-  rules:
-    - if: $CI_JOB_STATUS == "failed"
-      when: on_failure # Trigger if validate fails
-    - if: $CI_JOB_STATUS == "success"
-      when: on_success # Trigger if validate succeeds
   # run only after merging to main. This should be acrivated later.
   # rules:
   #  - if: $CI_COMMIT_TAG
