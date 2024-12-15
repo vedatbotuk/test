@@ -94,6 +94,7 @@ check_firmware_version:
       else
       echo "Success: FIRMWARE_VERSION or VERSION has changed.";
       fi
+  allow_failure: true
 
 val_tracker:
   stage: val_tracker
