@@ -1,8 +1,8 @@
 stages:
   - validate
+  - val_tracker
   - build
   - prod
-  - prepare
   - deploy
   - cleanup
 
@@ -86,9 +86,23 @@ check_firmware_version:
       echo "Success: FIRMWARE_VERSION or VERSION has changed.";
       fi
 
+val_tracker:
+  stage: val_tracker
+  needs:
+    - restrict_pr_to_main
+    - check_pr_description
+    - check_firmware_version
+  script:
+    - echo "Aggregating validate stage results..."
+    # Fail this job if any of the validate jobs failed
+    - if [[ "$CI_JOB_STATUS" == "failed" ]]; then exit 1; else exit 0; fi
+  allow_failure: true
+
 build_dev:
   stage: build
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  needs:
+    - val_tracker
   rules:
   - if: '$CI_COMMIT_BRANCH == "dev" || ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev")'
     when: always
@@ -102,9 +116,7 @@ build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
-    - restrict_pr_to_main
-    - check_pr_description
-    - check_firmware_version
+    - val_tracker
   rules:
     - if: $CI_JOB_STATUS == "failed"
       when: always # Trigger if validate fails
@@ -132,28 +144,6 @@ build_prod:
     #   when: never
     # - if: '$CI_COMMIT_BRANCH == "main"'
     #   when: always
-
-# prepare:
-#   stage: prepare
-#   needs:
-#     - restrict_pr_to_main
-#     - check_pr_description
-#     - check_firmware_version
-#   rules: *common_rule
-#   script:
-#     # Load settings from settings.conf
-#     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
-#     - source settings.conf
-#     - export FIRMWARE_VERSION
-#     - export VERSION
-#     - echo "FIRMWARE_VERSION=$FIRMWARE_VERSION" >> variables.env
-#     - echo "VERSION=$VERSION"  >> variables.env
-
-#     # Set up version tag based on firmware version and version
-#     - echo "TAG=${FIRMWARE_VERSION}_${VERSION}" >> variables.env
-#   artifacts:
-#     reports:
-#       dotenv: variables.env
 
 deploy:
   variables:
