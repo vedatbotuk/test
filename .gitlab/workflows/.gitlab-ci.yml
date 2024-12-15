@@ -155,8 +155,7 @@ deploy:
     # - ls /builds/vedatbotuk/botuk_zigbee/ota
     # - ls ota
 
-    - git fetch
-    - git status
+    - git fetch --tags
     - git checkout main
 
     # Create and push tag
