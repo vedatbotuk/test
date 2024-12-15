@@ -131,13 +131,6 @@ deploy:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   rules: *deploy_rule
   script:
-    - echo "Cleaning up Git repositories and all files in the container"
-    - rm -rf .git # Remove .git folder in the current working directory
-    - find . -name '.git' -exec rm -rf {} + # Recursively remove any .git directories
-    - rm -rf * # Optionally remove all files in the container (be careful!)
-    - rm -rf ./* # Clean up files in the current directory
-    - echo "Cleanup complete"
-
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
     - source settings.conf
