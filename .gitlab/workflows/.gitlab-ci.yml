@@ -159,10 +159,12 @@ deploy:
     - git config user.name "gitlab-ci-bot"
     - git config user.email "gitlab-ci-bot@gitlab.botuk.de"
 
+    - git remote set-url origin https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git
+
     # Update the remote URL to use the token
     - git tag $TAG
-    - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git HEAD:$TAG
-
+    # - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git HEAD:$TAG
+    - git push origin $TAG
 
     # Generate Release Notes from Commits Since Last Tag
     - LATEST_TAG=$(git describe --tags --abbrev=0)
