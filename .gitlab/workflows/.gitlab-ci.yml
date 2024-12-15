@@ -10,8 +10,7 @@ stages:
 restrict_pr_to_main:
   stage: validate
   rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always # Run if targeting main branch
+  when: always # Ensure this job is never skipped
   # only:
   #   - merge_requests
   script:
@@ -25,9 +24,7 @@ restrict_pr_to_main:
 check_pr_description:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always # Run if targeting main branch
+  when: always # Ensure this job is never skipped
   # only:
   #   - merge_requests
   script:
@@ -62,9 +59,7 @@ check_pr_description:
 check_firmware_version:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always # Run if targeting main branch
+  when: always # Ensure this job is never skipped
   # rules:
   #   - if: $CI_COMMIT_TAG
   #     when: never
@@ -99,8 +94,7 @@ check_firmware_version:
 val_tracker:
   stage: val_tracker
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  rules:
-    - when: always # Ensure this job is never skipped
+  when: always # Ensure this job is never skipped
   needs:
     - restrict_pr_to_main
     - check_pr_description
