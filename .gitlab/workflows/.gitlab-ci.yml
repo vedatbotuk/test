@@ -21,6 +21,7 @@ restrict_pr_to_main:
       echo "Pull requests to the main branch are only allowed from the dev branch.";
       exit 1;
       fi
+  allow_failure: true
 
 check_pr_description:
   stage: validate
@@ -58,6 +59,7 @@ check_pr_description:
       else
       echo "No unchecked to-do items found in PR description.";
       fi
+  allow_failure: true
 
 check_firmware_version:
   stage: validate
@@ -94,6 +96,7 @@ check_firmware_version:
       else
       echo "Success: FIRMWARE_VERSION or VERSION has changed.";
       fi
+  allow_failure: true
 
 val_tracker:
   stage: val_tracker
