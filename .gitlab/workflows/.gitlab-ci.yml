@@ -105,8 +105,6 @@ build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   rules:
-    - if: $CI_JOB_STATUS == "failed"
-      when: always # Trigger if validate fails
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
       when: always
   script:
@@ -120,8 +118,6 @@ build_prod:
     expire_in: 1 hour
 
 .deploy_rule: &deploy_rule
-    - if: '$CI_JOB_STATUS == "success"'
-      when: on_success
     - if: $CI_COMMIT_TAG
       when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -226,36 +222,26 @@ deploy:
   script:
     - echo Cleaned up deployment
 
-# cleanup_dev_success:
-#   needs: ["build_dev"]
+# cleanup_success:
+#   stage: cleanup
+#   needs:
+#     - build_prod
+#     - deploy
+#   rules: *common_rule_pr_to_main
 #   when: on_success
 #   <<: *cleanup_job
+#   script:
+#     - echo "Cleanup after successful build or deploy"
+#     - echo "Additional cleanup commands go here"
 
-# cleanup_dev_failure:
-#   needs: ["build_dev"]
+# cleanup_failure:
+#   stage: cleanup
+#   needs:
+#     - build_prod
+#     - deploy
+#   rules: *common_rule_pr_to_main
 #   when: on_failure
 #   <<: *cleanup_job
-
-cleanup_success:
-  stage: cleanup
-  needs:
-    - build_prod
-    - deploy
-  rules: *common_rule_pr_to_main
-  when: on_success
-  <<: *cleanup_job
-  script:
-    - echo "Cleanup after successful build or deploy"
-    - echo "Additional cleanup commands go here"
-
-cleanup_failure:
-  stage: cleanup
-  needs:
-    - build_prod
-    - deploy
-  rules: *common_rule_pr_to_main
-  when: on_failure
-  <<: *cleanup_job
-  script:
-    - echo "Cleanup after failed build or deploy"
-    - echo "Additional failure-specific cleanup commands go here"
+#   script:
+#     - echo "Cleanup after failed build or deploy"
+#     - echo "Additional failure-specific cleanup commands go here"
