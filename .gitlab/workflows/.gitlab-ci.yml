@@ -97,9 +97,9 @@ build_dev:
     when: always
   script:
     - echo "Repository already checked out by GitLab Runner."
-    # - source $HOME/esp/esp-idf/export.sh
-    # - idf.py set-target esp32h2
-    # - idf.py build
+    - source $HOME/esp/esp-idf/export.sh
+    - idf.py set-target esp32h2
+    - idf.py build
 
 build_prod:
   stage: prod
@@ -109,9 +109,9 @@ build_prod:
       when: always
   script:
     - echo "Repository checked out by GitLab Runner"
-    # - source $HOME/esp/esp-idf/export.sh
-    # - chmod +x ./scripts/prod.sh
-    # - ./scripts/prod.sh
+    - source $HOME/esp/esp-idf/export.sh
+    - chmod +x ./scripts/prod.sh
+    - ./scripts/prod.sh
   artifacts:
     paths:
       - ./ota/*
@@ -143,17 +143,19 @@ deploy:
     - echo "TAG=${FIRMWARE_VERSION}_${VERSION}" >> variables.env
 
     # Run the prod script
-    # - chmod +x ./scripts/prod.sh
-    # - ./scripts/prod.sh
+    - chmod +x ./scripts/prod.sh
+    - ./scripts/prod.sh
     # DEBUG LINES
-    - mkdir ota
-    - touch ota/botuk_index1.json
-    - touch ota/botuk_index2.json
-    - touch ota/botuk_index3.json
-    - pwd
-    - ls /builds/vedatbotuk/botuk_zigbee
-    - ls /builds/vedatbotuk/botuk_zigbee/ota
-    - ls ota
+    # - mkdir ota
+    # - touch ota/botuk_index1.json
+    # - touch ota/botuk_index2.json
+    # - touch ota/botuk_index3.json
+    # - pwd
+    # - ls /builds/vedatbotuk/botuk_zigbee
+    # - ls /builds/vedatbotuk/botuk_zigbee/ota
+    # - ls ota
+
+    - git fetch
 
     # Create and push tag
     - git config user.name "gitlab-ci-bot"
