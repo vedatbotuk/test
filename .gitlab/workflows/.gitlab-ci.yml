@@ -107,8 +107,8 @@ val_tracker:
   script:
     - echo "Aggregating validate stage results..."
     # Fail this job if any of the validate jobs failed
-    - if [[ "$CI_JOB_STATUS" == "failed" ]]; then exit 1; else exit 0; fi
     - echo "$CI_JOB_STATUS"
+    - if [[ "$CI_JOB_STATUS" == "failed" ]]; then exit 1; else exit 0; fi
   # allow_failure: true
 
 build_dev:
