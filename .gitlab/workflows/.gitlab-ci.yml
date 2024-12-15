@@ -9,8 +9,8 @@ stages:
 
 restrict_pr_to_main:
   stage: validate
-  only:
-    - merge_requests
+  # only:
+  #   - merge_requests
   script:
     - >
       if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "main" && "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" != "dev" ]];
@@ -22,8 +22,8 @@ restrict_pr_to_main:
 check_pr_description:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  only:
-    - merge_requests
+  # only:
+  #   - merge_requests
   script:
     # Fetch the PR description from the GitLab API
     - API_URL="$CI_API_V4_URL/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID"
@@ -56,11 +56,11 @@ check_pr_description:
 check_firmware_version:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
+  # rules:
+  #   - if: $CI_COMMIT_TAG
+  #     when: never
+  #   - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+  #     when: always
   script:
     - git fetch origin main:main
 
@@ -101,8 +101,6 @@ val_tracker:
 build_dev:
   stage: build
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  needs:
-    - val_tracker
   rules:
   - if: '$CI_COMMIT_BRANCH == "dev" || ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev")'
     when: always
@@ -152,9 +150,7 @@ deploy:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
-    - restrict_pr_to_main
-    - check_pr_description
-    - check_firmware_version
+    - val_tracker
   rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
