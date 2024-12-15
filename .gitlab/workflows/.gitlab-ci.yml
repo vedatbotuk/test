@@ -257,7 +257,7 @@ cleanup_success:
   <<: *cleanup_job
   script:
     - echo "Cleanup after successful build or deploy"
-    - # Add any cleanup logic here
+    - echo "Additional cleanup commands go here"
 
 cleanup_failure:
   stage: cleanup
@@ -269,7 +269,7 @@ cleanup_failure:
   <<: *cleanup_job
   script:
     - echo "Cleanup after failed build or deploy"
-    - # Add any cleanup logic here
+    - echo "Additional failure-specific cleanup commands go here"
 
 # cleanup_prod_success:
 #   needs: ["build_prod"]
