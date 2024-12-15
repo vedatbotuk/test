@@ -115,9 +115,9 @@ build_prod:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
     - val_tracker
-  # rules:
-  #   - if: $CI_JOB_STATUS == "failed"
-  #     when: always # Trigger if validate fails
+  rules:
+    - if: $CI_JOB_STATUS == "failed"
+      when: always # Trigger if validate fails
   #   - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
   #     when: always
   script:
