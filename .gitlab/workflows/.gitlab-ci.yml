@@ -157,6 +157,7 @@ deploy:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
     - val_tracker
+  rules:
     - if: $CI_JOB_STATUS == "success"
       when: always # Run if validate fails
   # rules: *common_rule
