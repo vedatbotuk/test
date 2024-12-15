@@ -130,7 +130,6 @@ build_prod:
   needs:
     - val_tracker
   when: on_failure
-      when: always # Run if targeting main branch
   # rules:
   #   - if: $CI_JOB_STATUS == "failed"
   #     when: always # Trigger if validate fails
