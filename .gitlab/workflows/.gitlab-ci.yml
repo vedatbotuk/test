@@ -167,7 +167,6 @@ deploy:
   needs:
     - val_tracker
   when: on_success
-      when: always # Run if targeting main branch
   # rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
