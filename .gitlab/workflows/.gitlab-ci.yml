@@ -119,7 +119,8 @@ build_prod:
   needs:
     - val_tracker
   rules:
-    - when: always # Ensure this job is never skipped
+    - if: $CI_JOB_STATUS == "failed"
+      when: always # Run if validate fails
   # rules:
   #   - if: $CI_JOB_STATUS == "failed"
   #     when: always # Trigger if validate fails
@@ -156,8 +157,8 @@ deploy:
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
     - val_tracker
-  rules:
-    - when: always # Ensure this job is never skipped
+    - if: $CI_JOB_STATUS == "success"
+      when: always # Run if validate fails
   # rules: *common_rule
   # run only after merging to main. This should be acrivated later.
   # rules:
