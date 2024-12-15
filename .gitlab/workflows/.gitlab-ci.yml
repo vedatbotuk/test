@@ -89,8 +89,8 @@ check_firmware_version:
 val_tracker:
   stage: val_tracker
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  # rules:
-  #   - when: always # Ensure this job is never skipped
+  rules:
+    - when: always # Ensure this job is never skipped
   needs:
     - restrict_pr_to_main
     - check_pr_description
