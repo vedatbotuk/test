@@ -156,6 +156,8 @@ deploy:
     # - ls ota
 
     - git fetch
+    - git status
+    - git checkout main
 
     # Create and push tag
     - git config user.name "gitlab-ci-bot"
