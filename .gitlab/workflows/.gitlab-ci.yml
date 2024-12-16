@@ -4,7 +4,6 @@ stages:
   - prod
   - prepare
   - deploy
-  - close-issues
   - cleanup
 
 # Only dev branch can be merged to main branch
@@ -144,6 +143,7 @@ build_prod:
 # ######################################
 prepare_job:
   stage: prepare
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   rules: *deploy_rule
   script:
     # Load settings from settings.conf
@@ -236,64 +236,12 @@ deploy:
       - ota/*
     expire_in: 1 hour
 
-# Close issues automatically
-# for non default branches
-# ##########################
-close_issues_on_merge:
-  stage: close-issues
-  script:
-    # Check if the merge commit includes issue references (e.g., "Closes #123")
-    - |
-      issues=$(git log -1 --pretty=%B | grep -oE 'Closes #[0-9]+' | awk '{print $2}' | tr -d '#')
-    # Close each issue using the GitLab API
-    - |
-      for issue in $issues; do
-        echo "Closing issue #$issue"
-        curl --request PUT \
-          --header "CI_PROJECT_NAME-TOKEN: $TEST_TOKEN" \
-          --header "Content-Type: application/json" \
-          --data '{"state_event": "close"}' \
-          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/issues/$issue"
-      done
-  only:
-    - main  # Trigger this job only on the main branch
-
 # CLEANUP
 # #######
-.common_rule_pr_to_main: &common_rule_pr_to_main
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-
-.common_rule_pr_to_dev: &common_rule_pr_to_dev
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"'
-
-# a YAML anchor reduces repetition
-.cleanup_job: &cleanup_job
+cleanup: &cleanup
   stage: cleanup
-  # only:
-  # - merge_requests
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
-    - echo Cleaned up deployment
-
-# cleanup_success:
-#   stage: cleanup
-#   needs:
-#     - build_prod
-#     - deploy
-#   rules: *common_rule_pr_to_main
-#   when: on_success
-#   <<: *cleanup_job
-#   script:
-#     - echo "Cleanup after successful build or deploy"
-#     - echo "Additional cleanup commands go here"
-
-# cleanup_failure:
-#   stage: cleanup
-#   needs:
-#     - build_prod
-#     - deploy
-#   rules: *common_rule_pr_to_main
-#   when: on_failure
-#   <<: *cleanup_job
-#   script:
-#     - echo "Cleanup after failed build or deploy"
-#     - echo "Additional failure-specific cleanup commands go here"
+    - rm -rf ./*
+  only:
+    - merge_requests
