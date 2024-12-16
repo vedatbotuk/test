@@ -144,6 +144,7 @@ build_prod:
 # ######################################
 prepare_job:
   stage: prepare
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   rules: *deploy_rule
   script:
     # Load settings from settings.conf
@@ -241,6 +242,10 @@ deploy:
 # ##########################
 close_issues_on_merge:
   stage: close-issues
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
   script:
     # Check if the merge commit includes issue references (e.g., "Closes #123")
     - |
@@ -255,12 +260,13 @@ close_issues_on_merge:
           --data '{"state_event": "close"}' \
           "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/issues/$issue"
       done
-  only:
-    - main  # Trigger this job only on the main branch
 
 # CLEANUP
 # #######
 cleanup: &cleanup
   stage: cleanup
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
     - rm -rf ./*
+  only:
+    - merge_requests
