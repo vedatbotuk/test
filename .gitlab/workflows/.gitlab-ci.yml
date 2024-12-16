@@ -244,10 +244,13 @@ sync_to_github:
     - git config --global user.email "your-email@example.com"
     - git config --global user.name "Your Name"
   script:
+    # Clone the main branch from GitLab
     - git clone --mirror https://github.com/vedatbotuk/test.git
     - cd test.git
+    # Add GitHub as a remote repository
     - git remote add github https://vedatbotuk:${GITHUB_PUSH}@github.com/vedatbotuk/test.git
-    - git push --mirror github
+    # Push changes in the main branch to GitHub
+    - git push github main
   only:
     - main
 
