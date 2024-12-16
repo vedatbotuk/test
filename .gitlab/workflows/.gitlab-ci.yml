@@ -106,7 +106,7 @@ build_dev:
   stage: build
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   rules:
-  - if: '$CI_COMMIT_BRANCH == "dev" || ($CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev")'
+  - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"'
     when: always
   script:
     - echo "Repository already checked out by GitLab Runner."
