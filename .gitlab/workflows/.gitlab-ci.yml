@@ -4,6 +4,7 @@ stages:
   - prod
   - prepare
   - deploy
+  - close-issues
   - cleanup
 
 # Only dev branch can be merged to main branch
@@ -235,6 +236,27 @@ deploy:
       - ota/*
     expire_in: 1 hour
 
+# Close issues automatically
+# for non default branches
+# ##########################
+close_issues_on_merge:
+  stage: close-issues
+  script:
+    # Check if the merge commit includes issue references (e.g., "Closes #123")
+    - |
+      issues=$(git log -1 --pretty=%B | grep -oE 'Closes #[0-9]+' | awk '{print $2}' | tr -d '#')
+    # Close each issue using the GitLab API
+    - |
+      for issue in $issues; do
+        echo "Closing issue #$issue"
+        curl --request PUT \
+          --header "CI_PROJECT_NAME-TOKEN: $TEST_TOKEN" \
+          --header "Content-Type: application/json" \
+          --data '{"state_event": "close"}' \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/issues/$issue"
+      done
+  only:
+    - main  # Trigger this job only on the main branch
 
 # CLEANUP
 # #######
