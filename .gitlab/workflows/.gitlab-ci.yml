@@ -126,11 +126,7 @@ build_prod:
 
 prepare_job:
   stage: prepare
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
+  rules: *.deploy_rule
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
@@ -155,11 +151,7 @@ build_main:
   needs:
     - job: prepare_job
       artifacts: true
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: always
+  rules: *.deploy_rule
   script:
     # Run the prod script
     - chmod +x ./scripts/prod.sh
