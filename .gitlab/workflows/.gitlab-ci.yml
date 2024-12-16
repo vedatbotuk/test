@@ -142,11 +142,11 @@ prepare_job:
     reports:
       dotenv: variables.env
 
-build_main:
+deploy:
   variables:
     PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$FIRMWARE_VERSION/1.0.0"
 
-  stage: build
+  stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   needs:
     - job: prepare_job
