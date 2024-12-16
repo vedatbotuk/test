@@ -6,7 +6,9 @@ stages:
   - deploy
   - cleanup
 
-
+# Only dev branch can be merged to main branch
+# Check if merging to main branch possible
+# ############################################
 restrict_pr_to_main:
   stage: validate
   rules:
@@ -21,6 +23,9 @@ restrict_pr_to_main:
       exit 1;
       fi
 
+# Pull request can be have some todos
+# Check before merging, if all todos is done
+############################################
 check_pr_description:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
@@ -56,6 +61,10 @@ check_pr_description:
       echo "No unchecked to-do items found in PR description.";
       fi
 
+# Firmwar version and ota version
+# shoulc be updated befor merging
+# to main branch
+#################################
 check_firmware_version:
   stage: validate
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
@@ -90,6 +99,9 @@ check_firmware_version:
       echo "Success: FIRMWARE_VERSION or VERSION has changed.";
       fi
 
+# Building dev before merge to dev branch
+# This comes from features branch
+# ########################################
 build_dev:
   stage: build
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
@@ -102,6 +114,8 @@ build_dev:
     - idf.py set-target esp32h2
     - idf.py build
 
+# Building prod before merging to main branch
+# ###########################################
 build_prod:
   stage: prod
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
@@ -124,6 +138,9 @@ build_prod:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: always
 
+
+# Deploying after merging to main branch
+# ######################################
 prepare_job:
   stage: prepare
   rules: *deploy_rule
@@ -219,7 +236,8 @@ deploy:
     expire_in: 1 hour
 
 
-
+# CLEANUP
+# #######
 .common_rule_pr_to_main: &common_rule_pr_to_main
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
 
