@@ -4,6 +4,7 @@ stages:
   - prod
   - prepare
   - deploy
+  - sync
   - cleanup
 
 # Only dev branch can be merged to main branch
@@ -190,7 +191,7 @@ deploy:
 
     # Update the remote URL to use the token
     - git tag $TAG
-    - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git $TAG
+    - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee_workflow_changes.git $TAG
 
 
     # Generate Release Notes from Commits Since Last Tag
@@ -235,6 +236,20 @@ deploy:
     paths:
       - ota/*
     expire_in: 1 hour
+
+sync_to_github:
+  stage: sync
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  before_script:
+    - git config --global user.email "your-email@example.com"
+    - git config --global user.name "Your Name"
+  script:
+    - git clone --mirror https://github.com/vedatbotuk/test.git
+    - cd test.git
+    - git remote add github https://vedatbotuk:${GITHUB_PUSH}@github.com/vedatbotuk/test.git
+    - git push --mirror github
+  only:
+    - main
 
 # CLEANUP
 # #######
