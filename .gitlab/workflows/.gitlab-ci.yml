@@ -268,3 +268,5 @@ cleanup: &cleanup
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
     - rm -rf ./*
+  only:
+    - merge_requests
