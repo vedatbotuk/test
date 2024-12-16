@@ -239,9 +239,6 @@ deploy:
 # Close issues automatically
 # for non default branches
 # ##########################
-stages:
-  - close-issues
-
 close_issues_on_merge:
   stage: close-issues
   script:
