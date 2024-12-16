@@ -126,7 +126,7 @@ build_prod:
 
 prepare_job:
   stage: prepare
-  rules: *.deploy_rule
+  rules: *deploy_rule
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
@@ -151,7 +151,7 @@ build_main:
   needs:
     - job: prepare_job
       artifacts: true
-  rules: *.deploy_rule
+  rules: *deploy_rule
   script:
     # Run the prod script
     - chmod +x ./scripts/prod.sh
