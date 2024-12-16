@@ -2,6 +2,7 @@ stages:
   - validate
   - build
   - prod
+  - prepare
   - deploy
   - cleanup
 
@@ -123,13 +124,13 @@ build_prod:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: always
 
-deploy:
-  variables:
-    PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$FIRMWARE_VERSION/1.0.0"
-
-  stage: deploy
-  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  rules: *deploy_rule
+prepare_job:
+  stage: prepare
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
   script:
     # Load settings from settings.conf
     - echo "Loading FIRMWARE_VERSION and VERSION from settings.conf"
@@ -141,7 +142,25 @@ deploy:
 
     # Set up version tag based on firmware version and version
     - echo "TAG=${FIRMWARE_VERSION}_${VERSION}" >> variables.env
+  artifacts:
+    reports:
+      dotenv: variables.env
 
+build_main:
+  variables:
+    PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$FIRMWARE_VERSION/1.0.0"
+
+  stage: build
+  image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  needs:
+    - job: prepare_job
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: always
+  script:
     # Run the prod script
     - chmod +x ./scripts/prod.sh
     - ./scripts/prod.sh
@@ -159,14 +178,10 @@ deploy:
     - git config user.name "gitlab-ci-bot"
     - git config user.email "gitlab-ci-bot@gitlab.botuk.de"
 
-    - git remote set-url origin https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git
-
     # Update the remote URL to use the token
-    # - git tag $TAG
-    # - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git HEAD:$TAG
-    - echo $TAG
     - git tag $TAG
-    - git push origin HEAD:main $TAG
+    - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git $TAG
+
 
     # Generate Release Notes from Commits Since Last Tag
     - LATEST_TAG=$(git describe --tags --abbrev=0)
@@ -210,6 +225,7 @@ deploy:
     paths:
       - ota/*
     expire_in: 1 hour
+
 
 
 .common_rule_pr_to_main: &common_rule_pr_to_main
