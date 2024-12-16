@@ -255,8 +255,9 @@ close_issues_on_merge:
           --data '{"state_event": "close"}' \
           "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/issues/$issue"
       done
-  only:
-    - main  # Trigger this job only on the main branch
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: alway
 
 # CLEANUP
 # #######
