@@ -260,40 +260,7 @@ close_issues_on_merge:
 
 # CLEANUP
 # #######
-.common_rule_pr_to_main: &common_rule_pr_to_main
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-
-.common_rule_pr_to_dev: &common_rule_pr_to_dev
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev"'
-
-# a YAML anchor reduces repetition
-.cleanup_job: &cleanup_job
+cleanup: &cleanup
   stage: cleanup
-  # only:
-  # - merge_requests
   script:
-    - echo Cleaned up deployment
-
-# cleanup_success:
-#   stage: cleanup
-#   needs:
-#     - build_prod
-#     - deploy
-#   rules: *common_rule_pr_to_main
-#   when: on_success
-#   <<: *cleanup_job
-#   script:
-#     - echo "Cleanup after successful build or deploy"
-#     - echo "Additional cleanup commands go here"
-
-# cleanup_failure:
-#   stage: cleanup
-#   needs:
-#     - build_prod
-#     - deploy
-#   rules: *common_rule_pr_to_main
-#   when: on_failure
-#   <<: *cleanup_job
-#   script:
-#     - echo "Cleanup after failed build or deploy"
-#     - echo "Additional failure-specific cleanup commands go here"
+    - rm -rf ./*
