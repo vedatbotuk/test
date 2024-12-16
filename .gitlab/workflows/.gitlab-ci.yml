@@ -166,7 +166,7 @@ deploy:
     # - git push https://${CI_PROJECT_NAME}:${TEST_TOKEN}@gitlab.botuk.de/vedatbotuk/botuk_zigbee.git HEAD:$TAG
     - echo $TAG
     - git tag $TAG
-    - git push $TAG origin main
+    - git push origin main
 
     # Generate Release Notes from Commits Since Last Tag
     - LATEST_TAG=$(git describe --tags --abbrev=0)
