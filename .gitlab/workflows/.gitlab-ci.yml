@@ -256,17 +256,16 @@ wiki_sync_automatically_vm_control:
       echo "Images found:";
       echo "$IMAGES";
 
-    # Upload each image to Wiki.js
+    # Upload each image to Wiki.js via REST API
     - echo "Uploading images to Wiki.js..."
     - >
       for IMG in $IMAGES; do
       echo "Uploading $IMG...";
-      curl -X POST "https://wiki.botuk.de/graphql"
+      curl -X POST "https://wiki.botuk.de/api/uploads"
       -H "Authorization: Bearer $WIKI_API_TOKEN"
       -H "Content-Type: multipart/form-data"
-      -F operations='{"query": "mutation UploadFile($file: Upload!) { files { upload(file: $file) { responseResult { succeeded errorCode message } file { id name path } } } }", "variables": { "file": null }}'
-      -F map='{"0": ["variables.file"]}'
-      -F 0=@$IMG;
+      -F "file=@$IMG"
+      -F "path=/uploads/$IMG";
       done;
 
     # Escape README.md for JSON payload
@@ -301,7 +300,6 @@ wiki_sync_automatically_vm_control:
 
   only:
     - main  # Trigger on changes to the main branch
-
 
 # CLEANUP
 # #######
