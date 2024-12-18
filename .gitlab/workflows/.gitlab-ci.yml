@@ -291,7 +291,7 @@ sync_gitlab_wiki_to_wikijs:
       "title": "'$PAGE_TITLE'"
       }
       }';
-      done;
+      done
 
     - echo "Sync complete!"
 
