@@ -4,7 +4,6 @@ stages:
   - prod
   - prepare
   - deploy
-  - sync
   - cleanup
 
 # Only dev branch can be merged to main branch
@@ -237,22 +236,49 @@ deploy:
       - ota/*
     expire_in: 1 hour
 
-sync_to_github:
-  stage: sync
+# Update README.md on wiki.botuk.de
+
+wiki_sync_automatically_vm_control:
+  stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
-  before_script:
-    - git config --global user.email "your-email@example.com"
-    - git config --global user.name "Your Name"
   script:
-    # Clone the main branch from GitLab
-    - git clone --mirror https://github.com/vedatbotuk/test.git
-    - cd test.git
-    # Add GitHub as a remote repository
-    - git remote add github https://vedatbotuk:${GITHUB_PUSH}@github.com/vedatbotuk/test.git
-    # Push changes in the main branch to GitHub
-    - git push github main
+    - echo "Syncing README.md to Wiki.js..."
+    - >
+      curl "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files%2FREADME.md/raw?ref=main" > README.md;
+      echo "Fetched README.md content:";
+      cat README.md;
+
+    - echo "Escaping README.md content for JSON payload..."
+    - >
+      JSON_CONTENT=$(jq -Rs '.' < README.md);
+      echo "Escaped JSON content: $JSON_CONTENT";
+
+    - echo "Updating Wiki.js page..."
+    - >
+      curl -X POST "https://wiki.botuk.de/graphql"
+      -H "Authorization: Bearer $WIKI_API_TOKEN"
+      -H "Content-Type: application/json"
+      -d '{
+      "query": "mutation UpdatePage($id: Int!, $content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { update(id: $id, content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
+      "variables": {
+      "id": 167,
+      "content": '"$JSON_CONTENT"',
+      "description": "Automatically synced from GitLab",
+      "editor": "code",
+      "isPublished": true,
+      "isPrivate": false,
+      "locale": "it",
+      "path": "./",
+      "tags": ["automation", "GitLab", "sync"],
+      "title": "Automatically VM Control"
+      }
+      }';
+
+    - echo "Wiki.js update complete."
+
   only:
-    - main
+    - dev  # Trigger on changes to the main branch
+
 
 # CLEANUP
 # #######
