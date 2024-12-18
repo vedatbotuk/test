@@ -282,7 +282,7 @@ wiki_sync_automatically_vm_control:
 
 # CLEANUP
 # #######
-cleanup: &cleanup
+cleanup:
   stage: cleanup
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
