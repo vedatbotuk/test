@@ -238,7 +238,6 @@ deploy:
 
 # Sync README.md and images to Wiki.js
 sync_gitlab_wiki_to_wikijs:
-wiki_sync_automatically_vm_control:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   before_script:
