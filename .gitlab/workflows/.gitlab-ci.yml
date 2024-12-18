@@ -260,7 +260,6 @@ sync_gitlab_wiki_to_wikijs:
     - >
       for PAGE in *.md; do
       echo "Processing page: $PAGE";
-      ;
       # Extract content and escape for JSON;
       CONTENT=$(cat "$PAGE");
       JSON_CONTENT=$(echo "$CONTENT" | jq -Rs '.');
