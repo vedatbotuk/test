@@ -248,7 +248,7 @@ sync_gitlab_wiki_to_wikijs:
   script:
     # Clone the GitLab wiki repository
     - echo "Cloning the GitLab wiki repository..."
-    - git clone https://$CI_JOB_TOKEN:@gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git
+    - git clone https://$CI_JOB_TOKEN:@gitlab.botuk.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git
 
     # Navigate to the cloned wiki repository
     - cd $CI_PROJECT_NAME.wiki
