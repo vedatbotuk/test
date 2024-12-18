@@ -237,66 +237,61 @@ deploy:
     expire_in: 1 hour
 
 # Sync README.md and images to Wiki.js
+sync_gitlab_wiki_to_wikijs:
 wiki_sync_automatically_vm_control:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  before_script:
+    # Set up Git config for fetching the wiki
+    - git config --global user.email "ci@example.com"
+    - git config --global user.name "GitLab CI/CD"
+
   script:
-    - echo "Syncing README.md to Wiki.js..."
+    # Clone the GitLab wiki repository
+    - echo "Cloning the GitLab wiki repository..."
+    - git clone https://$CI_JOB_TOKEN:@gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git
 
-    # Fetch README.md
-    - >
-      curl "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files/README.md/raw?ref=main" > README.md;
-      echo "Fetched README.md content:";
-      cat README.md;
+    # Navigate to the cloned wiki repository
+    - cd $CI_PROJECT_NAME.wiki
 
-    # Extract all image references
-    - echo "Finding image references in README.md..."
+    # Iterate over all .md files in the wiki
     - >
-      IMAGES=$(grep -oE 'img/[^)\\"]+' README.md | sort | uniq);
-      echo "Images found:";
-      echo "$IMAGES";
+      for PAGE in *.md; do
+      echo "Processing page: $PAGE";
+      
+      # Extract content and escape for JSON;
+      CONTENT=$(cat "$PAGE");
+      JSON_CONTENT=$(echo "$CONTENT" | jq -Rs '.');
 
-    # Upload each image to Wiki.js via REST API
-    - echo "Uploading images to Wiki.js..."
-    - >
-      for IMG in $IMAGES; do
-      echo "Uploading $IMG...";
-      curl -X POST "https://wiki.botuk.de/api/uploads"
-      -H "Authorization: Bearer $WIKI_API_TOKEN"
-      -H "Content-Type: multipart/form-data"
-      -F "file=@$IMG"
-      -F "path=/uploads/$IMG";
-      done;
+      # Determine the page path in Wiki.js (remove .md and replace underscores with dashes);
+      PAGE_TITLE=$(basename "$PAGE" .md);
+      SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
+      FULL_PATH="/en/technical/project/botuk_zigbee/$SUB_PATH";
+      echo "Page title: $PAGE_TITLE, Path: $FULL_PATH";
 
-    # Escape README.md for JSON payload
-    - echo "Escaping README.md content for JSON payload..."
-    - >
-      JSON_CONTENT=$(jq -Rs '.' < README.md);
-      echo "Escaped JSON content: $JSON_CONTENT";
-
-    # Update Wiki.js page
-    - echo "Updating Wiki.js page..."
-    - >
+      # Upload the page content to Wiki.js;
+      echo "Uploading $PAGE to Wiki.js...";
       curl -X POST "https://wiki.botuk.de/graphql"
       -H "Authorization: Bearer $WIKI_API_TOKEN"
       -H "Content-Type: application/json"
       -d '{
-      "query": "mutation UpdatePage($id: Int!, $content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { update(id: $id, content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
+      "query": "mutation UpdatePage($id: Int, $content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { update(id: $id, content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
       "variables": {
-      "id": 167,
+      "id": null,  # Null to create a new page if it doesn't exist
       "content": '"$JSON_CONTENT"',
-      "description": "Attention! Synced from GitLab. Edit here: https://gitlab.botuk.de/vedatbotuk/botuk_zigbee_workflow_changes",
+      "description": "Synced from GitLab Wiki",
       "editor": "code",
       "isPublished": true,
       "isPrivate": false,
-      "locale": "it",
-      "path": "./",
-      "tags": ["automation", "GitLab", "sync"],
-      "title": "Botuk Zigbee"
+      "locale": "en",
+      "path": "'$FULL_PATH'",
+      "tags": ["GitLab", "Sync"],
+      "title": "'$PAGE_TITLE'"
       }
       }';
+      done;
 
-    - echo "Wiki.js update complete."
+    - echo "Sync complete!"
 
   only:
     - main  # Trigger on changes to the main branch
