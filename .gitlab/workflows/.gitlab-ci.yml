@@ -237,17 +237,17 @@ deploy:
     expire_in: 1 hour
 
 # Update README.md on wiki.botuk.de
-
 wiki_sync_automatically_vm_control:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
     - echo "Syncing README.md to Wiki.js..."
     - >
-      curl "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files%2FREADME.md/raw?ref=main" > README.md;
+      curl "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files/README.md/raw?ref=main" > README.md;
       echo "Fetched README.md content:";
       cat README.md;
 
+    - echo "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files%2FREADME.md/raw?ref=main"
     - echo "Escaping README.md content for JSON payload..."
     - >
       JSON_CONTENT=$(jq -Rs '.' < README.md);
@@ -288,4 +288,4 @@ cleanup: &cleanup
   script:
     - rm -rf ./*
   only:
-    - merge_requests
+    - main
