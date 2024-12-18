@@ -277,7 +277,7 @@ wiki_sync_automatically_vm_control:
     - echo "Wiki.js update complete."
 
   only:
-    - dev  # Trigger on changes to the main branch
+    - main  # Trigger on changes to the main branch
 
 
 # CLEANUP
