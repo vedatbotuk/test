@@ -172,8 +172,11 @@ deploy:
   rules: *deploy_rule
   script:
     # Run the prod script
-    - chmod +x ./scripts/prod.sh
-    - ./scripts/prod.sh
+    # TODO #######################
+    # Activate following two lines
+    # TODO #######################
+    # - chmod +x ./scripts/prod.sh
+    # - ./scripts/prod.sh
     # DEBUG LINES
     # - mkdir ota
     # - touch ota/botuk_index1.json
@@ -248,7 +251,7 @@ sync_gitlab_wiki_to_wikijs:
   script:
     # Clone the GitLab wiki repository
     - echo "Cloning the GitLab wiki repository..."
-    - git clone https://$CI_JOB_TOKEN:@gitlab.botuk.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git
+    - git clone https://$CI_JOB_TOKEN:@gitlab.botuk.de/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git
 
     # Navigate to the cloned wiki repository
     - cd $CI_PROJECT_NAME.wiki
