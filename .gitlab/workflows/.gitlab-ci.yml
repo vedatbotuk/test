@@ -260,8 +260,9 @@ sync_gitlab_wiki_to_wikijs:
     - >
       for PAGE in *.md;
       do echo "Processing page: $PAGE";
-      CONTENT=$(cat "$PAGE");
-      JSON_CONTENT=$(echo "$CONTENT" | jq -Rs '.');
+      echo "Escaping $PAGE content for JSON payload...";
+      JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
+      echo "Escaped JSON content: $JSON_CONTENT";
       PAGE_TITLE=$(basename "$PAGE" .md);
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
       FULL_PATH="/en/technical/project/botuk_zigbee/$SUB_PATH";
