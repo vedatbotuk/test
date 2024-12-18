@@ -263,14 +263,14 @@ wiki_sync_automatically_vm_control:
       "variables": {
       "id": 167,
       "content": '"$JSON_CONTENT"',
-      "description": "Automatically synced from GitLab",
+      "description": "Attention! Synced from GitLab. Edit here: https://gitlab.botuk.de/vedatbotuk/botuk_zigbee_workflow_changes",
       "editor": "code",
       "isPublished": true,
       "isPrivate": false,
       "locale": "it",
       "path": "./",
       "tags": ["automation", "GitLab", "sync"],
-      "title": "Automatically VM Control"
+      "title": "Botuk Zigbee"
       }
       }';
 
