@@ -260,17 +260,17 @@ sync_gitlab_wiki_to_wikijs:
     - >
       for PAGE in *.md; do
       echo "Processing page: $PAGE";
-      
+      ;
       # Extract content and escape for JSON;
       CONTENT=$(cat "$PAGE");
       JSON_CONTENT=$(echo "$CONTENT" | jq -Rs '.');
-
+      ;
       # Determine the page path in Wiki.js (remove .md and replace underscores with dashes);
       PAGE_TITLE=$(basename "$PAGE" .md);
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
       FULL_PATH="/en/technical/project/botuk_zigbee/$SUB_PATH";
       echo "Page title: $PAGE_TITLE, Path: $FULL_PATH";
-
+      ;
       # Upload the page content to Wiki.js;
       echo "Uploading $PAGE to Wiki.js...";
       curl -X POST "https://wiki.botuk.de/graphql"
