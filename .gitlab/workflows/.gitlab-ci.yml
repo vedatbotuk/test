@@ -272,9 +272,24 @@ sync_gitlab_wiki_to_wikijs:
       -H "Authorization: Bearer $WIKI_API_TOKEN"
       -H "Content-Type: application/json"
       -d '{
-      "query": "mutation UpdatePage($id: Int, $content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { update(id: $id, content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
+      "query": "mutation UpdatePage($content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) {
+      pages {
+      update(content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) {
+      responseResult {
+      succeeded
+      errorCode
+      message
+      }
+      page {
+      id
+      path
+      title
+      content
+      }
+      }
+      }
+      }",
       "variables": {
-      "id": null,
       "content": '"$JSON_CONTENT"',
       "description": "Synced from GitLab Wiki",
       "editor": "code",
