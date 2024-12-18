@@ -236,23 +236,46 @@ deploy:
       - ota/*
     expire_in: 1 hour
 
-# Update README.md on wiki.botuk.de
+# Sync README.md and images to Wiki.js
 wiki_sync_automatically_vm_control:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
   script:
     - echo "Syncing README.md to Wiki.js..."
+
+    # Fetch README.md
     - >
       curl "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files/README.md/raw?ref=main" > README.md;
       echo "Fetched README.md content:";
       cat README.md;
 
-    - echo "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/files%2FREADME.md/raw?ref=main"
+    # Extract all image references
+    - echo "Finding image references in README.md..."
+    - >
+      IMAGES=$(grep -oE 'img/[^)\\"]+' README.md | sort | uniq);
+      echo "Images found:";
+      echo "$IMAGES";
+
+    # Upload each image to Wiki.js
+    - echo "Uploading images to Wiki.js..."
+    - >
+      for IMG in $IMAGES; do
+      echo "Uploading $IMG...";
+      curl -X POST "https://wiki.botuk.de/graphql"
+      -H "Authorization: Bearer $WIKI_API_TOKEN"
+      -H "Content-Type: multipart/form-data"
+      -F operations='{"query": "mutation UploadFile($file: Upload!) { files { upload(file: $file) { responseResult { succeeded errorCode message } file { id name path } } } }", "variables": { "file": null }}'
+      -F map='{"0": ["variables.file"]}'
+      -F 0=@$IMG;
+      done;
+
+    # Escape README.md for JSON payload
     - echo "Escaping README.md content for JSON payload..."
     - >
       JSON_CONTENT=$(jq -Rs '.' < README.md);
       echo "Escaped JSON content: $JSON_CONTENT";
 
+    # Update Wiki.js page
     - echo "Updating Wiki.js page..."
     - >
       curl -X POST "https://wiki.botuk.de/graphql"
