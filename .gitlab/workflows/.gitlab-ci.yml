@@ -257,36 +257,36 @@ sync_gitlab_wiki_to_wikijs:
     - cd $CI_PROJECT_NAME.wiki
 
     # Iterate over all .md files in the wiki
-    - |
+    - >
       for PAGE in *.md; do
-          echo "Processing page: $PAGE"
-          echo "Escaping $PAGE content for JSON payload..."
-          JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
-          echo "Escaped JSON content: $JSON_CONTENT"
+          echo "Processing page: $PAGE";
+          echo "Escaping $PAGE content for JSON payload...";
+          JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
+          echo "Escaped JSON content: $JSON_CONTENT";
 
-          PAGE_TITLE=$(basename "$PAGE" .md)
-          SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
-          FULL_PATH="/en/technical/project/botuk_zigbee/$SUB_PATH"
+          PAGE_TITLE=$(basename "$PAGE" .md);
+          SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
+          FULL_PATH="/en/technical/project/botuk_zigbee/$SUB_PATH";
 
           echo "Page title: $PAGE_TITLE, Path: $FULL_PATH"
           echo "Checking if the page exists..."
 
           # Query to check if the page exists
-          RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-              -H "Authorization: Bearer $WIKI_API_TOKEN" \
-              -H "Content-Type: application/json" \
+          RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql"
+              -H "Authorization: Bearer $WIKI_API_TOKEN"
+              -H "Content-Type: application/json"
               -d '{
                   "query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }",
                   "variables": { "path": "'"$FULL_PATH"'" }
-              }')
+              }');
 
-          PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
+          PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty');
 
           if [ -n "$PAGE_ID" ]; then
-              echo "Page exists with ID: $PAGE_ID. Updating..."
-              curl -X POST "https://wiki.botuk.de/graphql" \
-                  -H "Authorization: Bearer $WIKI_API_TOKEN" \
-                  -H "Content-Type: application/json" \
+              echo "Page exists with ID: $PAGE_ID. Updating...";
+              curl -X POST "https://wiki.botuk.de/graphql"
+                  -H "Authorization: Bearer $WIKI_API_TOKEN"
+                  -H "Content-Type: application/json"
                   -d '{
                       "query": "mutation UpdatePage($id: Int!, $content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { update(id: $id, content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
                       "variables": {
@@ -301,12 +301,12 @@ sync_gitlab_wiki_to_wikijs:
                           "tags": ["GitLab", "Sync"],
                           "title": "'"$PAGE_TITLE"'"
                       }
-                  }'
+                  }';
           else
-              echo "Page does not exist. Creating new page..."
-              CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-                  -H "Authorization: Bearer $WIKI_API_TOKEN" \
-                  -H "Content-Type: application/json" \
+              echo "Page does not exist. Creating new page...";
+              CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql"
+                  -H "Authorization: Bearer $WIKI_API_TOKEN"
+                  -H "Content-Type: application/json"
                   -d '{
                       "query": "mutation CreatePage($content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { create(content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
                       "variables": {
@@ -320,15 +320,15 @@ sync_gitlab_wiki_to_wikijs:
                           "tags": ["GitLab", "Sync"],
                           "title": "'"$PAGE_TITLE"'"
                       }
-                  }')
+                  }');
 
-              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded')
+              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded');
 
               if [ "$CREATE_SUCCESS" != "true" ]; then
-                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message')
-                  echo "Failed to create the page. Error: $ERROR_MSG"
+                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message');
+                  echo "Failed to create the page. Error: $ERROR_MSG";
               else
-                  echo "Page created successfully."
+                  echo "Page created successfully.";
               fi
           fi
       done
