@@ -271,6 +271,7 @@ sync_gitlab_wiki_to_wikijs:
               -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}')
 
           PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
+          echo $PAGE_ID
 
           # If PAGE_ID exists, update the page
           if [ -n "$PAGE_ID" ]; then
