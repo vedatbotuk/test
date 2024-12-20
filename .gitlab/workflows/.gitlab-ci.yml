@@ -257,7 +257,7 @@ sync_gitlab_wiki_to_wikijs:
     - cd $CI_PROJECT_NAME.wiki
 
     # Iterate over all .md files in the wiki
-    - >
+    - |
       for PAGE in *.md; do
           echo "Processing page: $PAGE"
           echo "Escaping $PAGE content for JSON payload..."
