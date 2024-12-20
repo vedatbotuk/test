@@ -264,7 +264,7 @@ sync_gitlab_wiki_to_wikijs:
           SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
           FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
           
-          # Query for the page ID to check if the page exists
+          # Query for the page ID
           RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
               -H "Authorization: Bearer $WIKI_API_TOKEN" \
               -H "Content-Type: application/json" \
@@ -275,8 +275,7 @@ sync_gitlab_wiki_to_wikijs:
           # If PAGE_ID exists, update the page
           if [ -n "$PAGE_ID" ]; then
               echo "Page exists with ID: $PAGE_ID. Updating..."
-
-              UPDATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
+              curl -s -X POST "https://wiki.botuk.de/graphql" \
               -H "Authorization: Bearer $WIKI_API_TOKEN" \
               -H "Content-Type: application/json" \
               -d '{
@@ -293,18 +292,33 @@ sync_gitlab_wiki_to_wikijs:
                       "tags": ["GitLab", "Sync"],
                       "title": "'"$PAGE_TITLE"'"
                   }
+              }'
+          else
+              # If PAGE_ID doesn't exist, create the page
+              CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
+              -H "Authorization: Bearer $WIKI_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{
+                  "query": "mutation CreatePage($content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) { pages { create(content: $content, description: $description, editor: $editor, isPublished: $isPublished, isPrivate: $isPrivate, locale: $locale, path: $path, tags: $tags, title: $title) { responseResult { succeeded errorCode message } page { id path title content } } } }",
+                  "variables": {
+                      "content": '"$JSON_CONTENT"',
+                      "description": "Synced from GitLab Wiki",
+                      "editor": "code",
+                      "isPublished": true,
+                      "isPrivate": false,
+                      "locale": "en",
+                      "path": "'"$FULL_PATH"'",
+                      "tags": ["GitLab", "Sync"],
+                      "title": "'"$PAGE_TITLE"'"
+                  }
               }')
 
-              UPDATE_SUCCESS=$(echo "$UPDATE_RESPONSE" | jq -r '.data.pages.update.responseResult.succeeded')
+              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded')
 
-              if [ "$UPDATE_SUCCESS" != "true" ]; then
-                  ERROR_MSG=$(echo "$UPDATE_RESPONSE" | jq -r '.data.pages.update.responseResult.message')
-                  echo "Failed to update the page. Error: $ERROR_MSG"
-              else
-                  echo "Page updated successfully."
+              if [ "$CREATE_SUCCESS" != "true" ]; then
+                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message')
+                  echo "Failed to create the page. Error: $ERROR_MSG"
               fi
-          else
-              echo "Page does not exist. Skipping creation and update."
           fi
       done
 
