@@ -266,7 +266,7 @@ sync_gitlab_wiki_to_wikijs:
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
       -H "Authorization: Bearer $WIKI_API_TOKEN" \
       -H "Content-Type: application/json" \
-      -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": { "path": "'"$FULL_PATH"'" }}')
+      -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}')
       PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
       if [ -n "$PAGE_ID" ]; then
       curl -s -X POST "https://wiki.botuk.de/graphql" \
