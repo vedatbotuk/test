@@ -266,18 +266,21 @@ sync_gitlab_wiki_to_wikijs:
 
           PAGE_TITLE=$(basename "$PAGE" .md)
           SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
-          FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
+          FULL_PATH="/en/technical/project/botuk_zigbee/$SUB_PATH"
 
           echo "Page title: $PAGE_TITLE, Path: $FULL_PATH"
           echo "Checking if the page exists..."
-          
-          PAGE_ID=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
+
+          # Query to check if the page exists
+          RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
               -H "Authorization: Bearer $WIKI_API_TOKEN" \
               -H "Content-Type: application/json" \
               -d '{
                   "query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }",
                   "variables": { "path": "'"$FULL_PATH"'" }
-              }' | jq -r '.data.pages.single.id // empty')
+              }')
+
+          PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
 
           if [ -n "$PAGE_ID" ]; then
               echo "Page exists with ID: $PAGE_ID. Updating..."
@@ -301,7 +304,7 @@ sync_gitlab_wiki_to_wikijs:
                   }'
           else
               echo "Page does not exist. Creating new page..."
-              curl -X POST "https://wiki.botuk.de/graphql" \
+              CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
                   -H "Authorization: Bearer $WIKI_API_TOKEN" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -317,7 +320,16 @@ sync_gitlab_wiki_to_wikijs:
                           "tags": ["GitLab", "Sync"],
                           "title": "'"$PAGE_TITLE"'"
                       }
-                  }'
+                  }')
+
+              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded')
+
+              if [ "$CREATE_SUCCESS" != "true" ]; then
+                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message')
+                  echo "Failed to create the page. Error: $ERROR_MSG"
+              else
+                  echo "Page created successfully."
+              fi
           fi
       done
     - echo "Sync complete!"
