@@ -321,7 +321,6 @@ sync_gitlab_wiki_to_wikijs:
               fi
           fi
       done
-
     - echo "Sync complete!"
 
   only:
