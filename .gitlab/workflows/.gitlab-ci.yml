@@ -268,7 +268,7 @@ sync_gitlab_wiki_to_wikijs:
     - PAGE_PATH="technical/project/botuk_zigbee/home"
     - PAGE_ID=$(echo "$RESPONSE" | jq -r --arg PAGE_PATH "$PAGE_PATH" '.data.pages.list[] | select(.path == $PAGE_PATH) | .id // empty')
     - echo ${PAGE_ID}
-
+    # TODO the lines above get the PAGE_ID, this should be deleted.
     
     - >
       for PAGE in *.md; do
@@ -280,6 +280,7 @@ sync_gitlab_wiki_to_wikijs:
           # Query for the page ID
           RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
 
+          # TODO: this line should be edidted. Now works manually. See above.
           # PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty')
 
           # If PAGE_ID exists, update the page
