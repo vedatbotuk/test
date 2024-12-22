@@ -249,7 +249,8 @@ sync_gitlab_wiki_to_wikijs:
     - git config --global user.name "GitLab CI/CD"
     - >
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
-    - echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
+    - >
+      echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
 
   script:
     # Clone the GitLab wiki repository
