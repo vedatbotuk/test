@@ -283,7 +283,8 @@ sync_gitlab_wiki_to_wikijs:
           echo "Debug: FULL_PATH = $FULL_PATH";
           RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d "{\"query\": \"query { pages { list { id path } } }\"}");
           echo "Debug: RESPONSE = $RESPONSE";
-          PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" ".data.pages.list[] | select(.path == $FULL_PATH) | .id");
+          PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" ".data.pages.list[] | select(.path == \$FULL_PATH) | .id // empty");
+          PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" ".data.pages.list[] | select(.path == \$FULL_PATH) | .id");
           echo "Page ID: $PAGE_ID";
           if [ -n "$PAGE_ID" ]; then
               echo "Page exists with ID: $PAGE_ID. Updating...";
