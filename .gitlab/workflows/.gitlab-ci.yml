@@ -248,6 +248,22 @@ sync_gitlab_wiki_to_wikijs:
     - git config --global user.email "ci@example.com"
     - git config --global user.name "GitLab CI/CD"
 
+    # Query for all pages once and build a lookup map
+    - declare -A PAGE_MAP
+    - >
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
+          -H "Authorization: Bearer $WIKI_API_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"query": "query { pages { list { id path } } }"}')
+    - echo $RESPONSE
+
+    # Populate the associative array
+    - >
+      while read -r ID PATH; do
+          PAGE_MAP["$PATH"]=$ID
+      done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"')
+    - echo PAGE_MAP[0]
+
   script:
     # Clone the GitLab wiki repository
     - echo "Cloning the GitLab wiki repository..."
@@ -272,22 +288,6 @@ sync_gitlab_wiki_to_wikijs:
 
     # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
 
-    # Query for all pages once and build a lookup map
-    - declare -A PAGE_MAP
-    - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-          -H "Authorization: Bearer $WIKI_API_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"query": "query { pages { list { id path } } }"}')
-    - echo $RESPONSE
-
-    # Populate the associative array
-    - >
-      while read -r ID PATH; do
-          PAGE_MAP["$PATH"]=$ID
-      done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"')
-    - echo PAGE_MAP[0]
-
     - >
       for PAGE in *.md;
       do
@@ -295,11 +295,6 @@ sync_gitlab_wiki_to_wikijs:
           PAGE_TITLE=$(basename "$PAGE" .md);
           SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
           FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH";
-          # Query for the page ID;
-          # RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}');
-
-          # TODO: this line should be edidted. Now works manually. See above.;
-          # PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty');
           PAGE_ID=${PAGE_MAP["$FULL_PATH"]};
           # echo $PAGE_ID;
           # If PAGE_ID exists, update the page;
