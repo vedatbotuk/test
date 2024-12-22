@@ -278,7 +278,8 @@ sync_gitlab_wiki_to_wikijs:
           -H "Authorization: Bearer $WIKI_API_TOKEN" \
           -H "Content-Type: application/json" \
           -d '{"query": "query { pages { list { id path } } }"}')
-    
+    - echo $RESPONSE
+
     # Function to fetch PAGE_ID using jq
     - >
       get_page_id() {
@@ -286,7 +287,8 @@ sync_gitlab_wiki_to_wikijs:
           echo "$RESPONSE" | jq -r --arg FULL_PATH "$full_path" \
               '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty'
       }
-    
+
+
     - >
       for PAGE in *.md; do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
