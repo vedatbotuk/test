@@ -270,7 +270,9 @@ sync_gitlab_wiki_to_wikijs:
     # - echo ${PAGE_ID}
     # TODO the lines above get the PAGE_ID, this should be deleted.
 
-    - |
+    # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
+
+    - >
       for PAGE in *.md; do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
           PAGE_TITLE=$(basename "$PAGE" .md)
