@@ -261,6 +261,7 @@ sync_gitlab_wiki_to_wikijs:
     - >
       while read -r ID PATH; do
           PAGE_MAP["$PATH"]=$ID
+          echo $PATH
       done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"')
     - echo PAGE_MAP[0]
 
@@ -298,8 +299,9 @@ sync_gitlab_wiki_to_wikijs:
           PAGE_ID=${PAGE_MAP["$FULL_PATH"]};
           # echo $PAGE_ID;
           # If PAGE_ID exists, update the page;
-          if [ -n "$PAGE_ID" ]; then
-              echo "Page exists with ID: $PAGE_ID. Updating..."
+          if [ -n "$PAGE_ID" ];
+          then
+              echo "Page exists with ID: $PAGE_ID. Updating...";
               curl -s -X POST "https://wiki.botuk.de/graphql" \
               -H "Authorization: Bearer $WIKI_API_TOKEN" \
               -H "Content-Type: application/json" \
@@ -316,10 +318,9 @@ sync_gitlab_wiki_to_wikijs:
                       "tags": ["GitLab", "Sync"],
                       "title": "'"$PAGE_TITLE"'"
                   }
-              }'
+              }';
           else
-              # If PAGE_ID doesn't exist, create the page
-              echo "Page does not exists, create new page"
+              echo "Page does not exists, create new page";
               CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
               -H "Authorization: Bearer $WIKI_API_TOKEN" \
               -H "Content-Type: application/json" \
@@ -336,13 +337,12 @@ sync_gitlab_wiki_to_wikijs:
                       "tags": ["GitLab", "Sync"],
                       "title": "'"$PAGE_TITLE"'"
                   }
-              }')
-
-              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded')
-
-              if [ "$CREATE_SUCCESS" != "true" ]; then
-                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message')
-                  echo "Failed to create the page. Error: $ERROR_MSG"
+              }');
+              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded');
+              if [ "$CREATE_SUCCESS" != "true" ];
+              then
+                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message');
+                  echo "Failed to create the page. Error: $ERROR_MSG";
               fi
           fi
       done
