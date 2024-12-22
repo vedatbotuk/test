@@ -251,19 +251,12 @@ sync_gitlab_wiki_to_wikijs:
     # Query for all pages once and build a lookup map
     - declare -A PAGE_MAP
     - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-          -H "Authorization: Bearer $WIKI_API_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"query": "query { pages { list { id path } } }"}');
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}');
     - echo $RESPONSE
 
     # Populate the associative array
     - >
-      while read -r ID PATH;
-      do
-          PAGE_MAP["$PATH"]=$ID;
-          echo $PATH;
-      done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"')
+      while read -r ID PATH; do PAGE_MAP["$PATH"]=$ID; echo $PATH; done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"');
     - echo PAGE_MAP[0]
 
   script:
