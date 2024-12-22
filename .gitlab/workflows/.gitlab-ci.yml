@@ -279,12 +279,14 @@ sync_gitlab_wiki_to_wikijs:
           -H "Authorization: Bearer $WIKI_API_TOKEN" \
           -H "Content-Type: application/json" \
           -d '{"query": "query { pages { list { id path } } }"}')
+    - echo $RESPONSE
 
     # Populate the associative array
     - >
       while read -r ID PATH; do
           PAGE_MAP["$PATH"]=$ID
       done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"')
+    - echo PAGE_MAP[0]
 
     - >
       for PAGE in *.md; do
