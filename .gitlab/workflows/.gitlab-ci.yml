@@ -306,6 +306,7 @@ sync_gitlab_wiki_to_wikijs:
               }'
           else
               # If PAGE_ID doesn't exist, create the page
+              echo "Page does not exists, create new page"
               CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
               -H "Authorization: Bearer $WIKI_API_TOKEN" \
               -H "Content-Type: application/json" \
