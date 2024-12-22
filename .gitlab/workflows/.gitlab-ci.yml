@@ -273,7 +273,6 @@ sync_gitlab_wiki_to_wikijs:
     # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
 
     - |
-      # for PAGE in *.md; do;
       echo "Processing: $PAGE";
       JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
       PAGE_TITLE=$(basename "$PAGE" .md);
