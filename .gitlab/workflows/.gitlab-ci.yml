@@ -282,6 +282,7 @@ sync_gitlab_wiki_to_wikijs:
 
           # TODO: this line should be edidted. Now works manually. See above.
           PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty')
+          echo $PAGE_ID
 
           # If PAGE_ID exists, update the page
           if [ -n "$PAGE_ID" ]; then
