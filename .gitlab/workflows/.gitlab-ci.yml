@@ -272,22 +272,8 @@ sync_gitlab_wiki_to_wikijs:
 
     # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
 
-    # Query all pages once
-    - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-          -H "Authorization: Bearer $WIKI_API_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"query": "query { pages { list { id path } } }"}')
-    - echo $RESPONSE
-
-    # Function to fetch PAGE_ID using jq
-    - >
-      get_page_id() {
-          local full_path=$1
-          echo "$RESPONSE" | jq -r --arg FULL_PATH "$full_path" \
-              '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty'
-      }
-
+    # Preprocess the response into plain-text format: PATH -> ID
+    - echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
 
     - >
       for PAGE in *.md; do
@@ -301,7 +287,7 @@ sync_gitlab_wiki_to_wikijs:
 
           # TODO: this line should be edidted. Now works manually. See above.
           # PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty')
-          PAGE_ID=$(get_page_id "$FULL_PATH")
+          PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}')
           echo $PAGE_ID
 
           # If PAGE_ID exists, update the page
