@@ -247,17 +247,9 @@ sync_gitlab_wiki_to_wikijs:
     # Set up Git config for fetching the wiki
     - git config --global user.email "ci@example.com"
     - git config --global user.name "GitLab CI/CD"
-
-    # # Query for all pages once and build a lookup map
-    # - declare -A PAGE_MAP
-    # - >
-    #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}');
-    # - echo $RESPONSE
-
-    # # Populate the associative array
-    # - >
-    #   while read -r ID PATH; do PAGE_MAP["$PATH"]=$ID; echo $PATH; done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"');
-    # - echo PAGE_MAP[0]
+    - >
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
+    - echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
 
   script:
     # Clone the GitLab wiki repository
@@ -290,7 +282,7 @@ sync_gitlab_wiki_to_wikijs:
           PAGE_TITLE=$(basename "$PAGE" .md);
           SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
           FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH";
-          PAGE_ID=${PAGE_MAP["$FULL_PATH"]};
+          PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}')
           # echo $PAGE_ID;
           # If PAGE_ID exists, update the page;
           if [ -n "$PAGE_ID" ];
