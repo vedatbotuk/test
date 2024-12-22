@@ -251,17 +251,18 @@ sync_gitlab_wiki_to_wikijs:
     # Query for all pages once and build a lookup map
     - declare -A PAGE_MAP
     - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-          -H "Authorization: Bearer $WIKI_API_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{"query": "query { pages { list { id path } } }"}')
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql"
+          -H "Authorization: Bearer $WIKI_API_TOKEN"
+          -H "Content-Type: application/json"
+          -d '{"query": "query { pages { list { id path } } }"}');
     - echo $RESPONSE
 
     # Populate the associative array
     - >
-      while read -r ID PATH; do
-          PAGE_MAP["$PATH"]=$ID
-          echo $PATH
+      while read -r ID PATH;
+      do
+          PAGE_MAP["$PATH"]=$ID;
+          echo $PATH;
       done < <(echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.id) \(.path)"')
     - echo PAGE_MAP[0]
 
@@ -338,6 +339,12 @@ sync_gitlab_wiki_to_wikijs:
                       "title": "'"$PAGE_TITLE"'"
                   }
               }');
+              CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded');
+              if [ "$CREATE_SUCCESS" != "true" ];
+              then
+                  ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message');
+                  echo "Failed to create the page. Error: $ERROR_MSG";
+              fi
           fi
       done
     - echo $PAGE_ID  
