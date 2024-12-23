@@ -279,7 +279,7 @@ sync_gitlab_wiki_to_wikijs:
       echo "$RESPONSE" | jq -r '.data.pages.single | "\(.id)"' > pages_map.txt
 
     - TEST=$(ls -la .)
-    - TEST1=$(cat pages_mao.txt)
+    - TEST1=$(cat pages_map.txt)
     - echo $TEST
     - echo $TEST1
 
