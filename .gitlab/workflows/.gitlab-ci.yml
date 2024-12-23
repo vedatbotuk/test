@@ -262,9 +262,9 @@ sync_gitlab_wiki_to_wikijs:
     # - >
     #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
     #   PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
-    # - >
-    #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
-    # - echo ${RESPONSE}
+    - >
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
+    - echo ${RESPONSE}
     # - PAGE_PATH="technical/project/botuk_zigbee/home"
     # - PAGE_ID=$(echo "$RESPONSE" | jq -r --arg PAGE_PATH "$PAGE_PATH" '.data.pages.list[] | select(.path == $PAGE_PATH) | .id // empty')
     # - echo ${PAGE_ID}
@@ -272,14 +272,13 @@ sync_gitlab_wiki_to_wikijs:
 
     # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
 
-    - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
-    - echo $RESPONSE
-    - |-
-      echo "$RESPONSE" | jq -r '.data.pages.single | "\(.id)"' > pages_map.txt
+    # - >
+    #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
+    # - echo $RESPONSE
+    # - |-
+    #   echo "$RESPONSE" | jq -r '.data.pages.single | "\(.id)"' > pages_map.txt
 
-
-    - cat pages_map.txt
+    # - cat pages_map.txt
 
     - >
       for PAGE in *.md;
