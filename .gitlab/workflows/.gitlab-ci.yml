@@ -286,7 +286,8 @@ sync_gitlab_wiki_to_wikijs:
     - echo $TEST1
     
     - FULL_PATH="technical/project/botuk_zigbee/home"
-    - PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}') || PAGE_ID="";
+    # - PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}') || PAGE_ID="";
+    - PAGE_ID=$(grep "^$FULL_PATH " pages_map.txt | cut -d' ' -f2)
 
     - >
       for PAGE in *.md; do 
