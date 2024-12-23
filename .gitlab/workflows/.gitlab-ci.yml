@@ -289,7 +289,7 @@ sync_gitlab_wiki_to_wikijs:
       PAGE_TITLE=$(basename "$PAGE" .md); 
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g'); 
       FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"; 
-      PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}'); 
+      PAGE_ID=174
       echo "Processing: $FULL_PATH (ID: $PAGE_ID)"; 
       if [ -n "$PAGE_ID" ]; then 
       echo "Page exists with ID: $PAGE_ID. Updating..."; 
