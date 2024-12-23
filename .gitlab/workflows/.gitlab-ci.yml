@@ -243,6 +243,8 @@ deploy:
 sync_gitlab_wiki_to_wikijs:
   stage: deploy
   image: registry.gitlab.botuk.de/vedatbotuk/botuk_zigbee
+  variables:
+    PAGE_ID: ""
   before_script:
     # Set up Git config for fetching the wiki
     - git config --global user.email "ci@example.com"
@@ -282,7 +284,6 @@ sync_gitlab_wiki_to_wikijs:
     - TEST1=$(cat pages_map.txt)
     - echo $TEST
     - echo $TEST1
-    - PAGE_ID=""
 
     - >
       for PAGE in *.md; do 
