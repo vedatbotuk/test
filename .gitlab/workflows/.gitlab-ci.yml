@@ -283,21 +283,21 @@ sync_gitlab_wiki_to_wikijs:
     - echo $TEST
     - echo $TEST1
 
-    - |
+    - >
       for PAGE in *.md; do
-        # Read the content of the page and encode it as JSON
-        JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
-        PAGE_TITLE=$(basename "$PAGE" .md)
-        SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
-        FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
+        # Read the content of the page and encode it as JSON \
+        JSON_CONTENT=$(jq -Rs '.' < "$PAGE") \ 
+        PAGE_TITLE=$(basename "$PAGE" .md) \
+        SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g') \
+        FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH" \
+        \
+        # Get the page ID from the pages_map.txt file \
+        PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}') \
+        echo "Processing: $FULL_PATH (ID: $PAGE_ID)" \
         
-        # Get the page ID from the pages_map.txt file
-        PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}')
-        echo "Processing: $FULL_PATH (ID: $PAGE_ID)"
-        
-        # If PAGE_ID exists, update the page
-        if [ -n "$PAGE_ID" ]; then
-          echo "Page exists with ID: $PAGE_ID. Updating..."
+        # If PAGE_ID exists, update the page \
+        if [ -n "$PAGE_ID" ]; then \
+          echo "Page exists with ID: $PAGE_ID. Updating..." \
           curl -s -X POST "https://wiki.botuk.de/graphql" \
             -H "Authorization: Bearer $WIKI_API_TOKEN" \
             -H "Content-Type: application/json" \
@@ -321,9 +321,9 @@ sync_gitlab_wiki_to_wikijs:
                 "tags": ["GitLab", "Sync"],
                 "title": "'"$PAGE_TITLE"'"
               }
-            }'
-        else
-          echo "Page does not exist. Creating a new page..."
+            }' \
+        else \
+          echo "Page does not exist. Creating a new page..." \
           CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
             -H "Authorization: Bearer $WIKI_API_TOKEN" \
             -H "Content-Type: application/json" \
@@ -347,19 +347,18 @@ sync_gitlab_wiki_to_wikijs:
                 "tags": ["GitLab", "Sync"],
                 "title": "'"$PAGE_TITLE"'"
               }
-            }')
-
-          # Check if the page creation succeeded
-          CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded')
-          if [ "$CREATE_SUCCESS" != "true" ]; then
-            ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message')
-            echo "Failed to create the page. Error: $ERROR_MSG"
-          else
-            echo "Page created successfully."
-          fi
-        fi
+            }') \
+          \
+          # Check if the page creation succeeded \
+          CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded') \
+          if [ "$CREATE_SUCCESS" != "true" ]; then \
+            ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message') \
+            echo "Failed to create the page. Error: $ERROR_MSG" \
+          else \
+            echo "Page created successfully." \
+          fi \
+        fi \
       done
-
 
   only:
     - main  # Trigger on changes to the main branch
