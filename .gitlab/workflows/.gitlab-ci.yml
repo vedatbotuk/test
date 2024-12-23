@@ -247,9 +247,9 @@ sync_gitlab_wiki_to_wikijs:
     # Set up Git config for fetching the wiki
     - git config --global user.email "ci@example.com"
     - git config --global user.name "GitLab CI/CD"
-    - >
+    - |-
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
-    - >
+    - |-
       echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
 
   script:
@@ -275,6 +275,8 @@ sync_gitlab_wiki_to_wikijs:
     # TODO the lines above get the PAGE_ID, this should be deleted.
 
     # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
+
+    - cat pages_map.txt
 
     - >
       for PAGE in *.md;
