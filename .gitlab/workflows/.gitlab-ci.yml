@@ -293,9 +293,9 @@ sync_gitlab_wiki_to_wikijs:
       echo "Processing: $FULL_PATH (ID: $PAGE_ID)"; 
       if [ -n "$PAGE_ID" ]; then 
       echo "Page exists with ID: $PAGE_ID. Updating..."; 
-      curl -s -X POST "https://wiki.botuk.de/graphql" \
-      -H "Authorization: Bearer $WIKI_API_TOKEN" \
-      -H "Content-Type: application/json" \
+      curl -s -X POST "https://wiki.botuk.de/graphql"
+      -H "Authorization: Bearer $WIKI_API_TOKEN"
+      -H "Content-Type: application/json"
       -d '{
       "query": "mutation UpdatePage($id: Int!, $content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $tags: [String]!, $title: String!) {
       pages {
@@ -319,9 +319,9 @@ sync_gitlab_wiki_to_wikijs:
       }';
       else 
       echo "Page does not exist. Creating a new page..."; 
-      CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
-      -H "Authorization: Bearer $WIKI_API_TOKEN" \
-      -H "Content-Type: application/json" \
+      CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql"
+      -H "Authorization: Bearer $WIKI_API_TOKEN"
+      -H "Content-Type: application/json"
       -d '{
       "query": "mutation CreatePage($content: String!, $description: String!, $editor: String!, $isPublished: Boolean!, $isPrivate: Boolean!, $locale: String!, $path: String!, $tags: [String]!, $title: String!) {
       pages {
