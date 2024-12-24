@@ -256,7 +256,7 @@ sync_gitlab_wiki_to_wikijs:
     # Navigate to the cloned wiki repository
     - cd $CI_PROJECT_NAME.wiki
 
-    - >
+    - |
       JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
       PAGE_TITLE="home.de"
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
