@@ -277,13 +277,13 @@ sync_gitlab_wiki_to_wikijs:
     # - >
     #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
     # - echo $RESPONSE
-    - >
-      echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
+    # - >
+      # echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
 
-    - TEST=$(ls -la .)
-    - TEST1=$(cat pages_map.txt)
-    - echo $TEST
-    - echo $TEST1
+    # - TEST=$(ls -la .)
+    # - TEST1=$(cat pages_map.txt)
+    # - echo $TEST
+    # - echo $TEST1
     
     # - FULL_PATH="technical/project/botuk_zigbee/home"
     # - PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}') || PAGE_ID="";
