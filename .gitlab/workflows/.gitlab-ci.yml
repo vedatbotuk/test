@@ -267,8 +267,8 @@ sync_gitlab_wiki_to_wikijs:
       PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty');
       echo $PAGE_ID;
       # If PAGE_ID exists, update the page;
-      if [ -n "$PAGE_ID" ]; then
-      echo "Page exists with ID: $PAGE_ID. Updating...";
+      if [ -n "$PAGE_ID" ];
+      then echo "Page exists with ID: $PAGE_ID. Updating...";
       curl -s -X POST "https://wiki.botuk.de/graphql" \
       -H "Authorization: Bearer $WIKI_API_TOKEN" \
       -H "Content-Type: application/json" \
@@ -286,8 +286,7 @@ sync_gitlab_wiki_to_wikijs:
       "title": "'"$PAGE_TITLE"'"
       }
       }';
-      else
-      # If PAGE_ID doesn't exist, create the page;
+      else # If PAGE_ID doesn't exist, create the page;
       echo "Page does not exists, create new page";
       CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" \
       -H "Authorization: Bearer $WIKI_API_TOKEN" \
@@ -307,8 +306,8 @@ sync_gitlab_wiki_to_wikijs:
       }
       }');
       CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded');
-      if [ "$CREATE_SUCCESS" != "true" ]; then
-      ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message');
+      if [ "$CREATE_SUCCESS" != "true" ];
+      then ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message');
       echo "Failed to create the page. Error: $ERROR_MSG";
       fi;
       fi;
