@@ -263,7 +263,7 @@ sync_gitlab_wiki_to_wikijs:
     # Debug existing page on wiki
     - >
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
-      PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
+      PAGE_ID=$(echo "$RESPONSE" | jq -r --arg PAGE_PATH "/technical/project/botuk_zigbee/home" '.data.pages.list[] | select(.path == $PAGE_PATH) | .id // empty');
     - echo ${PAGE_ID}
     # - >
     #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
