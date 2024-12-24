@@ -261,33 +261,17 @@ sync_gitlab_wiki_to_wikijs:
     # Iterate over all .md files in the wiki
     
     # Debug existing page on wiki
-    # - >
-    #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
-    #   PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
     - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
-    - echo ${RESPONSE}
-    # - PAGE_PATH="technical/project/botuk_zigbee/home"
-    - PAGE_ID=$(echo "$RESPONSE" | jq -r --arg PAGE_PATH "$PAGE_PATH" '.data.pages.list[] | select(.path == $PAGE_PATH) | .id // empty')
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
+      PAGE_ID=$(echo "$RESPONSE" | jq -r '.data.pages.single.id // empty')
     - echo ${PAGE_ID}
+    # - >
+    #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
+    # - echo ${RESPONSE}
+    # - PAGE_PATH="technical/project/botuk_zigbee/home"
+    # - PAGE_ID=$(echo "$RESPONSE" | jq -r --arg PAGE_PATH "$PAGE_PATH" '.data.pages.list[] | select(.path == $PAGE_PATH) | .id // empty')
+    # - echo ${PAGE_ID}
     # TODO the lines above get the PAGE_ID, this should be deleted.
-
-    # If I create a page id like above, it works. But in for loop it does not work creating varibale page id
-
-    # - >
-    #   RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query GetPageId($path: String!) { pages { single(path: $path) { id } } }","variables": {"path": "'"$FULL_PATH"'"}}');
-    # - echo $RESPONSE
-    # - >
-      # echo "$RESPONSE" | jq -r '.data.pages.list[] | "\(.path) \(.id)"' > pages_map.txt
-
-    # - TEST=$(ls -la .)
-    # - TEST1=$(cat pages_map.txt)
-    # - echo $TEST
-    # - echo $TEST1
-    
-    # - FULL_PATH="technical/project/botuk_zigbee/home"
-    # - PAGE_ID=$(grep -m 1 "^$FULL_PATH " pages_map.txt | awk '{print $2}') || PAGE_ID="";
-    # - PAGE_ID=$(grep "^$FULL_PATH " pages_map.txt | cut -d' ' -f2)
 
     - >
       for PAGE in *.md;
