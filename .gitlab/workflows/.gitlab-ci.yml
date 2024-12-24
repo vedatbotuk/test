@@ -291,16 +291,15 @@ sync_gitlab_wiki_to_wikijs:
 
     - >
       for PAGE in *.md;
-      do PAGE=${PAGE}; 
-      PAGE=174; 
-      echo ${PAGE}; 
-      JSON_CONTENT=$(jq -Rs '.' < "$PAGE"); 
-      PAGE_TITLE=$(basename "$PAGE" .md); 
-      SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g'); 
+      do JSON_CONTENT=$(jq -Rs '.' < "${PAGE}"); 
+      PAGE_TITLE=$(basename "${PAGE}" .md); 
+      SUB_PATH=$(echo "${PAGE_TITLE}" | sed 's/_/-/g'); 
       FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"; 
-      PAGE_ID=$(grep "^$FULL_PATH " pages_map.txt | cut -d' ' -f2); 
-      echo "Processing: $FULL_PATH (ID: $PAGE_ID)"; 
-      if [ -n "$PAGE_ID" ];
+      echo ${PAGE}; 
+      echo ${FULL_PATH}; 
+      PAGE_ID=$(grep "^${FULL_PATH} " pages_map.txt | cut -d' ' -f2); 
+      echo "Processing: ${FULL_PATH} (ID: ${PAGE_ID})"; 
+      if [ -n "$PPAGE_ID}" ];
       then echo "Page exists with ID: $PAGE_ID. Updating..."; 
       curl -s -X POST "https://wiki.botuk.de/graphql"
       -H "Authorization: Bearer $WIKI_API_TOKEN"
