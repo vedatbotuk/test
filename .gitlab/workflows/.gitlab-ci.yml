@@ -256,16 +256,16 @@ sync_gitlab_wiki_to_wikijs:
     # Navigate to the cloned wiki repository
     - cd $CI_PROJECT_NAME.wiki
 
-    - PAGE_TITLE="home.md";
-    - JSON_CONTENT=$(jq -Rs '.' < "$PAGE_TITLE");
-    - SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
-    - FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH";
-    # Query for the page ID;
+    - PAGE_TITLE="home.md"
+    - JSON_CONTENT=$(jq -Rs '.' < "$PAGE_TITLE")
+    - SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
+    - FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
+    # Query for the page ID
     - >
-      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}');
-    # TODO: this line should be edidted. Now works manually. See above.;
-    - PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty');
-    - echo $PAGE_ID;
+      RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
+    # TODO: this line should be edidted. Now works manually. See above.
+    - PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty')
+    - echo $PAGE_ID
     - >
       # If PAGE_ID exists, update the page;
       if [ -n "$PAGE_ID" ];
