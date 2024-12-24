@@ -348,7 +348,7 @@ sync_gitlab_wiki_to_wikijs:
           echo "Page created successfully."
         fi
       fi
-    done
+      done
 
 
   only:
