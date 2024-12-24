@@ -261,14 +261,11 @@ sync_gitlab_wiki_to_wikijs:
       PAGE_TITLE="home.de";
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
       FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH";
-      
       # Query for the page ID;
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}');
-
       # TODO: this line should be edidted. Now works manually. See above.;
       PAGE_ID=$(echo "$RESPONSE" | jq -r --arg FULL_PATH "$FULL_PATH" '.data.pages.list[] | select(.path == $FULL_PATH) | .id // empty');
       echo $PAGE_ID;
-
       # If PAGE_ID exists, update the page;
       if [ -n "$PAGE_ID" ]; then
       echo "Page exists with ID: $PAGE_ID. Updating...";
@@ -309,9 +306,7 @@ sync_gitlab_wiki_to_wikijs:
       "title": "'"$PAGE_TITLE"'"
       }
       }');
-
       CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded');
-
       if [ "$CREATE_SUCCESS" != "true" ]; then
       ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message');
       echo "Failed to create the page. Error: $ERROR_MSG";
