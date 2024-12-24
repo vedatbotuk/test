@@ -291,7 +291,7 @@ sync_gitlab_wiki_to_wikijs:
 
     - >
       for PAGE in *.md; do 
-      PAGE = ${PAGE}
+      PAGE=${PAGE}
       JSON_CONTENT=$(jq -Rs '.' < "$PAGE"); 
       PAGE_TITLE=$(basename "$PAGE" .md); 
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g'); 
