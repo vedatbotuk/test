@@ -290,16 +290,18 @@ sync_gitlab_wiki_to_wikijs:
     # - PAGE_ID=$(grep "^$FULL_PATH " pages_map.txt | cut -d' ' -f2)
 
     - >
-      for PAGE in *.md; do 
-      PAGE=${PAGE}
+      for PAGE in *.md;
+      do PAGE=${PAGE}
+      PAGE=171
+      echo ${PAGE}
       JSON_CONTENT=$(jq -Rs '.' < "$PAGE"); 
       PAGE_TITLE=$(basename "$PAGE" .md); 
       SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g'); 
       FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"; 
       PAGE_ID=$(grep "^$FULL_PATH " pages_map.txt | cut -d' ' -f2); 
       echo "Processing: $FULL_PATH (ID: $PAGE_ID)"; 
-      if [ -n "$PAGE_ID" ]; then 
-      echo "Page exists with ID: $PAGE_ID. Updating..."; 
+      if [ -n "$PAGE_ID" ];
+      then echo "Page exists with ID: $PAGE_ID. Updating..."; 
       curl -s -X POST "https://wiki.botuk.de/graphql"
       -H "Authorization: Bearer $WIKI_API_TOKEN"
       -H "Content-Type: application/json"
@@ -324,8 +326,7 @@ sync_gitlab_wiki_to_wikijs:
       "title": "'"$PAGE_TITLE"'"
       }
       }';
-      else 
-      echo "Page does not exist. Creating a new page..."; 
+      else echo "Page does not exist. Creating a new page..."; 
       CREATE_RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql"
       -H "Authorization: Bearer $WIKI_API_TOKEN"
       -H "Content-Type: application/json"
@@ -351,11 +352,10 @@ sync_gitlab_wiki_to_wikijs:
       }
       }'); 
       CREATE_SUCCESS=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.succeeded'); 
-      if [ "$CREATE_SUCCESS" != "true" ]; then 
-      ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message'); 
+      if [ "$CREATE_SUCCESS" != "true" ];
+      then ERROR_MSG=$(echo "$CREATE_RESPONSE" | jq -r '.data.pages.create.responseResult.message'); 
       echo "Failed to create the page. Error: $ERROR_MSG"; 
-      else 
-      echo "Page created successfully."; 
+      else echo "Page created successfully."; 
       fi; 
       fi; 
       done
