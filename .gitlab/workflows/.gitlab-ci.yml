@@ -260,8 +260,7 @@ sync_gitlab_wiki_to_wikijs:
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
     - echo ${RESPONSE}
 
-    # - PAGE_LIST=$(ls *.md)
-    - PAGE_LIST=$("home.md" "test.md")
+    - PAGE_LIST=$(ls *.md)
 
     - >
       for PAGE in $PAGE_LIST;
