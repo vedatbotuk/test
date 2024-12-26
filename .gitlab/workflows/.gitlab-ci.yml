@@ -285,9 +285,11 @@ sync_gitlab_wiki_to_wikijs:
 
     - echo "{${DATA[*]}}"
 
-    # - PAGE_LIST=$(ls *.md)
-    # - PAGE_ID_LIST=("174" "home")
-    # - DATE=("$JSON_CONTENT" "$FULL_PATH" "174")
+    # TODO
+    ######
+    # , contentType: markdown
+    # works but create no new page
+    # test is again.
 
     - >
       COUNTER=0;
