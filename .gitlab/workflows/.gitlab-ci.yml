@@ -285,12 +285,6 @@ sync_gitlab_wiki_to_wikijs:
 
     - echo "{${DATA[*]}}"
 
-    # TODO
-    ######
-    # , contentType: markdown
-    # works but create no new page
-    # test is again.
-
     - >
       COUNTER=0;
       for PAGE_ID in "${PAGE_ID_LIST[@]}";
@@ -316,7 +310,7 @@ sync_gitlab_wiki_to_wikijs:
                       "id": '$PAGE_ID',
                       "content": '"$JSON_CONTENT"',
                       "description": "Synced from GitLab Wiki",
-                      "editor": "code",
+                      "editor": "markdown",
                       "isPublished": true,
                       "isPrivate": false,
                       "locale": "en",
