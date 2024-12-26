@@ -264,8 +264,40 @@ sync_gitlab_wiki_to_wikijs:
     # Extract IDs for the specific paths
     - PAGE_ID_LIST=$(echo "$RESPONSE" | jq -r '.data.pages.list[] | select(.path == "technical/project/botuk_zigbee/home" or .path == "technical/project/botuk_zigbee/test") | .id' | awk '{printf "\"%s\" ", $1}' | sed 's/ $//')
 
+
+    # Initialize PAGE_ID_LIST
+    - PAGE_ID_LIST=""
+
+    # Loop through each Markdown file to generate FULL_PATH and fetch the corresponding page ID
+    - >
+      for PAGE in *.md; do
+          # Get the page title without extension
+          PAGE_TITLE=$(basename "$PAGE" .md)
+          
+          # Convert underscores to hyphens in the title to form the sub-path
+          SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
+          
+          # Create the full path
+          FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
+          
+          # Query the JSON response for the current FULL_PATH and add the ID to the PAGE_ID_LIST
+          ID=$(echo "$RESPONSE" | jq -r --arg path "$FULL_PATH" '.data.pages.list[] | select(.path == $path) | .id')
+          
+          # Append the ID to PAGE_ID_LIST if it is not empty
+          if [[ -n "$ID" ]]; then
+              PAGE_ID_LIST="${PAGE_ID_LIST}\"$ID\" "
+          fi
+      done
+
+    # Remove the trailing space from PAGE_ID_LIST
+    - PAGE_ID_LIST=$(echo "$PAGE_ID_LIST" | sed 's/ $//')
+
     # Wrap the IDs in the array format
     - echo "PAGE_ID_LIST=($PAGE_ID_LIST)"
+
+    # Print the result
+    - >
+      echo "PAGE_ID_LIST: $PAGE_ID_LIST"
 
     - >
       DATA=();
