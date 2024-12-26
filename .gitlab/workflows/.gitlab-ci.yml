@@ -265,8 +265,7 @@ sync_gitlab_wiki_to_wikijs:
     - >
       DATA=();
       COUNTER=0;
-
-      for PAGE in $PAGE_LIST;
+      for PAGE in *.md;
       do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
 
