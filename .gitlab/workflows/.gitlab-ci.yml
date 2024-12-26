@@ -291,7 +291,7 @@ sync_gitlab_wiki_to_wikijs:
 
     - >
       COUNTER=0;
-      for IDs in $PAGE_ID_LIST;
+      for ID in "${PAGE_ID_LIST[@]}";
       do
           echo "Processing $PAGE...";
           JSON_CONTENT=${DATA[$COUNTER]}
