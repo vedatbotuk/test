@@ -260,14 +260,31 @@ sync_gitlab_wiki_to_wikijs:
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
     - echo ${RESPONSE}
 
-    - JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
-    - PAGE_TITLE=$(basename "$PAGE" .md);
-    - SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
-    - FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
+    - PAGE_ID_LIST=("174" "home")
+
+    - >
+      DATA=();
+      COUNTER=0;
+
+      for PAGE in $PAGE_LIST;
+      do
+          JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
+
+          PAGE_TITLE=$(basename "$PAGE" .md);
+          SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
+
+          FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH";
+
+          DATA+=("$JSON_CONTENT" "$FULL_PATH" "PAGE_ID_LIST${COUNTER}");
+
+          COUNTER=$((COUNTER + 1))
+      done
+
+    - echo "{${DATA[*]}}"
 
     # - PAGE_LIST=$(ls *.md)
     # - PAGE_ID_LIST=("174" "home")
-    - DATE=("$JSON_CONTENT" "$FULL_PATH" "174")
+    # - DATE=("$JSON_CONTENT" "$FULL_PATH" "174")
 
     - >
       for PAGE in $PAGE_LIST;
