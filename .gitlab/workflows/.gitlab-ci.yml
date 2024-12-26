@@ -278,7 +278,7 @@ sync_gitlab_wiki_to_wikijs:
           echo $PAGE_TITLE
           echo ${PAGE_ID_LIST[${COUNTER}]}
           
-          DATA+=("$JSON_CONTENT" "$FULL_PATH" "${PAGE_ID_LIST[${COUNTER}]}" "PAGE_TITLE");
+          DATA+=("$JSON_CONTENT" "$FULL_PATH" "${PAGE_ID_LIST[${COUNTER}]}" "$PAGE_TITLE");
 
           COUNTER=$((COUNTER + 1))
       done
