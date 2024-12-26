@@ -273,7 +273,7 @@ sync_gitlab_wiki_to_wikijs:
           FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
           echo $FULL_PATH
 
-          PAGE_ID=$(PAGE_ID_LIST[0])
+          PAGE_ID=${PAGE_ID_LIST[0]}
           echo ${PAGE_ID}
 
           if [ -n "$PAGE_ID" ];
