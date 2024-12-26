@@ -290,7 +290,7 @@ sync_gitlab_wiki_to_wikijs:
     # - DATE=("$JSON_CONTENT" "$FULL_PATH" "174")
 
     - >
-      for PAGE in $PAGE_LIST;
+      for IDs in $PAGE_ID_LIST;
       do
           echo "Processing $PAGE...";
           JSON_CONTENT=${DATA[0]}
@@ -306,7 +306,7 @@ sync_gitlab_wiki_to_wikijs:
           # PAGE_ID=${PAGE_ID_LIST[0]}
           echo ${PAGE_ID}
 
-          if [ -n "$PAGE_ID" ];
+          if [[ "$PAGE_ID" =~ ^[0-9]+$ ]];
           then
               echo "Page exists with ID: $PAGE_ID. Updating...";
               curl -s -X POST "https://wiki.botuk.de/graphql" \
