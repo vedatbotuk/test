@@ -299,7 +299,7 @@ sync_gitlab_wiki_to_wikijs:
           PAGE_TITLE=${DATA[$COUNTER + 3]}
           echo "Processing $PAGE_TITLE...";
           echo $FULL_PATH
-          echo $PAGE
+          echo $PAGE_ID
           echo ${PAGE_ID}
 
           if [[ "$PAGE_ID" =~ ^[0-9]+$ ]];
