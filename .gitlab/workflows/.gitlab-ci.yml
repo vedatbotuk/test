@@ -290,12 +290,13 @@ sync_gitlab_wiki_to_wikijs:
     # - DATE=("$JSON_CONTENT" "$FULL_PATH" "174")
 
     - >
+      COUNTER=0;
       for IDs in $PAGE_ID_LIST;
       do
           echo "Processing $PAGE...";
-          JSON_CONTENT=${DATA[0]}
-          FULL_PATH=${DATA[1]}
-          PAGE_ID=${DATA[2]}
+          JSON_CONTENT=${DATA[$COUNTER]}
+          FULL_PATH=${DATA[$COUNTER + 1]}
+          PAGE_ID=${DATA[$COUNTER + 2]}
 
           # JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
           # PAGE_TITLE=$(basename "$PAGE" .md);
