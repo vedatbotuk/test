@@ -278,7 +278,7 @@ sync_gitlab_wiki_to_wikijs:
           echo $PAGE_TITLE
           echo ${PAGE_ID_LIST[${COUNTER}]}
           
-          DATA+=("$JSON_CONTENT" "$FULL_PATH" "${PAGE_ID_LIST[${COUNTER}]}");
+          DATA+=("$JSON_CONTENT" "$FULL_PATH" "${PAGE_ID_LIST[${COUNTER}]}" "PAGE_TITLE");
 
           COUNTER=$((COUNTER + 1))
       done
@@ -293,18 +293,13 @@ sync_gitlab_wiki_to_wikijs:
       COUNTER=0;
       for PAGE_ID in "${PAGE_ID_LIST[@]}";
       do
-          echo "Processing $PAGE...";
           JSON_CONTENT=${DATA[$COUNTER]}
           FULL_PATH=${DATA[$COUNTER + 1]}
           PAGE_ID=${DATA[$COUNTER + 2]}
-
-          # JSON_CONTENT=$(jq -Rs '.' < "$PAGE")
-          # PAGE_TITLE=$(basename "$PAGE" .md);
-          # SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g')
-          # FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH"
+          PAGE_TITLE=${DATA[$COUNTER + 3]}
+          echo "Processing $PAGE_TITLE...";
           echo $FULL_PATH
-
-          # PAGE_ID=${PAGE_ID_LIST[0]}
+          echo $PAGE
           echo ${PAGE_ID}
 
           if [[ "$PAGE_ID" =~ ^[0-9]+$ ]];
