@@ -286,7 +286,7 @@ sync_gitlab_wiki_to_wikijs:
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
           if [[ $JSON_CONTENT == '""' ]];
           then
-              JSON_CONTENT="Page cannot be empty. Auto-generated content.";
+              JSON_CONTENT='"Page cannot be empty. Auto-generated content."';
           fi
           PAGE_TITLE=$(basename "$PAGE" .md);
           RELATIVE_PATH=$(echo "$PAGE" | sed 's|^\./||; s|\.md$||')
