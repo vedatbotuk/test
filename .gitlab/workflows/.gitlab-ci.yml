@@ -284,8 +284,7 @@ sync_gitlab_wiki_to_wikijs:
       for PAGE in $(find . -type f -name "*.md");
       do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
-          echo $JSON_CONTENT
-          if [[ $JSON_CONTENT == "null" ]];
+          if [[ $JSON_CONTENT == '""' ]];
           then
               JSON_CONTENT="Page cannot be empty. Auto-generated content.";
           fi
