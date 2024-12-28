@@ -260,9 +260,9 @@ sync_gitlab_wiki_to_wikijs:
       RESPONSE=$(curl -s -X POST "https://wiki.botuk.de/graphql" -H "Authorization: Bearer $WIKI_API_TOKEN" -H "Content-Type: application/json" -d '{"query": "query { pages { list { id path } } }"}')
     - echo ${RESPONSE}
 
-    # - PAGE_ID_LIST=("176" "177")
+    - PAGE_ID_LIST=("176" "177")
     # Extract IDs for the specific paths
-    - PAGE_ID_LIST=$(echo "$RESPONSE" | jq -r '.data.pages.list[] | select(.path == "technical/project/botuk_zigbee/home" or .path == "technical/project/botuk_zigbee/test") | .id' | awk '{printf "\"%s\" ", $1}' | sed 's/ $//')
+    # - PAGE_ID_LIST=$(echo "$RESPONSE" | jq -r '.data.pages.list[] | select(.path == "technical/project/botuk_zigbee/home" or .path == "technical/project/botuk_zigbee/test") | .id' | awk '{printf "\"%s\" ", $1}' | sed 's/ $//')
 
 
 
