@@ -280,12 +280,8 @@ sync_gitlab_wiki_to_wikijs:
           
           # Extract the ID for the matching path from the JSON response;
           PAGE_ID=$(echo "$RESPONSE" | jq -r --arg path "$EXPECTED_PATH" '.data.pages.list[] | select(.path == $path) | .id');
-          
-          # If a valid ID is found, add it to the PAGE_ID_LIST;
-          if [[ -n "$PAGE_ID" ]];
-          then
-              PAGE_ID_LIST+=("$PAGE_ID");
-          fi
+
+          PAGE_ID_LIST+=("$PAGE_ID");
       done
 
 
