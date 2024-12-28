@@ -267,7 +267,7 @@ sync_gitlab_wiki_to_wikijs:
 
     - >
       PAGE_ID_LIST=();
-      for PAGE in "*.md";
+      for PAGE in *.md;
       do
           FILENAME=$(basename "$PAGE" .md);
           EXPECTED_PATH="technical/project/botuk_zigbee/$FILENAME";
@@ -281,7 +281,7 @@ sync_gitlab_wiki_to_wikijs:
     - >
       DATA=();
       COUNTER=0;
-      for PAGE in "*.md";
+      for PAGE in *.md;
       do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
 
