@@ -266,21 +266,12 @@ sync_gitlab_wiki_to_wikijs:
 
 
     - >
-      # Initialize an empty PAGE_ID_LIST;
       PAGE_ID_LIST=();
-
-      # Iterate over all .md files in the current directory;
       for PAGE in *.md;
       do
-          # Extract the path from the filename;
           FILENAME=$(basename "$PAGE" .md);
-          
-          # Construct the expected path;
           EXPECTED_PATH="technical/project/botuk_zigbee/$FILENAME";
-          
-          # Extract the ID for the matching path from the JSON response;
           PAGE_ID=$(echo "$RESPONSE" | jq -r --arg path "$EXPECTED_PATH" '.data.pages.list[] | select(.path == $path) | .id');
-
           PAGE_ID_LIST+=("$PAGE_ID");
       done
 
