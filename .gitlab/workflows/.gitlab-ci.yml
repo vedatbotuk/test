@@ -275,9 +275,12 @@ sync_gitlab_wiki_to_wikijs:
           if [[ -z "$PAGE_ID" || "$PAGE_ID" == "null" ]]; 
           then
               PAGE_ID_LIST+=("new_page");
+              echo "Page does not exist, creating new page...";
           else
               PAGE_ID_LIST+=("$PAGE_ID");
-          fi          
+              echo "Page exists with ID: $PAGE_ID. Updating...";
+          fi
+          echo $PAGE_ID
       done
 
     # Wrap the IDs in the array format
