@@ -264,8 +264,8 @@ sync_gitlab_wiki_to_wikijs:
       PAGE_ID_LIST=();
       for PAGE in $(find . -type f -name "*.md");
       do
-          FILENAME=$(basename "$PAGE" .md);
-          EXPECTED_PATH="technical/project/botuk_zigbee/$FILENAME";
+          RELATIVE_PATH=$(echo "$PAGE" | sed 's|^\./||; s|\.md$||')
+          EXPECTED_PATH="technical/project/botuk_zigbee/$RELATIVE_PATH";
           PAGE_ID=$(echo "$RESPONSE" | jq -r --arg path "$EXPECTED_PATH" '.data.pages.list[] | select(.path == $path) | .id');
           if [[ -z "$PAGE_ID" || "$PAGE_ID" == "null" ]];
           then
@@ -286,12 +286,14 @@ sync_gitlab_wiki_to_wikijs:
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
 
           PAGE_TITLE=$(basename "$PAGE" .md);
-          SUB_PATH=$(echo "$PAGE_TITLE" | sed 's/_/-/g');
+          RELATIVE_PATH=$(echo "$PAGE" | sed 's|^\./||; s|\.md$||')
+          SUB_PATH=$(echo "$RELATIVE_PATH" | sed 's/_/-/g');
 
           FULL_PATH="/technical/project/botuk_zigbee/$SUB_PATH";
 
           echo $FULL_PATH
           echo $PAGE_TITLE
+          echo $RELATIVE_PATH
           echo ${PAGE_ID_LIST[${COUNTER}]}
           
           DATA+=("$JSON_CONTENT" "$FULL_PATH" "${PAGE_ID_LIST[${COUNTER}]}" "${PAGE_TITLE}");
