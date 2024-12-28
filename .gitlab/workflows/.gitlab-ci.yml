@@ -267,7 +267,7 @@ sync_gitlab_wiki_to_wikijs:
 
     - >
       PAGE_ID_LIST=();
-      find . -type f -name "*.md" | while read -r PAGE;
+      for PAGE in $(find . -type f -name "*.md");
       do
           RELATIVE_PATH=$(echo "$PAGE" | sed 's|^\./||; s|\.md$||');
           EXPECTED_PATH="technical/project/botuk_zigbee/$RELATIVE_PATH";
