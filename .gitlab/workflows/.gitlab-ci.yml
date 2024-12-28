@@ -272,7 +272,12 @@ sync_gitlab_wiki_to_wikijs:
           RELATIVE_PATH=$(echo "$PAGE" | sed 's|^\./||; s|\.md$||');
           EXPECTED_PATH="technical/project/botuk_zigbee/$RELATIVE_PATH";
           PAGE_ID=$(echo "$JSON_RESPONSE" | jq -r --arg path "$EXPECTED_PATH" '.data.pages.list[] | select(.path == $path) | .id');
-          PAGE_ID_LIST+=("$PAGE_ID");
+          if [[ -z "$PAGE_ID" || "$PAGE_ID" == "null" ]]; 
+          then
+              PAGE_ID_LIST+=("new_page");
+          else
+              PAGE_ID_LIST+=("$PAGE_ID");
+          fi          
       done
 
     # Wrap the IDs in the array format
