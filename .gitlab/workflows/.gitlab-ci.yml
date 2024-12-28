@@ -267,22 +267,21 @@ sync_gitlab_wiki_to_wikijs:
 
     - >
       PAGE_ID_LIST=();
-      for PAGE in *.md;
+      find . -type f -name "*.md" | while read -r PAGE;
       do
-          FILENAME=$(basename "$PAGE" .md);
-          EXPECTED_PATH="technical/project/botuk_zigbee/$FILENAME";
-          PAGE_ID=$(echo "$RESPONSE" | jq -r --arg path "$EXPECTED_PATH" '.data.pages.list[] | select(.path == $path) | .id');
+          RELATIVE_PATH=$(echo "$PAGE" | sed 's|^\./||; s|\.md$||');
+          EXPECTED_PATH="technical/project/botuk_zigbee/$RELATIVE_PATH";
+          PAGE_ID=$(echo "$JSON_RESPONSE" | jq -r --arg path "$EXPECTED_PATH" '.data.pages.list[] | select(.path == $path) | .id');
           PAGE_ID_LIST+=("$PAGE_ID");
       done
 
-
     # Wrap the IDs in the array format
-    - echo "PAGE_ID_LIST=($PAGE_ID_LIST)"
+    - echo "PAGE_ID_LIST=(${PAGE_ID_LIST[@]})"
 
     - >
       DATA=();
       COUNTER=0;
-      for PAGE in *.md;
+      find . -type f -name "*.md" | while read -r PAGE;
       do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
 
