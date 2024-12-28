@@ -281,7 +281,7 @@ sync_gitlab_wiki_to_wikijs:
     - >
       DATA=();
       COUNTER=0;
-      for PAGE in *.md;
+      for PAGE in $(find . -type f -name "*.md");
       do
           JSON_CONTENT=$(jq -Rs '.' < "$PAGE");
 
